@@ -1,17 +1,91 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { RouterProvider } from "react-router-dom";
+import reportWebVitals from "./reportWebVitals";
+import { AuthProvider } from "./hooks/auth";
+import router from "./router";
+import { App } from "antd";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+// const router = createBrowserRouter([
+//   {
+//     path: "/",
+//     element: (
+//       <ProtectedRoute>
+//         <Root />
+//       </ProtectedRoute>
+//     ),
+//     errorElement: <Error404 />,
+//     children: [
+//       // {
+//       //   path: "auth",
+//       //   element;
+//       // },
+//       {
+//         // path: "upload",
+//         index: true,
+//         element: (
+//           <ProtectedRoute>
+//             <UploadScreen />
+//           </ProtectedRoute>
+//         ),
+//       },
+//       {
+//         path: "image",
+//         // element: <ListImage />,
+//         children: [
+//           {
+//             path: ":folderName",
+//             element: (
+//               <ProtectedRoute>
+//                 <ListImage />
+//               </ProtectedRoute>
+//             ),
+//           },
+//         ],
+//       },
+//       {
+//         path: "*",
+//         element: <Error404 />,
+//       },
+//     ],
+//   },
+//   {
+//     path: "/login",
+//     element: <LoginScreen />,
+//   },
+//   {
+//     path: "/register",
+//     element: <SignUpPage />,
+//   },
+// ]);
+
+// const authRouter = createBrowserRouter([
+//   {
+//     path: "/",
+//     errorElement: <Error404 />,
+//     children: [
+//       {
+//         // path: "/login",
+//         index: true,
+//         element: <LoginScreen />,
+//       },
+//       {
+//         path: "/register",
+//         element: <SignUpPage />,
+//       },
+//     ],
+//   },
+// ]);
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <App />
+    <AuthProvider>
+      <App>
+        <RouterProvider router={router} />
+      </App>
+    </AuthProvider>
   </React.StrictMode>
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
