@@ -2,6 +2,7 @@
 import axios from "axios";
 import { API } from "../constants/API";
 import router from "../router";
+import { message } from "antd";
 
 let requestsCount = 0;
 
@@ -35,7 +36,6 @@ axios.interceptors.response.use(
   async function onResponseError(error) {
     requestsCount = requestsCount - 1;
     // updateActivityLoading();
-
     let errorText = "Lỗi xảy ra, vui lòng kiểm tra hoặc liên hệ quản trị viên";
     if (error.code === "ECONNABORTED") {
       errorText = "Thời gian chờ đã quá hạn, vui lòng thử lại";
@@ -46,37 +46,53 @@ axios.interceptors.response.use(
         errorText = "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại";
         await window.localStorage.removeItem("token");
         router.navigate("/login");
+        message.error(errorText);
         // getStore().dispatch(authActions.clear());
         // navigationService.replace(ROUTER.AUTH_NAVIGATOR);
       }
-
+      if (error.response.status === 403) {
+        // console.log("--- token timeout ---");
+        errorText = "Bạn không có quyền truy cập chức năng này";
+        message.error(errorText);
+        // await window.localStorage.removeItem("token");
+        // router.navigate("/login");
+      }
       if (error.response.data?.message) {
         errorText = error.response.data.message;
+        message.error(errorText);
         if (error.response.status === 401) {
           errorText = "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại";
           await window.localStorage.removeItem("token");
           router.navigate("/login");
         }
+        // if (error.response.status === 403) {
+        //   console.log("--- token timeout ---");
+        //   errorText = "Bạn không có quyền truy cập chức năng này";
+        //   await window.localStorage.removeItem("token");
+        //   router.navigate("/login");
+        // }
       }
       if (error.response.data?.body?.message) {
         errorText = error.response.data.message;
       }
-      if (error.response.data?.error_description) {
-        errorText = error.response.data.error_description;
-        if (errorText === "unregistered") {
-          errorText = "Tài khoản chưa được đăng ký";
-        }
-        if (error.response.status === 401) {
-          errorText = "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại";
-          router.navigate("/login");
-          window.localStorage.removeItem("token");
-        }
-      }
+      // if (error.response.data?.error_description) {
+      //   errorText = error.response.data.error_description;
+      //   if (errorText === "unregistered") {
+      //     errorText = "Tài khoản chưa được đăng ký";
+      //   }
+      //   if (error.response.status === 401) {
+      //     errorText = "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại";
+      //     router.navigate("/login");
+      //     window.localStorage.removeItem("token");
+      //   }
+      // }
     }
 
-    // const showError = error.config.showError ?? true;
+    const showError = error.config.showError ?? true;
     // if (showError) Toast.showText(errorText);
-
+    if (showError) {
+      console.log(errorText);
+    }
     return Promise.reject(error);
   }
 );

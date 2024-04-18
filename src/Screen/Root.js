@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Avatar, Button, Dropdown, Layout, Menu, Space, theme } from "antd";
-import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
+import {
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  CloudUploadOutlined,
+  CloudServerOutlined,
+  TeamOutlined,
+} from "@ant-design/icons";
 import { Outlet, useNavigate, useLocation, useParams } from "react-router-dom";
 import { API } from "../constants/API";
 import { useAuth } from "../hooks/auth";
@@ -15,24 +21,33 @@ const Root = () => {
   let location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
   const [subMenu, setSubMenu] = useState([]);
+  const [name, setName] = useState([]);
   const menuItem = [
     {
       key: "UPLOAD",
       label: "Upload tập tin",
+      icon: <CloudUploadOutlined />,
       onClick: () => navigate("/"),
     },
     {
       key: "IMAGE",
       label: "Danh sách ảnh",
+      icon: <CloudServerOutlined />,
       // onClick: () => navigate("/image"),
       children: subMenu?.map((item, j) => {
         // const subKey = item;
         return {
           key: item,
           label: `${item}`,
-          onClick: () => navigate(`/image/${item}`),
+          onClick: () => navigate(`/image/${item}`, { state: { key: item } }),
         };
       }),
+    },
+    {
+      key: "USER",
+      label: "Quản lý người dùng",
+      icon: <TeamOutlined />,
+      onClick: () => navigate("/user"),
     },
   ];
 
@@ -49,6 +64,7 @@ const Root = () => {
   // --------------- useEffect ------------------
   useEffect(() => {
     handleGetFolder();
+    handleGetInfo();
     document.body.style.margin = 0;
   }, []);
   // --------------------------------------------
@@ -63,6 +79,20 @@ const Root = () => {
       })
       .catch((err) => console.log(err));
   };
+
+  const handleGetInfo = async () => {
+    await request
+      .get(API.USERS_INFO)
+      .then((res) => {
+        if (res?.data) {
+          // setSubMenu(res.data?.data);
+          // console.log(res.data);
+          setName(res.data.user.userName);
+        }
+      })
+      .catch((err) => console.log(err));
+  };
+
   const handleLogOut = async () => {
     await logout();
     navigate("/login");
@@ -127,10 +157,9 @@ const Root = () => {
           />
           <Space align="end" style={{ position: "absolute", right: "10%" }}>
             <Avatar>U</Avatar>
-
             <Dropdown placement="bottomLeft" arrow menu={{ items }}>
               <Button size="tiny" type="text">
-                User
+                {name}
               </Button>
             </Dropdown>
           </Space>

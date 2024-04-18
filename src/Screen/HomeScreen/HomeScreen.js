@@ -16,9 +16,7 @@ const props = {
       console.log(info.file, info.fileList);
     }
     if (status === "done") {
-      message.success(`${info.file.name} file uploaded successfully.`);
-    } else if (status === "error") {
-      message.error(`${info.file.name} file upload failed.`);
+      message.success(`${info.file.name} file đã được upload thành công.`);
     }
   },
   onDrop(e) {
@@ -71,13 +69,8 @@ const UploadScreen = () => {
       <p className="ant-upload-drag-icon">
         <InboxOutlined />
       </p>
-      <p className="ant-upload-text">
-        Click or drag file to this area to upload
-      </p>
-      <p className="ant-upload-hint">
-        Support for a single or bulk upload. Strictly prohibited from uploading
-        company data or other banned files.
-      </p>
+      <p className="ant-upload-text">Bấm hoặc kéo file vào để upload file</p>
+      <p className="ant-upload-hint">Chỉ nhận file định dạng .zip hoặc .rar</p>
     </Dragger>
   );
 };

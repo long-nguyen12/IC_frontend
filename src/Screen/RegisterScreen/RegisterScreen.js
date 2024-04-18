@@ -1,18 +1,40 @@
 import React from "react";
 
-import { Button, Form, Grid, Input, theme, Typography } from "antd";
+import { App, Button, Form, Grid, Input, theme, Typography } from "antd";
 
 import { LockOutlined, MailOutlined, UserOutlined } from "@ant-design/icons";
+import { Link } from "react-router-dom";
+import request from "../../service/request";
+import { API } from "../../constants/API";
 
 const { useToken } = theme;
 const { useBreakpoint } = Grid;
-const { Text, Title, Link } = Typography;
+const { Text, Title } = Typography;
 
 export default function SignUpPage() {
   const { token } = useToken();
+  const { message } = App.useApp();
   const screens = useBreakpoint();
-
+  // --------------- useEffect -------------------
+  // ---------------------------------------------
+  // --------------- Action ------------------------
   const onFinish = (values) => {
+    const form = new FormData();
+    form.append("userName", values.userName);
+    form.append("password", values.password);
+    form.append("email", values.email);
+    request
+      .post(API.REGISTER, form)
+      .then((res) => {
+        if (res.status === 201) {
+          message.success("Tạo tài khoản thành công");
+          navigator("login");
+        }
+      })
+      .catch((err) => {
+        message.error(err.response.data.message);
+        // console.log(err);
+      });
     console.log("Received values of form: ", values);
   };
 
@@ -71,10 +93,8 @@ export default function SignUpPage() {
             <path d="M4.92505 17.6H14.525V27.2001H4.92505V17.6Z" fill="white" />
           </svg>
 
-          <Title style={styles.title}>Sign up</Title>
-          <Text style={styles.text}>
-            Join us! Create an account to get started.
-          </Text>
+          <Title style={styles.title}>Đăng ký</Title>
+          <Text style={styles.text}>Tạo tài khoản để bắt đầu !</Text>
         </div>
         <Form
           name="normal_signup"
@@ -83,15 +103,15 @@ export default function SignUpPage() {
           requiredMark="optional"
         >
           <Form.Item
-            name="name"
+            name="userName"
             rules={[
               {
                 required: true,
-                message: "Please input your Name!",
+                message: "Vui lòng nhập tên tài khoản!",
               },
             ]}
           >
-            <Input prefix={<UserOutlined />} placeholder="Name" />
+            <Input prefix={<UserOutlined />} placeholder="Tên tài khoản" />
           </Form.Item>
           <Form.Item
             name="email"
@@ -99,7 +119,7 @@ export default function SignUpPage() {
               {
                 type: "email",
                 required: true,
-                message: "Please input your Email!",
+                message: "Vui lòng nhập Email!",
               },
             ]}
           >
@@ -107,27 +127,26 @@ export default function SignUpPage() {
           </Form.Item>
           <Form.Item
             name="password"
-            extra="Password needs to be at least 8 characters."
             rules={[
               {
                 required: true,
-                message: "Please input your Password!",
+                message: "Vui lòng nhập mật khẩu!",
               },
             ]}
           >
             <Input.Password
               prefix={<LockOutlined />}
               type="password"
-              placeholder="Password"
+              placeholder="Mật khẩu"
             />
           </Form.Item>
           <Form.Item style={{ marginBottom: "0px" }}>
             <Button block type="primary" htmlType="submit">
-              Sign up
+              Đăng ký
             </Button>
             <div style={styles.signup}>
-              <Text style={styles.text}>Already have an account?</Text>{" "}
-              <Link href="/">Sign in</Link>
+              <Text style={styles.text}>Đã có tài khoản?</Text>{" "}
+              <Link to="/login">Đăng nhập</Link>
             </div>
           </Form.Item>
         </Form>

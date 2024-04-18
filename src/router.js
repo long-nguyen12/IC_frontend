@@ -6,6 +6,7 @@ import UploadScreen from "./Screen/HomeScreen/HomeScreen";
 import Root from "./Screen/Root";
 import Error404 from "./Error";
 import { ProtectedRoute } from "./component/ProtectedRoute/ProtectedRoute";
+import UsersScreen from "./Screen/UsersScreen/UsersScreen";
 
 const router = createBrowserRouter([
   {
@@ -45,6 +46,14 @@ const router = createBrowserRouter([
         ],
       },
       {
+        path: "user",
+        element: (
+          <ProtectedRoute>
+            <UsersScreen />
+          </ProtectedRoute>
+        ),
+      },
+      {
         path: "*",
         element: <Error404 />,
       },
@@ -55,7 +64,7 @@ const router = createBrowserRouter([
     element: <LoginScreen />,
   },
   {
-    path: "/register",
+    path: "register",
     element: <SignUpPage />,
   },
 ]);

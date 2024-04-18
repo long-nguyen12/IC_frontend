@@ -102,11 +102,8 @@ export default function LoginScreen() {
             />
           </svg>
 
-          <Title style={styles.title}>Sign in</Title>
-          <Text style={styles.text}>
-            Welcome back to AntBlocks UI! Please enter your details below to
-            sign in.
-          </Text>
+          <Title style={styles.title}>Đăng nhập</Title>
+          <Text style={styles.text}>Vui lòng nhập thông tin đăng nhập</Text>
         </div>
         <Form
           name="normal_login"
@@ -148,9 +145,9 @@ export default function LoginScreen() {
             <Form.Item name="remember" valuePropName="checked" noStyle>
               <Checkbox>Ghi nhớ tài khoản</Checkbox>
             </Form.Item>
-            <p style={styles.forgotPassword}>
+            {/* <p style={styles.forgotPassword}>
               <Link to={"register"}>Quên mật khẩu?</Link>
-            </p>
+            </p> */}
           </Form.Item>
           <Form.Item style={{ marginBottom: "0px" }}>
             <Button block="true" type="primary" htmlType="submit">
@@ -158,7 +155,7 @@ export default function LoginScreen() {
             </Button>
             <div style={styles.footer}>
               <Text style={styles.text}>Chưa có tài khoản?</Text>{" "}
-              <Link to={"register"}>Đăng ký</Link>
+              <Link to={"/register"}>Đăng ký</Link>
             </div>
           </Form.Item>
         </Form>
