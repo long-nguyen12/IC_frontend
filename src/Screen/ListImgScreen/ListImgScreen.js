@@ -71,16 +71,19 @@ const ListImage = () => {
   const [limit] = useState(10);
   // --------------- useEffect ------------------
   useEffect(() => {
-    // Reset data and page when folderName changes
-    setData([]);
-    setPage(1);
-    setImgName(null);
-    setSelect(0);
-    setStatus(false);
-    setHasMore(true);
-    form.setFieldsValue({
-      describes: ["", "", "", "", ""],
-    });
+    const resetState = () => {
+      setData([]);
+      setPage(1);
+      setImgName(null);
+      setSelect(0);
+      setStatus(false);
+      setHasMore(true);
+      form.setFieldsValue({
+        describes: ["", "", "", "", ""],
+      });
+    };
+
+    resetState();
   }, [folderName]);
 
   useEffect(() => {
@@ -189,15 +192,10 @@ const ListImage = () => {
       .then((res) => {
         if (res.data) {
           const blob = new Blob([res.data], { type: "application/json" });
-          // Create a temporary URL for the Blob object
           const url = window.URL.createObjectURL(blob);
-          // Create a link element
           const link = document.createElement("a");
-          // Set the href attribute to the temporary URL
           link.href = url;
-          // Set the download attribute to the desired file name
           link.download = `${folderName}.json`;
-          // Programmatically trigger a click event on the link to initiate the download
           link.click();
         }
       })
