@@ -11,7 +11,12 @@ import {
   Skeleton,
 } from "antd";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+  MinusCircleOutlined,
+  PlusOutlined,
+  CloudSyncOutlined,
+  CloudDownloadOutlined,
+} from "@ant-design/icons";
 // import axios from "axios";
 import { API } from "../../constants/API";
 import { formatString } from "../../constants/formatString";
@@ -56,6 +61,7 @@ const ListImage = () => {
   const { message } = App.useApp();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState(false);
   const [data, setData] = useState([]);
   const [imgName, setImgName] = useState(null);
   const [describe, setDescribe] = useState(["", "", "", "", ""]);
@@ -68,11 +74,16 @@ const ListImage = () => {
     // Reset data and page when folderName changes
     setData([]);
     setPage(1);
+    setImgName(null);
+    setSelect(0);
+    setStatus(false);
     setHasMore(true);
+    form.setFieldsValue({
+      describes: ["", "", "", "", ""],
+    });
   }, [folderName]);
 
   useEffect(() => {
-    console.log(folderName);
     loadMoreData(1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [folderName]);
@@ -82,6 +93,7 @@ const ListImage = () => {
     console.log("Received values of form:", values);
     const formData = new FormData();
     formData.append("name", imgName);
+    formData.append("folder", folderName);
     formData.append(
       "describe",
       JSON.stringify(Object.values(values.describes))
@@ -151,21 +163,52 @@ const ListImage = () => {
         }
       });
   };
-  // const setFieldValue = () => {
-  //   const newValues = ["Value 1", "Value 2", "Value 3"]; // Your new field values
+  const exportFile = async () => {
+    setLoading(true);
+    const form = new FormData();
+    form.append("folderName", folderName);
+    await request
+      .post(API.EXPORT_FILE, form)
+      .then((res) => {
+        if (res.data) {
+          message.success(res.data.message);
+          // window.open(res.data.file);
+          setStatus(true);
+          setLoading(false);
+        }
+      })
+      .catch((err) => {
+        setLoading(false);
+        setStatus(false);
+      });
+  };
 
-  //   setInitialValues(newValues);
-
-  //   // Set field values using setFields method
-  //   form.setFieldsValue({
-  //     describes: newValues.map((value, index) => ({
-  //       [`describe_${index}`]: value,
-  //     })),
-  //   });
-  // };
+  const downloadFile = async () => {
+    await request
+      .get(formatString(API.DOWNLOAD, folderName), { responseType: "blob" })
+      .then((res) => {
+        if (res.data) {
+          const blob = new Blob([res.data], { type: "application/json" });
+          // Create a temporary URL for the Blob object
+          const url = window.URL.createObjectURL(blob);
+          // Create a link element
+          const link = document.createElement("a");
+          // Set the href attribute to the temporary URL
+          link.href = url;
+          // Set the download attribute to the desired file name
+          link.download = `${folderName}.json`;
+          // Programmatically trigger a click event on the link to initiate the download
+          link.click();
+        }
+      })
+      .catch((err) => {
+        setLoading(false);
+        setStatus(false);
+      });
+  };
   // --------------------------------------------
   return (
-    <Row style={{ maxHeight: 500, minHeight: 200 }}>
+    <Row style={{ maxHeight: 500, minHeight: 200 }} gutter={2}>
       <Col span={4}>
         <div id="scrollableDiv" style={{ height: 500, overflow: "auto" }}>
           <InfiniteScroll
@@ -211,7 +254,7 @@ const ListImage = () => {
         </div>
       </Col>
       <Col
-        span={20}
+        span={18}
         style={{
           width: "80%",
           maxHeight: "100%",
@@ -310,6 +353,20 @@ const ListImage = () => {
             </Button>
           </Form.Item>
         </Form>
+      </Col>
+      <Col span={2}>
+        <Button
+          type="primary"
+          shape="round"
+          size="small"
+          icon={status ? <CloudDownloadOutlined /> : <CloudSyncOutlined />}
+          loading={loading}
+          onClick={() => {
+            status ? downloadFile() : exportFile();
+          }}
+        >
+          {status ? "Tải file" : "Xuất file"}
+        </Button>
       </Col>
     </Row>
   );

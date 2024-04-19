@@ -9,6 +9,8 @@ export const API = {
 
   ADD_DESCRIBE: "/api/describe/describe",
   GET_DESCRIBE: "/api/describe/describe?name={0}",
+  EXPORT_FILE: "/api/describe/create_json",
+  DOWNLOAD: "/api/image/download-json?name={0}",
 
   USERS: "/api/users/user",
   USERS_INFO: "/api/users/user_info",
