@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   App,
   Button,
@@ -9,14 +9,10 @@ import {
   List,
   Row,
   Skeleton,
+  Space,
 } from "antd";
 import InfiniteScroll from "react-infinite-scroll-component";
-import {
-  MinusCircleOutlined,
-  PlusOutlined,
-  CloudSyncOutlined,
-  CloudDownloadOutlined,
-} from "@ant-design/icons";
+import { CloudSyncOutlined, CloudDownloadOutlined } from "@ant-design/icons";
 // import axios from "axios";
 import { API } from "../../constants/API";
 import { formatString } from "../../constants/formatString";
@@ -63,6 +59,10 @@ const ListImage = () => {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState(false);
   const [data, setData] = useState([]);
+  const prevRef = useRef();
+  const nextRef = useRef();
+  const submitRef = useRef();
+  const formRef = useRef(null);
   const [imgName, setImgName] = useState(null);
   const [describe, setDescribe] = useState(["", "", "", "", ""]);
   const [hasMore, setHasMore] = useState(true);
@@ -84,6 +84,7 @@ const ListImage = () => {
     };
 
     resetState();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [folderName]);
 
   useEffect(() => {
@@ -143,6 +144,10 @@ const ListImage = () => {
     // request.get(formatString(API.GET_DESCRIBE, name))
     setSelect(index);
     setImgName(name);
+    requestDescribe(name);
+  };
+
+  const requestDescribe = (name) => {
     request
       .get(formatString(API.GET_DESCRIBE, name))
       .then((res) => {
@@ -166,6 +171,7 @@ const ListImage = () => {
         }
       });
   };
+
   const exportFile = async () => {
     setLoading(true);
     const form = new FormData();
@@ -203,6 +209,29 @@ const ListImage = () => {
         setLoading(false);
         setStatus(false);
       });
+  };
+
+  const handleKeyDown = (event) => {
+    if (event.key === "Tab" && event.target === submitRef.current) {
+      event.preventDefault(); // Prevent default tab behavior
+
+      // Focus on the button when the Tab key is pressed while the first input is focused
+      nextRef.current.focus();
+    }
+  };
+
+  const moveToPrevImg = () => {
+    setSelect(select - 1);
+    setImgName(data[select - 2]);
+    requestDescribe(data[select - 2]);
+    // console.log("select >>>", select - 1);
+    console.log("name >>>", data[select]);
+  };
+
+  const moveToNextImg = () => {
+    setSelect(select + 1);
+    setImgName(data[select]);
+    requestDescribe(data[select]);
   };
   // --------------------------------------------
   return (
@@ -260,6 +289,7 @@ const ListImage = () => {
       >
         <Form
           form={form}
+          ref={formRef}
           name="dynamic_form_item"
           {...formItemLayoutWithOutLabel}
           onFinish={onFinish}
@@ -292,18 +322,20 @@ const ListImage = () => {
                       : formItemLayoutWithOutLabel)}
                     label={index === 0 ? `Mô tả` : ""}
                     required={false}
-                    key={field.key}
+                    key={[field.key, "item"]}
+                    name={[field.name, "item"]}
+                    tabIndex={index + 1}
                   >
                     <Form.Item
                       {...field}
                       validateTrigger={["onChange", "onBlur"]}
-                      rules={[
-                        {
-                          required: true,
-                          whitespace: true,
-                          message: "Vui lòng nhập mô tả hoặc xóa dòng này",
-                        },
-                      ]}
+                      // rules={[
+                      //   {
+                      //     required: true,
+                      //     whitespace: true,
+                      //     message: "Vui lòng nhập mô tả hoặc xóa dòng này",
+                      //   },
+                      // ]}
                       noStyle
                     >
                       <TextArea
@@ -315,7 +347,7 @@ const ListImage = () => {
                         }}
                       />
                     </Form.Item>
-                    {fields.length > 1 ? (
+                    {/* {fields.length > 1 ? (
                       <MinusCircleOutlined
                         className="dynamic-delete-button"
                         onClick={() => remove(field.name)}
@@ -326,10 +358,10 @@ const ListImage = () => {
                           bottom: "40%",
                         }}
                       />
-                    ) : null}
+                    ) : null} */}
                   </Form.Item>
                 ))}
-                <Form.Item>
+                {/* <Form.Item>
                   <Button
                     type="dashed"
                     onClick={() => add()}
@@ -341,14 +373,34 @@ const ListImage = () => {
                     Thêm mô tả
                   </Button>
                   <Form.ErrorList errors={errors} />
-                </Form.Item>
+                </Form.Item> */}
               </>
             )}
           </Form.List>
           <Form.Item>
-            <Button type="primary" htmlType="submit">
-              Lưu mô tả
-            </Button>
+            <Row onKeyDown={handleKeyDown}>
+              <Space>
+                <Button type="primary" htmlType="submit" ref={submitRef}>
+                  Lưu mô tả
+                </Button>
+                {select > 1 ? (
+                  <Button
+                    type="primary"
+                    ref={prevRef}
+                    onClick={() => moveToPrevImg()}
+                  >
+                    Prev
+                  </Button>
+                ) : null}
+                <Button
+                  type="primary"
+                  ref={nextRef}
+                  onClick={() => moveToNextImg()}
+                >
+                  Next
+                </Button>
+              </Space>
+            </Row>
           </Form.Item>
         </Form>
       </Col>
