@@ -10,6 +10,7 @@ import {
   Row,
   Skeleton,
   Space,
+  Tour,
 } from "antd";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { CloudSyncOutlined, CloudDownloadOutlined } from "@ant-design/icons";
@@ -62,6 +63,9 @@ const ListImage = () => {
   const prevRef = useRef();
   const nextRef = useRef();
   const submitRef = useRef();
+  const ref1 = useRef(null);
+  const ref2 = useRef(null);
+  const ref3 = useRef(null);
   const formRef = useRef(null);
   const [imgName, setImgName] = useState(null);
   const [describe, setDescribe] = useState(["", "", "", "", ""]);
@@ -69,6 +73,37 @@ const ListImage = () => {
   const [select, setSelect] = useState(0);
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
+  const [open, setOpen] = useState(false);
+
+  const steps = [
+    {
+      title: "Chọn ảnh",
+      description: "Chọn ảnh để bắt đầu thêm mô tả.",
+      target: () => ref1.current,
+    },
+    {
+      title: "Nhập mô tả",
+      description:
+        "Chọn 1 trường mô tả để bắt đầu nhập ( Tab để chuyển nhanh sang trường tiếp theo ).",
+      target: () => ref2?.current,
+    },
+    {
+      title: "Lưu mô tả",
+      description: "Lưu mô tả của ảnh .",
+      target: () => submitRef?.current,
+    },
+    {
+      title: "Chuyển ảnh",
+      description: "Chuyển sang ảnh tiếp theo.",
+      target: () => nextRef?.current,
+    },
+    {
+      title: "Xuất & tải file",
+      description:
+        "Xuất toàn bộ mô tả của tất cả các ảnh trong thư mục thành file JSON và tải xuống ( Ctrl + S ).",
+      target: () => ref3?.current,
+    },
+  ];
   // --------------- useEffect ------------------
   useEffect(() => {
     const resetState = () => {
@@ -89,6 +124,9 @@ const ListImage = () => {
 
   useEffect(() => {
     loadMoreData(1);
+    if (!localStorage.getItem("previouslyVisited")) {
+      openTour();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [folderName]);
   // --------------------------------------------
@@ -110,6 +148,12 @@ const ListImage = () => {
         }
       })
       .catch((err) => console.log(err));
+  };
+
+  const openTour = () => {
+    // console.log(localStorage.getItem("previouslyVisited"));
+    setOpen(true);
+    localStorage.setItem("previouslyVisited", true);
   };
 
   async function loadMoreData(newPage) {
@@ -203,6 +247,7 @@ const ListImage = () => {
           link.href = url;
           link.download = `${folderName}.json`;
           link.click();
+          setStatus(false);
         }
       })
       .catch((err) => {
@@ -213,10 +258,21 @@ const ListImage = () => {
 
   const handleKeyDown = (event) => {
     if (event.key === "Tab" && event.target === submitRef.current) {
-      event.preventDefault(); // Prevent default tab behavior
-
-      // Focus on the button when the Tab key is pressed while the first input is focused
+      event.preventDefault();
       nextRef.current.focus();
+    }
+    if (event.key === "Tab" && event.target === nextRef.current) {
+      event.preventDefault();
+      form.getFieldInstance(["describes", 0]).focus();
+    }
+    if (event.ctrlKey && event.key === "s") {
+      event.preventDefault();
+      // console.log("Ctrl + S");
+      if (status) {
+        downloadFile();
+      } else {
+        exportFile();
+      }
     }
   };
 
@@ -235,108 +291,102 @@ const ListImage = () => {
   };
   // --------------------------------------------
   return (
-    <Row style={{ maxHeight: 500, minHeight: 200 }} gutter={2}>
-      <Col span={4}>
-        <div id="scrollableDiv" style={{ height: 500, overflow: "auto" }}>
-          <InfiniteScroll
-            // style={{
-            //   width: "100%",
-            //   height: 500,
-            // }}
-            dataLength={data.length}
-            next={() => loadMoreData(page + 1)}
-            hasMore={hasMore}
-            loader={<Skeleton.Image active />}
-            scrollableTarget="scrollableDiv"
+    <div onKeyDown={handleKeyDown}>
+      <Row style={{ maxHeight: 500, minHeight: 200 }} gutter={2}>
+        <Col span={4}>
+          <div
+            id="scrollableDiv"
+            style={{ height: 500, overflow: "auto" }}
+            ref={ref1}
           >
-            <List
-              dataSource={data}
-              grid={{
-                gutter: 6,
-                column: 1,
-              }}
-              renderItem={(item, index) => (
-                <List.Item
-                  key={index + 1}
-                  style={{
-                    borderWidth: select === index + 1 ? 2 : 0,
-                    borderStyle: "solid",
-                    borderColor: "red",
-                  }}
-                >
-                  <Image
-                    onClick={() => handleGetDescribe(item, index + 1)}
-                    width={"100%"}
-                    preview={true}
-                    src={formatString(
-                      API.API_HOST + API.VIEW_IMAGE,
-                      folderName,
-                      item
-                    )}
-                  />
-                </List.Item>
-              )}
-            />
-          </InfiniteScroll>
-        </div>
-      </Col>
-      <Col
-        span={18}
-        style={{
-          width: "80%",
-          maxHeight: "100%",
-        }}
-      >
-        <Form
-          form={form}
-          ref={formRef}
-          name="dynamic_form_item"
-          {...formItemLayoutWithOutLabel}
-          onFinish={onFinish}
+            <InfiniteScroll
+              // style={{
+              //   width: "100%",
+              //   height: 500,
+              // }}
+              dataLength={data.length}
+              next={() => loadMoreData(page + 1)}
+              hasMore={hasMore}
+              loader={<Skeleton.Image active />}
+              scrollableTarget="scrollableDiv"
+            >
+              <List
+                dataSource={data}
+                grid={{
+                  gutter: 6,
+                  column: 1,
+                }}
+                renderItem={(item, index) => (
+                  <List.Item
+                    key={index + 1}
+                    style={{
+                      borderWidth: select === index + 1 ? 2 : 0,
+                      borderStyle: "solid",
+                      borderColor: "red",
+                    }}
+                  >
+                    <Image
+                      onClick={() => handleGetDescribe(item, index + 1)}
+                      width={"100%"}
+                      preview={true}
+                      src={formatString(
+                        API.API_HOST + API.VIEW_IMAGE,
+                        folderName,
+                        item
+                      )}
+                    />
+                  </List.Item>
+                )}
+              />
+            </InfiniteScroll>
+          </div>
+        </Col>
+        <Col
+          span={18}
           style={{
-            maxWidth: "100%",
-            maxHeight: 500,
-            minHeight: 200,
-            overflow: "auto",
+            width: "80%",
+            maxHeight: "100%",
           }}
         >
-          <Form.List
-            name="describes"
-            rules={[
-              {
-                validator: async (_, names) => {
-                  if (!names || names.length < 5) {
-                    return Promise.reject(new Error("At least 5 passengers"));
-                  }
-                },
-              },
-            ]}
-            initialValue={describe}
+          <Form
+            form={form}
+            ref={formRef}
+            name="dynamic_form_item"
+            {...formItemLayoutWithOutLabel}
+            onFinish={onFinish}
+            style={{
+              maxWidth: "100%",
+              maxHeight: 500,
+              minHeight: 200,
+              overflow: "auto",
+            }}
           >
-            {(fields, { add, remove }, { errors }) => (
-              <>
-                {fields.map((field, index) => (
-                  <Form.Item
-                    {...(index === 0
-                      ? formItemLayout
-                      : formItemLayoutWithOutLabel)}
-                    label={index === 0 ? `Mô tả` : ""}
-                    required={false}
-                    key={[field.key, "item"]}
-                    name={[field.name, "item"]}
-                    tabIndex={index + 1}
-                  >
+            <Form.List
+              name="describes"
+              rules={[
+                {
+                  validator: async (_, names) => {
+                    if (!names || names.length < 5) {
+                      return Promise.reject(new Error("At least 5 passengers"));
+                    }
+                  },
+                },
+              ]}
+              initialValue={describe}
+            >
+              {(fields, { add, remove }, { errors }) => (
+                <div ref={ref2}>
+                  {fields.map((field, index) => (
                     <Form.Item
                       {...field}
-                      validateTrigger={["onChange", "onBlur"]}
-                      // rules={[
-                      //   {
-                      //     required: true,
-                      //     whitespace: true,
-                      //     message: "Vui lòng nhập mô tả hoặc xóa dòng này",
-                      //   },
-                      // ]}
-                      noStyle
+                      {...(index === 0
+                        ? formItemLayout
+                        : formItemLayoutWithOutLabel)}
+                      label={index === 0 ? `Mô tả` : ""}
+                      required={false}
+                      // key={[field.key, "item"]}
+                      // name={[field.name, "item"]}
+                      tabIndex={index + 1}
                     >
                       <TextArea
                         rows={2}
@@ -346,8 +396,8 @@ const ListImage = () => {
                           width: "80%",
                         }}
                       />
-                    </Form.Item>
-                    {/* {fields.length > 1 ? (
+                      {/* </Form.Item> */}
+                      {/* {fields.length > 1 ? (
                       <MinusCircleOutlined
                         className="dynamic-delete-button"
                         onClick={() => remove(field.name)}
@@ -359,9 +409,9 @@ const ListImage = () => {
                         }}
                       />
                     ) : null} */}
-                  </Form.Item>
-                ))}
-                {/* <Form.Item>
+                    </Form.Item>
+                  ))}
+                  {/* <Form.Item>
                   <Button
                     type="dashed"
                     onClick={() => add()}
@@ -374,51 +424,54 @@ const ListImage = () => {
                   </Button>
                   <Form.ErrorList errors={errors} />
                 </Form.Item> */}
-              </>
-            )}
-          </Form.List>
-          <Form.Item>
-            <Row onKeyDown={handleKeyDown}>
-              <Space>
-                <Button type="primary" htmlType="submit" ref={submitRef}>
-                  Lưu mô tả
-                </Button>
-                {select > 1 ? (
+                </div>
+              )}
+            </Form.List>
+            <Form.Item>
+              <Row>
+                <Space>
+                  <Button type="primary" htmlType="submit" ref={submitRef}>
+                    Lưu mô tả
+                  </Button>
+                  {select > 1 ? (
+                    <Button
+                      type="primary"
+                      ref={prevRef}
+                      onClick={() => moveToPrevImg()}
+                    >
+                      Prev
+                    </Button>
+                  ) : null}
                   <Button
                     type="primary"
-                    ref={prevRef}
-                    onClick={() => moveToPrevImg()}
+                    ref={nextRef}
+                    onClick={() => moveToNextImg()}
                   >
-                    Prev
+                    Next
                   </Button>
-                ) : null}
-                <Button
-                  type="primary"
-                  ref={nextRef}
-                  onClick={() => moveToNextImg()}
-                >
-                  Next
-                </Button>
-              </Space>
-            </Row>
-          </Form.Item>
-        </Form>
-      </Col>
-      <Col span={2}>
-        <Button
-          type="primary"
-          shape="round"
-          size="small"
-          icon={status ? <CloudDownloadOutlined /> : <CloudSyncOutlined />}
-          loading={loading}
-          onClick={() => {
-            status ? downloadFile() : exportFile();
-          }}
-        >
-          {status ? "Tải file" : "Xuất file"}
-        </Button>
-      </Col>
-    </Row>
+                </Space>
+              </Row>
+            </Form.Item>
+          </Form>
+        </Col>
+        <Col span={2}>
+          <Button
+            type="primary"
+            shape="round"
+            size="small"
+            ref={ref3}
+            icon={status ? <CloudDownloadOutlined /> : <CloudSyncOutlined />}
+            loading={loading}
+            onClick={() => {
+              status ? downloadFile() : exportFile();
+            }}
+          >
+            {status ? "Tải file" : "Xuất file"}
+          </Button>
+        </Col>
+      </Row>
+      <Tour open={open} onClose={() => setOpen(false)} steps={steps} />
+    </div>
   );
 };
 export default ListImage;
