@@ -3,6 +3,8 @@ import {
   App,
   Button,
   Col,
+  Drawer,
+  FloatButton,
   Form,
   Image,
   Input,
@@ -10,10 +12,15 @@ import {
   Row,
   Skeleton,
   Space,
-  Tour,
 } from "antd";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { CloudSyncOutlined, CloudDownloadOutlined } from "@ant-design/icons";
+import {
+  CloudSyncOutlined,
+  CloudDownloadOutlined,
+  PictureOutlined,
+  FallOutlined,
+  RiseOutlined,
+} from "@ant-design/icons";
 // import axios from "axios";
 import { API } from "../../constants/API";
 import { formatString } from "../../constants/formatString";
@@ -63,78 +70,64 @@ const ListImage = () => {
   const prevRef = useRef();
   const nextRef = useRef();
   const submitRef = useRef();
-  const ref1 = useRef(null);
-  const ref2 = useRef(null);
-  const ref3 = useRef(null);
   const formRef = useRef(null);
-  const [imgName, setImgName] = useState(null);
+  // const [imgName, setImgName] = useState(null);
   const [describe, setDescribe] = useState(["", "", "", "", ""]);
   const [hasMore, setHasMore] = useState(true);
   const [select, setSelect] = useState(0);
   const [page, setPage] = useState(1);
-  const [limit] = useState(10);
-  const [open, setOpen] = useState(false);
+  const [limit] = useState(25);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSort, setIsSort] = useState("asc");
 
-  const steps = [
-    {
-      title: "Chọn ảnh",
-      description: "Chọn ảnh để bắt đầu thêm mô tả.",
-      target: () => ref1.current,
-    },
-    {
-      title: "Nhập mô tả",
-      description:
-        "Chọn 1 trường mô tả để bắt đầu nhập ( Tab để chuyển nhanh sang trường tiếp theo ).",
-      target: () => ref2?.current,
-    },
-    {
-      title: "Lưu mô tả",
-      description: "Lưu mô tả của ảnh .",
-      target: () => submitRef?.current,
-    },
-    {
-      title: "Chuyển ảnh",
-      description: "Chuyển sang ảnh tiếp theo.",
-      target: () => nextRef?.current,
-    },
-    {
-      title: "Xuất & tải file",
-      description:
-        "Xuất toàn bộ mô tả của tất cả các ảnh trong thư mục thành file JSON và tải xuống ( Ctrl + S ).",
-      target: () => ref3?.current,
-    },
-  ];
   // --------------- useEffect ------------------
   useEffect(() => {
     const resetState = () => {
-      setData([]);
+      // setData([]);
       setPage(1);
-      setImgName(null);
+      // setImgName(data[0]);
       setSelect(0);
       setStatus(false);
       setHasMore(true);
-      form.setFieldsValue({
-        describes: ["", "", "", "", ""],
-      });
     };
-
     resetState();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [folderName]);
-
-  useEffect(() => {
-    loadMoreData(1);
-    if (!localStorage.getItem("previouslyVisited")) {
-      openTour();
-    }
+    // loadAllDescribe();
+    getImageList("asc");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [folderName]);
   // --------------------------------------------
   // --------------- Action ---------------------
+  const getImageList = async (sort) => {
+    await request
+      .get(
+        formatString(
+          API.GET_ALL_IMAGE_NAME_NEW,
+          location.state.key,
+          1,
+          limit,
+          sort
+        )
+      )
+      .then((res) => {
+        if (res.data) {
+          const newData = res.data.file;
+          requestDescribe(newData[select].name);
+          setData(newData);
+          if (newData.length < limit) {
+            setHasMore(false);
+          }
+          return newData;
+        }
+      })
+      .catch((err) => console.log(err));
+  };
   const onFinish = (values) => {
-    console.log("Received values of form:", values);
+    // console.log(
+    //   "Received values of form:",
+    //   JSON.stringify(Object.values(values.describes))
+    // );
     const formData = new FormData();
-    formData.append("name", imgName);
+    formData.append("name", data[select].name);
     formData.append("folder", folderName);
     formData.append(
       "describe",
@@ -145,49 +138,43 @@ const ListImage = () => {
       .then((res) => {
         if (res.status === 200) {
           message.success(res?.data?.message);
+          getImageList(isSort);
+          // loadAllDescribe();
         }
       })
       .catch((err) => console.log(err));
   };
 
-  const openTour = () => {
-    // console.log(localStorage.getItem("previouslyVisited"));
-    setOpen(true);
-    localStorage.setItem("previouslyVisited", true);
-  };
-
   async function loadMoreData(newPage) {
-    // if (!hasMore) {
-    //   return;
-    // }
     setHasMore(true);
     await request
       .get(
-        formatString(API.GET_ALL_IMAGE_NAME, location.state.key, newPage, limit)
+        formatString(
+          API.GET_ALL_IMAGE_NAME_NEW,
+          location.state.key,
+          newPage,
+          limit,
+          isSort
+        )
       )
       .then((res) => {
         if (res.data) {
-          const newData = res.data.files;
+          const newData = res.data.file;
           setData((prevData) => [...prevData, ...newData]);
           setPage(newPage);
-          // setPage(pageNumber);
           // Check if there are more pages
           if (newData.length < limit) {
             setHasMore(false);
           }
+          return newData;
         }
-      });
-    // .catch(() => {
-    //   setHasMore(false);
-    // })
-    // .finally(() => {
-    //   setHasMore(false);
-    // });
+      })
+      .catch((err) => console.log(err));
   }
   const handleGetDescribe = async (name, index) => {
     // request.get(formatString(API.GET_DESCRIBE, name))
     setSelect(index);
-    setImgName(name);
+    // setImgName(name);
     requestDescribe(name);
   };
 
@@ -210,7 +197,28 @@ const ListImage = () => {
       .catch((err) => {
         if (err?.response?.status === 500) {
           form.setFieldsValue({
-            describes: ["", "", "", "", ""],
+            describes: [
+              {
+                caption: "",
+                segment_caption: "",
+              },
+              {
+                caption: "",
+                segment_caption: "",
+              },
+              {
+                caption: "",
+                segment_caption: "",
+              },
+              {
+                caption: "",
+                segment_caption: "",
+              },
+              {
+                caption: "",
+                segment_caption: "",
+              },
+            ],
           });
         }
       });
@@ -263,7 +271,12 @@ const ListImage = () => {
     }
     if (event.key === "Tab" && event.target === nextRef.current) {
       event.preventDefault();
-      form.getFieldInstance(["describes", 0]).focus();
+      const firstTextarea = document.querySelector(
+        ".ant-form-item-control-input-content:first-of-type input"
+      );
+      if (firstTextarea) {
+        firstTextarea.focus();
+      }
     }
     if (event.ctrlKey && event.key === "s") {
       event.preventDefault();
@@ -278,76 +291,53 @@ const ListImage = () => {
 
   const moveToPrevImg = () => {
     setSelect(select - 1);
-    setImgName(data[select - 2]);
-    requestDescribe(data[select - 2]);
-    // console.log("select >>>", select - 1);
-    console.log("name >>>", data[select]);
+    // setImgName(data[select - 1]?.name);
+    requestDescribe(data[select - 1]?.name);
   };
 
   const moveToNextImg = () => {
     setSelect(select + 1);
-    setImgName(data[select]);
-    requestDescribe(data[select]);
+    // setImgName(data[select + 1]?.name);
+    requestDescribe(data[select + 1]?.name);
+  };
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+  const handleSort = async () => {
+    if (isSort === "asc") {
+      setIsSort("desc");
+      getImageList("desc");
+    } else {
+      setIsSort("asc");
+      getImageList("asc");
+    }
+    // await setIsSort(sort);
   };
   // --------------------------------------------
   return (
     <div onKeyDown={handleKeyDown}>
-      <Row style={{ maxHeight: 500, minHeight: 200 }} gutter={2}>
-        <Col span={4}>
-          <div
-            id="scrollableDiv"
-            style={{ height: 500, overflow: "auto" }}
-            ref={ref1}
-          >
-            <InfiniteScroll
-              // style={{
-              //   width: "100%",
-              //   height: 500,
-              // }}
-              dataLength={data.length}
-              next={() => loadMoreData(page + 1)}
-              hasMore={hasMore}
-              loader={<Skeleton.Image active />}
-              scrollableTarget="scrollableDiv"
-            >
-              <List
-                dataSource={data}
-                grid={{
-                  gutter: 6,
-                  column: 1,
-                }}
-                renderItem={(item, index) => (
-                  <List.Item
-                    key={index + 1}
-                    style={{
-                      borderWidth: select === index + 1 ? 2 : 0,
-                      borderStyle: "solid",
-                      borderColor: "red",
-                    }}
-                  >
-                    <Image
-                      onClick={() => handleGetDescribe(item, index + 1)}
-                      width={"100%"}
-                      preview={true}
-                      src={formatString(
-                        API.API_HOST + API.VIEW_IMAGE,
-                        folderName,
-                        item
-                      )}
-                    />
-                  </List.Item>
-                )}
-              />
-            </InfiniteScroll>
-          </div>
+      <Row style={{ maxHeight: 600, minHeight: 200 }} gutter={2}>
+        <Col span={12}>
+          {data && data.length > 0 ? (
+            <Image
+              width={"100%"}
+              height={400}
+              preview={true}
+              style={{ objectFit: "contain" }}
+              src={formatString(
+                API.API_HOST + API.VIEW_IMAGE,
+                folderName,
+                data[select].name
+              )}
+            />
+          ) : null}
         </Col>
-        <Col
-          span={18}
-          style={{
-            width: "80%",
-            maxHeight: "100%",
-          }}
-        >
+        <Col span={12}>
           <Form
             form={form}
             ref={formRef}
@@ -356,74 +346,50 @@ const ListImage = () => {
             onFinish={onFinish}
             style={{
               maxWidth: "100%",
+              width: "100%",
               maxHeight: 500,
               minHeight: 200,
               overflow: "auto",
             }}
           >
-            <Form.List
-              name="describes"
-              rules={[
-                {
-                  validator: async (_, names) => {
-                    if (!names || names.length < 5) {
-                      return Promise.reject(new Error("At least 5 passengers"));
-                    }
-                  },
-                },
-              ]}
-              initialValue={describe}
-            >
+            <Form.List name="describes" initialValue={describe}>
               {(fields, { add, remove }, { errors }) => (
-                <div ref={ref2}>
+                <div>
                   {fields.map((field, index) => (
                     <Form.Item
-                      {...field}
                       {...(index === 0
                         ? formItemLayout
                         : formItemLayoutWithOutLabel)}
                       label={index === 0 ? `Mô tả` : ""}
                       required={false}
-                      // key={[field.key, "item"]}
-                      // name={[field.name, "item"]}
                       tabIndex={index + 1}
                     >
-                      <TextArea
-                        rows={2}
-                        placeholder="Mô tả"
-                        // onChange={(value) => console.log(value.currentTarget)}
-                        style={{
-                          width: "80%",
-                        }}
-                      />
-                      {/* </Form.Item> */}
-                      {/* {fields.length > 1 ? (
-                      <MinusCircleOutlined
-                        className="dynamic-delete-button"
-                        onClick={() => remove(field.name)}
-                        style={{
-                          paddingLeft: 20,
-                          position: "absolute",
-                          top: "40%",
-                          bottom: "40%",
-                        }}
-                      />
-                    ) : null} */}
+                      <Space key={field.key} style={{ width: "100%" }}>
+                        <Form.Item
+                          {...field}
+                          name={[field.name, "caption"]}
+                          key={[field.key, "caption"]}
+                          validateTrigger={["onChange", "onBlur"]}
+                          noStyle
+                        >
+                          <Input rows={2} placeholder="Mô tả" noStyle />
+                        </Form.Item>
+                        <Form.Item
+                          {...field}
+                          name={[field.name, "segment_caption"]}
+                          key={[field.key, "segment_caption"]}
+                          validateTrigger={["onChange", "onBlur"]}
+                          noStyle
+                        >
+                          <Input
+                            rows={2}
+                            placeholder="Segment Caption "
+                            noStyle
+                          />
+                        </Form.Item>
+                      </Space>
                     </Form.Item>
                   ))}
-                  {/* <Form.Item>
-                  <Button
-                    type="dashed"
-                    onClick={() => add()}
-                    style={{
-                      width: "60%",
-                    }}
-                    icon={<PlusOutlined />}
-                  >
-                    Thêm mô tả
-                  </Button>
-                  <Form.ErrorList errors={errors} />
-                </Form.Item> */}
                 </div>
               )}
             </Form.List>
@@ -433,7 +399,7 @@ const ListImage = () => {
                   <Button type="primary" htmlType="submit" ref={submitRef}>
                     Lưu mô tả
                   </Button>
-                  {select > 1 ? (
+                  {select >= 1 ? (
                     <Button
                       type="primary"
                       ref={prevRef}
@@ -449,28 +415,105 @@ const ListImage = () => {
                   >
                     Next
                   </Button>
+                  {/* <Button
+                    type="primary"
+                    icon={
+                      status ? <CloudDownloadOutlined /> : <CloudSyncOutlined />
+                    }
+                    loading={loading}
+                    onClick={() => {
+                      status ? downloadFile() : exportFile();
+                    }}
+                  >
+                    {status ? "Tải file" : "Xuất file"}
+                  </Button> */}
                 </Space>
               </Row>
             </Form.Item>
           </Form>
         </Col>
-        <Col span={2}>
-          <Button
-            type="primary"
-            shape="round"
-            size="small"
-            ref={ref3}
-            icon={status ? <CloudDownloadOutlined /> : <CloudSyncOutlined />}
-            loading={loading}
-            onClick={() => {
-              status ? downloadFile() : exportFile();
-            }}
-          >
-            {status ? "Tải file" : "Xuất file"}
-          </Button>
-        </Col>
       </Row>
-      <Tour open={open} onClose={() => setOpen(false)} steps={steps} />
+      <FloatButton.Group>
+        <FloatButton
+          onClick={showModal}
+          type="primary"
+          shape="square"
+          icon={<PictureOutlined />}
+        />
+        <FloatButton
+          shape="square"
+          type="primary"
+          icon={status ? <CloudDownloadOutlined /> : <CloudSyncOutlined />}
+          loading={loading}
+          onClick={() => {
+            status ? downloadFile() : exportFile();
+          }}
+        >
+          {status ? "Tải file" : "Xuất file"}
+        </FloatButton>
+      </FloatButton.Group>
+      <Drawer
+        title={folderName}
+        placement="bottom"
+        open={isModalOpen}
+        height={window.innerHeight - 50}
+        onClose={handleCancel}
+        extra={
+          <Space>
+            <Button
+              type="primary"
+              icon={isSort === "asc" ? <FallOutlined /> : <RiseOutlined />}
+              onClick={handleSort}
+            />
+          </Space>
+        }
+      >
+        <div
+          id="scrollableDiv"
+          style={{ height: "100%", overflow: "auto", width: "100%" }}
+        >
+          <InfiniteScroll
+            dataLength={data.length}
+            next={() => loadMoreData(page + 1)}
+            hasMore={hasMore}
+            loader={<Skeleton.Image active />}
+            scrollableTarget="scrollableDiv"
+          >
+            <List
+              dataSource={data}
+              grid={{
+                gutter: 12,
+                column: 5,
+              }}
+              renderItem={(item, index) => {
+                return (
+                  <List.Item
+                    key={index + 1}
+                    style={{
+                      borderWidth: item.haveCaption ? 2 : 0,
+                      borderStyle: "solid",
+                      borderColor: item.haveCaption ? "green" : "red",
+                    }}
+                  >
+                    <Image
+                      onClick={() => handleGetDescribe(item.name, index)}
+                      width={"100%"}
+                      height={150}
+                      style={{ objectFit: "contain" }}
+                      preview={true}
+                      src={formatString(
+                        API.API_HOST + API.VIEW_IMAGE,
+                        folderName,
+                        item.name
+                      )}
+                    />
+                  </List.Item>
+                );
+              }}
+            />
+          </InfiniteScroll>
+        </div>
+      </Drawer>
     </div>
   );
 };

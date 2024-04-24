@@ -102,7 +102,7 @@ const Root = () => {
     <Layout style={{ height: "100vh", maxHeight: "100vh" }}>
       <Sider
         breakpoint="lg"
-        style={{ height: window.innerHeight }}
+        style={{ height: "100%" }}
         collapsedWidth="0"
         collapsed={collapsed}
         onBreakpoint={(broken) => {
@@ -167,6 +167,7 @@ const Root = () => {
         <Content
           style={{
             margin: "24px 16px 0",
+            height: "100%",
           }}
         >
           <div
@@ -185,9 +186,7 @@ const Root = () => {
           style={{
             textAlign: "center",
           }}
-        >
-          {/* Ant Design ©{new Date().getFullYear()} Created by Ant UED */}
-        </Footer>
+        ></Footer>
       </Layout>
     </Layout>
   );
