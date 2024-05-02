@@ -59,7 +59,6 @@ const formItemLayoutWithOutLabel = {
 };
 
 const ListImage = () => {
-  const { TextArea } = Input;
   let { folderName } = useParams();
   let location = useLocation();
   const { message } = App.useApp();
@@ -83,7 +82,7 @@ const ListImage = () => {
   // --------------- useEffect ------------------
   useEffect(() => {
     const resetState = () => {
-      // setData([]);
+      setData([]);
       setPage(1);
       // setImgName(data[0]);
       setSelect(0);
@@ -102,7 +101,7 @@ const ListImage = () => {
       .get(
         formatString(
           API.GET_ALL_IMAGE_NAME_NEW,
-          location.state.key,
+          location?.state?.key ? location?.state?.key: folderName,
           1,
           limit,
           sort
@@ -151,7 +150,7 @@ const ListImage = () => {
       .get(
         formatString(
           API.GET_ALL_IMAGE_NAME_NEW,
-          location.state.key,
+          location?.state?.key ? location?.state?.key: folderName,
           newPage,
           limit,
           isSort
@@ -331,7 +330,7 @@ const ListImage = () => {
               style={{ objectFit: "contain" }}
               src={formatString(
                 API.API_HOST + API.VIEW_IMAGE,
-                folderName,
+                location?.state?.key ? location?.state?.key: folderName,
                 data[select].name
               )}
             />
@@ -503,7 +502,7 @@ const ListImage = () => {
                       preview={true}
                       src={formatString(
                         API.API_HOST + API.VIEW_IMAGE,
-                        folderName,
+                        location?.state?.key ? location?.state?.key: folderName,
                         item.name
                       )}
                     />
