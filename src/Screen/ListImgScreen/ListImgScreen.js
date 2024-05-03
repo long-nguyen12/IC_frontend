@@ -59,7 +59,6 @@ const formItemLayoutWithOutLabel = {
 };
 
 const ListImage = () => {
-  const { TextArea } = Input;
   let { folderName } = useParams();
   let location = useLocation();
   const { message } = App.useApp();
