@@ -35,12 +35,31 @@ const Root = () => {
       icon: <CloudServerOutlined />,
       // onClick: () => navigate("/image"),
       children: subMenu?.map((item, j) => {
-        // const subKey = item;
-        return {
-          key: item,
-          label: `${item}`,
-          onClick: () => navigate(`/image/${item}`, { state: { key: item } }),
-        };
+        if (item.includes("\\")) {
+          const parts = item.split("\\");
+          const parentLabel = parts[0];
+          const childLabel = parts[1];
+          return {
+            key: item,
+            label: parentLabel,
+            // onClick: () => navigate(`/image/${item}`, { state: { key: item } }),
+            children: [
+              {
+                key: childLabel,
+                label: childLabel,
+                icon: <CloudServerOutlined />,
+                onClick: () =>
+                  navigate(`/image/${childLabel}`, { state: { key: parentLabel } }),
+              },
+            ],
+          };
+        } else {
+          return {
+            key: item,
+            label: `${item}`,
+            onClick: () => navigate(`/image/${item}`),
+          };
+        }
       }),
     },
     {
