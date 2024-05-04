@@ -26,6 +26,7 @@ import { API } from "../../constants/API";
 import { formatString } from "../../constants/formatString";
 import { useLocation, useParams } from "react-router-dom";
 import request from "../../service/request";
+import ImageWithBBoxes from "../../component/ImageWithBbox/ImageWithBBox";
 
 const formItemLayout = {
   labelCol: {
@@ -78,12 +79,15 @@ const ListImage = () => {
   const [limit] = useState(25);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSort, setIsSort] = useState("asc");
-
+  const [bbox, setBBox] = useState({});
+  const [bboxTitle, setBBoxTitle] = useState();
   // --------------- useEffect ------------------
   useEffect(() => {
     const resetState = () => {
       setData([]);
       setPage(1);
+      setBBox(null);
+      setBBoxTitle();
       // setImgName(data[0]);
       setSelect(0);
       setStatus(false);
@@ -94,40 +98,58 @@ const ListImage = () => {
     getImageList("asc");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [folderName]);
+  useEffect(() => {
+    const fileName = data[select]?.name;
+    if (fileName) {
+      requestDescribe(
+        fileName.includes("/") ? fileName.split("/")[1] : fileName
+      );
+    }
+
+    // eslint-disable-next-line
+  }, [select, data]);
   // --------------------------------------------
   // --------------- Action ---------------------
   const getImageList = async (sort) => {
-    await request
-      .get(
+    try {
+      const res = await request.get(
         formatString(
           API.GET_ALL_IMAGE_NAME_NEW,
-          location?.state?.key ? location?.state?.key: folderName,
+          location?.state?.key ? location?.state?.key : folderName,
           1,
           limit,
-          sort
+          sort,
+          location?.state?.child ? location?.state?.child : "all"
         )
-      )
-      .then((res) => {
-        if (res.data) {
-          const newData = res.data.file;
-          requestDescribe(newData[select].name);
-          setData(newData);
-          if (newData.length < limit) {
-            setHasMore(false);
+      );
+
+      if (res.data) {
+        const newData = res.data.file;
+        setData(newData, () => {
+          // Use callback function to ensure data is updated
+          const fileName = newData[select]?.name;
+          if (fileName) {
+            requestDescribe(
+              fileName.includes("/") ? fileName.split("/")[1] : fileName
+            );
           }
-          return newData;
+        });
+
+        if (newData.length < limit) {
+          setHasMore(false);
         }
-      })
-      .catch((err) => console.log(err));
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
   const onFinish = (values) => {
-    // console.log(
-    //   "Received values of form:",
-    //   JSON.stringify(Object.values(values.describes))
-    // );
     const formData = new FormData();
     formData.append("name", data[select].name);
-    formData.append("folder", folderName);
+    formData.append(
+      "folder",
+      location?.state?.key ? location?.state?.key : folderName
+    );
     formData.append(
       "describe",
       JSON.stringify(Object.values(values.describes))
@@ -150,10 +172,11 @@ const ListImage = () => {
       .get(
         formatString(
           API.GET_ALL_IMAGE_NAME_NEW,
-          location?.state?.key ? location?.state?.key: folderName,
+          location?.state?.key ? location?.state?.key : folderName,
           newPage,
           limit,
-          isSort
+          isSort,
+          location?.state?.child ? location?.state?.child : "all"
         )
       )
       .then((res) => {
@@ -183,13 +206,23 @@ const ListImage = () => {
       .then((res) => {
         if (res?.data) {
           setDescribe(res.data.describe.describe);
+          if (res.data.describe.bbox) {
+            console.log("here", res.data.describe.bbox);
+            setBBoxTitle(res.data.describe?.categories_name);
+            setBBox({
+              x: res.data.describe?.bbox[0][0],
+              y: res.data.describe?.bbox[0][1],
+              height: res.data.describe?.bbox[0][2],
+              width: res.data.describe?.bbox[0][3],
+            });
+          }
           const data = res.data.describe.describe;
           const array = [];
           data.map((item) => {
             return array.push(item);
           });
           form.setFieldsValue({
-            describes: array,
+            describes: data.length === 0 ? [{}, {}, {}, {}, {}] : array,
           });
         }
       })
@@ -226,7 +259,14 @@ const ListImage = () => {
   const exportFile = async () => {
     setLoading(true);
     const form = new FormData();
-    form.append("folderName", folderName);
+    form.append(
+      "folderName",
+      location?.state?.key ? location?.state?.key : folderName
+    );
+    form.append(
+      "nameSubFolder",
+      location?.state?.child ? location?.state?.child : "all"
+    );
     await request
       .post(API.EXPORT_FILE, form)
       .then((res) => {
@@ -245,7 +285,14 @@ const ListImage = () => {
 
   const downloadFile = async () => {
     await request
-      .get(formatString(API.DOWNLOAD, folderName), { responseType: "blob" })
+      .get(
+        formatString(
+          API.DOWNLOAD,
+          location?.state?.key ? location?.state?.key : folderName,
+          location?.state?.child ? location?.state?.child : "all"
+        ),
+        { responseType: "blob" }
+      )
       .then((res) => {
         if (res.data) {
           const blob = new Blob([res.data], { type: "application/json" });
@@ -289,15 +336,26 @@ const ListImage = () => {
   };
 
   const moveToPrevImg = () => {
-    setSelect(select - 1);
+    if (select === 0) {
+      setSelect(data.length - 1);
+    } else {
+      setSelect(select - 1);
+    }
     // setImgName(data[select - 1]?.name);
-    requestDescribe(data[select - 1]?.name);
+    // console.log(select);
+    // requestDescribe(data[select - 1]?.name.split("/")[1]);
   };
 
   const moveToNextImg = () => {
-    setSelect(select + 1);
+    console.log(data.length);
+    console.log(select);
+    if (select === data.length - 1) {
+      setSelect(0);
+    } else {
+      setSelect(select + 1);
+    }
     // setImgName(data[select + 1]?.name);
-    requestDescribe(data[select + 1]?.name);
+    // requestDescribe(data[select]?.name.split("/")[1]);
   };
 
   const showModal = () => {
@@ -315,7 +373,6 @@ const ListImage = () => {
       setIsSort("asc");
       getImageList("asc");
     }
-    // await setIsSort(sort);
   };
   // --------------------------------------------
   return (
@@ -323,17 +380,17 @@ const ListImage = () => {
       <Row style={{ maxHeight: 600, minHeight: 200 }} gutter={2}>
         <Col span={12}>
           {data && data.length > 0 ? (
-            <Image
-              width={"100%"}
-              height={400}
-              preview={true}
-              style={{ objectFit: "contain" }}
-              src={formatString(
-                API.API_HOST + API.VIEW_IMAGE,
-                location?.state?.key ? location?.state?.key: folderName,
-                data[select].name
-              )}
-            />
+            <div style={{ width: "100%", height: "100%" }}>
+              <ImageWithBBoxes
+                imageUrl={formatString(
+                  API.API_HOST + API.VIEW_IMAGE,
+                  location?.state?.key ? location?.state?.key : folderName,
+                  data[select].name
+                )}
+                bboxes={bbox ? [bbox] : []}
+                title={bboxTitle}
+              />
+            </div>
           ) : null}
         </Col>
         <Col span={12}>
@@ -414,18 +471,6 @@ const ListImage = () => {
                   >
                     Next
                   </Button>
-                  {/* <Button
-                    type="primary"
-                    icon={
-                      status ? <CloudDownloadOutlined /> : <CloudSyncOutlined />
-                    }
-                    loading={loading}
-                    onClick={() => {
-                      status ? downloadFile() : exportFile();
-                    }}
-                  >
-                    {status ? "Tải file" : "Xuất file"}
-                  </Button> */}
                 </Space>
               </Row>
             </Form.Item>
@@ -495,14 +540,18 @@ const ListImage = () => {
                     }}
                   >
                     <Image
-                      onClick={() => handleGetDescribe(item.name, index)}
+                      onClick={() =>
+                        handleGetDescribe(item.name.split("/")[1], index)
+                      }
                       width={"100%"}
                       height={150}
                       style={{ objectFit: "contain" }}
                       preview={true}
                       src={formatString(
                         API.API_HOST + API.VIEW_IMAGE,
-                        location?.state?.key ? location?.state?.key: folderName,
+                        location?.state?.key
+                          ? location?.state?.key
+                          : folderName,
                         item.name
                       )}
                     />

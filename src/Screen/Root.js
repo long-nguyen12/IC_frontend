@@ -22,6 +22,7 @@ const Root = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [subMenu, setSubMenu] = useState([]);
   const [name, setName] = useState([]);
+  const parentLabels = new Map();
   const menuItem = [
     {
       key: "UPLOAD",
@@ -33,34 +34,54 @@ const Root = () => {
       key: "IMAGE",
       label: "Danh sách ảnh",
       icon: <CloudServerOutlined />,
-      // onClick: () => navigate("/image"),
-      children: subMenu?.map((item, j) => {
+      children: (subMenu || []).reduce((acc, item) => {
         if (item.includes("\\")) {
           const parts = item.split("\\");
           const parentLabel = parts[0];
           const childLabel = parts[1];
-          return {
-            key: item,
-            label: parentLabel,
-            // onClick: () => navigate(`/image/${item}`, { state: { key: item } }),
-            children: [
-              {
+
+          if (!parentLabels.has(parentLabel)) {
+            parentLabels.set(parentLabel, true);
+            const newItem = {
+              key: parentLabel,
+              label: parentLabel,
+              children: [],
+            };
+            if (childLabel) {
+              newItem.children.push({
                 key: childLabel,
                 label: childLabel,
                 icon: <CloudServerOutlined />,
                 onClick: () =>
-                  navigate(`/image/${childLabel}`, { state: { key: parentLabel } }),
-              },
-            ],
-          };
+                  navigate(`/image/${childLabel}`, {
+                    state: { key: parentLabel, child: childLabel },
+                  }),
+              });
+            }
+            acc.push(newItem);
+          } else {
+            const existingParent = acc.find((item) => item.key === parentLabel);
+            if (childLabel) {
+              existingParent.children.push({
+                key: childLabel,
+                label: childLabel,
+                icon: <CloudServerOutlined />,
+                onClick: () =>
+                  navigate(`/image/${childLabel}`, {
+                    state: { key: parentLabel, child: childLabel },
+                  }),
+              });
+            }
+          }
         } else {
-          return {
+          acc.push({
             key: item,
             label: `${item}`,
             onClick: () => navigate(`/image/${item}`),
-          };
+          });
         }
-      }),
+        return acc;
+      }, []),
     },
     {
       key: "USER",
@@ -118,10 +139,10 @@ const Root = () => {
   };
   // --------------------------------------------
   return (
-    <Layout style={{ height: "100vh", maxHeight: "100vh" }}>
+    <Layout style={{ minHeight: "100vh" }}>
       <Sider
         breakpoint="lg"
-        style={{ height: "100%" }}
+        style={{ minHeight: "100%", maxHeight: "100%" }}
         collapsedWidth="0"
         collapsed={collapsed}
         onBreakpoint={(broken) => {
