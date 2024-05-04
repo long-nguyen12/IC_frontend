@@ -209,20 +209,32 @@ const ListImage = () => {
           if (res.data.describe.bbox) {
             console.log("here", res.data.describe.bbox);
             setBBoxTitle(res.data.describe?.categories_name);
-            setBBox({
-              x: res.data.describe?.bbox[0][0],
-              y: res.data.describe?.bbox[0][1],
-              height: res.data.describe?.bbox[0][2],
-              width: res.data.describe?.bbox[0][3],
-            });
+            const bboxData = res.data.describe.bbox;
+            const bboxes = bboxData.map((coords, index) => ({
+              title: res.data.describe.categories_name[index],
+              x: coords[0],
+              y: coords[1],
+              width: coords[2],
+              height: coords[3],
+            }));
+            setBBox(bboxes);
+            console.log("asdsad >>", bboxes);
+            // setBBox({
+            //   x: res.data.describe?.bbox[0][0],
+            //   y: res.data.describe?.bbox[0][1],
+            //   height: res.data.describe?.bbox[0][2],
+            //   width: res.data.describe?.bbox[0][3],
+            // });
           }
           const data = res.data.describe.describe;
-          const array = [];
-          data.map((item) => {
-            return array.push(item);
-          });
+          const array = new Array(5).fill({});
+          if (data.length > 0) {
+            data.forEach((item, index) => {
+              array[index] = item;
+            });
+          }
           form.setFieldsValue({
-            describes: data.length === 0 ? [{}, {}, {}, {}, {}] : array,
+            describes: array,
           });
         }
       })
@@ -387,8 +399,8 @@ const ListImage = () => {
                   location?.state?.key ? location?.state?.key : folderName,
                   data[select].name
                 )}
-                bboxes={bbox ? [bbox] : []}
-                title={bboxTitle}
+                bboxes={bbox ? bbox : []}
+                // title={bboxTitle}
               />
             </div>
           ) : null}
