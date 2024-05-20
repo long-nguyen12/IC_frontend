@@ -42,7 +42,7 @@ const ImageWithBBoxes = ({ imageUrl, bboxes }) => {
 
         // Draw text inside bbox if the bbox is large enough
         if (scaledWidth > 20 && scaledHeight > 20) {
-          ctx.fillStyle = "black"; // Set text color to black
+          ctx.fillStyle = "yellow"; // Set text color to black
           ctx.font = "15px Arial"; // Set font size and type
           ctx.fillText(title, textX, textY); // Draw text
         }

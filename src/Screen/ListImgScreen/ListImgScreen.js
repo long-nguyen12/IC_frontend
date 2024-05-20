@@ -80,6 +80,7 @@ const ListImage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSort, setIsSort] = useState("asc");
   const [bbox, setBBox] = useState({});
+  // eslint-disable-next-line
   const [bboxTitle, setBBoxTitle] = useState();
   // --------------- useEffect ------------------
   useEffect(() => {
@@ -432,7 +433,7 @@ const ListImage = () => {
                       required={false}
                       tabIndex={index + 1}
                     >
-                      <Space key={field.key} style={{ width: "100%" }}>
+                      <Space key={field.key} style={{ width: "100%"}} direction="vertical">
                         <Form.Item
                           {...field}
                           name={[field.name, "caption"]}
@@ -440,7 +441,7 @@ const ListImage = () => {
                           validateTrigger={["onChange", "onBlur"]}
                           noStyle
                         >
-                          <Input rows={2} placeholder="Mô tả" noStyle />
+                          <Input rows={2} placeholder="Mô tả" style={{width: window.innerWidth * 0.3}} />
                         </Form.Item>
                         <Form.Item
                           {...field}
@@ -452,7 +453,8 @@ const ListImage = () => {
                           <Input
                             rows={2}
                             placeholder="Segment Caption "
-                            noStyle
+                            // noStyle
+                            style={{width: window.innerWidth * 0.3}}
                           />
                         </Form.Item>
                       </Space>
