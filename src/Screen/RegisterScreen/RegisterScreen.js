@@ -32,7 +32,7 @@ export default function SignUpPage() {
         }
       })
       .catch((err) => {
-        message.error(err.response.data.message);
+        message.error(err?.response?.data?.message);
         // console.log(err);
       });
     console.log("Received values of form: ", values);
