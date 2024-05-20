@@ -82,7 +82,26 @@ const ListImage = () => {
   const [bbox, setBBox] = useState({});
   // eslint-disable-next-line
   const [bboxTitle, setBBoxTitle] = useState();
+  const [width, setWidth] = useState(window.innerWidth * 0.3);
+
   // --------------- useEffect ------------------
+  useEffect(() => {
+    const handleResize = () => {
+      setWidth(window.innerWidth * 0.3);
+    };
+
+    // Add resize event listener
+    window.addEventListener('resize', handleResize);
+
+    // Initial call to set the correct width on mount
+    handleResize();
+
+    // Cleanup the event listener on unmount
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
   useEffect(() => {
     const resetState = () => {
       setData([]);
@@ -417,7 +436,7 @@ const ListImage = () => {
               maxWidth: "100%",
               width: "100%",
               maxHeight: '100%',
-              minHeight: 200,
+              minHeight: 400,
               overflow: "auto",
             }}
           >
@@ -441,7 +460,7 @@ const ListImage = () => {
                           validateTrigger={["onChange", "onBlur"]}
                           noStyle
                         >
-                          <Input rows={2} placeholder="Mô tả" style={{width: window.innerWidth * 0.3}} />
+                          <Input rows={2} placeholder="Mô tả" style={{width: width}} />
                         </Form.Item>
                         <Form.Item
                           {...field}
@@ -454,7 +473,7 @@ const ListImage = () => {
                             rows={2}
                             placeholder="Segment Caption "
                             // noStyle
-                            style={{width: window.innerWidth * 0.3}}
+                            style={{width: width}}
                           />
                         </Form.Item>
                       </Space>
