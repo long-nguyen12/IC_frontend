@@ -389,8 +389,8 @@ const ListImage = () => {
   };
   // --------------------------------------------
   return (
-    <div onKeyDown={handleKeyDown}>
-      <Row style={{ maxHeight: 600, minHeight: 200 }} gutter={2}>
+    <div onKeyDown={handleKeyDown} style={{ height: '100%'}}>
+      <Row style={{ height: '100%'}} gutter={2}>
         <Col span={12}>
           {data && data.length > 0 ? (
             <div style={{ width: "100%", height: "100%" }}>
@@ -416,7 +416,7 @@ const ListImage = () => {
             style={{
               maxWidth: "100%",
               width: "100%",
-              maxHeight: 500,
+              maxHeight: '100%',
               minHeight: 200,
               overflow: "auto",
             }}

@@ -208,13 +208,15 @@ const Root = () => {
           style={{
             margin: "24px 16px 0",
             height: "100%",
+            // borderWidth: 1,
+            // borderStyle: 'dashed'
           }}
         >
           <div
             style={{
               padding: 24,
-              minHeight: 360,
-              // height: "100%",
+              minHeight: 400,
+              height: "100%",
               background: colorBgContainer,
               borderRadius: borderRadiusLG,
             }}
