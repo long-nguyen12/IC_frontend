@@ -139,7 +139,7 @@ const Root = () => {
   };
   // --------------------------------------------
   return (
-    <Layout style={{ minHeight: "100vh" }}>
+    <Layout style={{ minHeight: "100vh", overflowX: 'hidden' }}>
       <Sider
         breakpoint="lg"
         style={{ minHeight: "100%", maxHeight: "100%" }}
@@ -208,6 +208,7 @@ const Root = () => {
           style={{
             margin: "24px 16px 0",
             height: "100%",
+            width: '100%'
             // borderWidth: 1,
             // borderStyle: 'dashed'
           }}

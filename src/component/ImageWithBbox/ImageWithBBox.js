@@ -1,26 +1,36 @@
 import React, { useRef, useEffect, useState } from "react";
-import { Stage, Layer, Image, Rect, Text } from "react-konva";
+import { Stage, Layer, Image, Rect, Text, Transformer } from "react-konva";
 import useImage from "use-image";
 
-const ImageWithBBoxes = ({ imageUrl, bboxes, onNewBbox, categories }) => {
+const ImageWithBBoxes = ({ imageUrl, bboxes, onNewBbox, onUpdateBbox, categories }) => {
   const [image] = useImage(imageUrl);
   const [isDrawing, setIsDrawing] = useState(false);
   const [newBbox, setNewBbox] = useState(null);
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
+  const [selectedBbox, setSelectedBbox] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [showCategorySelect, setShowCategorySelect] = useState(false);
   const stageRef = useRef(null);
+  const transformerRef = useRef(null);
 
   const handleMouseDown = (e) => {
     if (!image) return;
+
     const { x, y } = e.target.getStage().getPointerPosition();
     setStartPos({ x, y });
     setIsDrawing(true);
     setShowCategorySelect(false);
+
+    // Deselect any selected bounding box
+    setSelectedBbox(null);
+    if (transformerRef.current) {
+      transformerRef.current.nodes([]);
+    }
   };
 
   const handleMouseMove = (e) => {
     if (!isDrawing || !image) return;
+
     const { x, y } = e.target.getStage().getPointerPosition();
     const width = x - startPos.x;
     const height = y - startPos.y;
@@ -29,6 +39,7 @@ const ImageWithBBoxes = ({ imageUrl, bboxes, onNewBbox, categories }) => {
 
   const handleMouseUp = () => {
     if (!isDrawing) return;
+
     setIsDrawing(false);
     setShowCategorySelect(true);
   };
@@ -46,7 +57,52 @@ const ImageWithBBoxes = ({ imageUrl, bboxes, onNewBbox, categories }) => {
       setNewBbox(null);
       setSelectedCategory('');
       setShowCategorySelect(false);
+    } else if (selectedBbox && selectedCategory) {
+      const updatedBbox = {
+        ...selectedBbox,
+        title: selectedCategory,
+      };
+      onUpdateBbox(updatedBbox);
+      setSelectedBbox(null);
+      setSelectedCategory('');
+      setShowCategorySelect(false);
     }
+  };
+
+  const handleBboxClick = (bbox, index) => {
+    setSelectedBbox({ ...bbox, index });
+    setSelectedCategory(bbox.title);
+    setShowCategorySelect(true);
+
+    if (transformerRef.current) {
+      transformerRef.current.nodes([stageRef.current.findOne(`#bbox-${index}`)]);
+      transformerRef.current.getLayer().batchDraw();
+    }
+  };
+
+  const handleDragEnd = (e, bbox, index) => {
+    const { x, y } = e.target.position();
+    const updatedBbox = {
+      ...bbox,
+      x,
+      y,
+      index,
+    };
+    onUpdateBbox(updatedBbox);
+  };
+
+  const handleTransformEnd = (e, bbox, index) => {
+    const node = e.target;
+    const { x, y, width, height } = node.attrs;
+    const updatedBbox = {
+      ...bbox,
+      x,
+      y,
+      width,
+      height,
+      index,
+    };
+    onUpdateBbox(updatedBbox);
   };
 
   return (
@@ -64,12 +120,17 @@ const ImageWithBBoxes = ({ imageUrl, bboxes, onNewBbox, categories }) => {
           {bboxes.map((bbox, index) => (
             <React.Fragment key={index}>
               <Rect
+                id={`bbox-${index}`}
                 x={bbox.x}
                 y={bbox.y}
                 width={bbox.width}
                 height={bbox.height}
-                stroke="red"
+                stroke={selectedBbox && selectedBbox.index === index ? "blue" : "red"}
                 strokeWidth={2}
+                draggable
+                onClick={() => handleBboxClick(bbox, index)}
+                onDragEnd={(e) => handleDragEnd(e, bbox, index)}
+                onTransformEnd={(e) => handleTransformEnd(e, bbox, index)}
               />
               <Text
                 x={bbox.x + 2}
@@ -90,6 +151,7 @@ const ImageWithBBoxes = ({ imageUrl, bboxes, onNewBbox, categories }) => {
               strokeWidth={2}
             />
           )}
+          <Transformer ref={transformerRef} />
         </Layer>
       </Stage>
       {showCategorySelect && (

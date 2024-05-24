@@ -91,14 +91,14 @@ const ListImage = () => {
     };
 
     // Add resize event listener
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     // Initial call to set the correct width on mount
     handleResize();
 
     // Cleanup the event listener on unmount
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
@@ -408,16 +408,22 @@ const ListImage = () => {
   };
 
   const handleNewBbox = (newBbox) => {
-    setBBox([...bbox, {  ...newBbox }]);
+    setBBox([...bbox, { ...newBbox }]);
   };
-  const categories = [
-    '1',
-    '2'
-  ]
+
+  const handleUpdateBbox = (updatedBbox) => {
+    const updatedBboxes = bbox.map((bbox, index) =>
+      index === updatedBbox.index ? updatedBbox : bbox
+    );
+    setBBox(updatedBboxes);
+    console.log(updatedBboxes);
+  };
+
+  const categories = ["1", "2"];
   // --------------------------------------------
   return (
-    <div onKeyDown={handleKeyDown} style={{ height: '100%'}}>
-      <Row style={{ height: '100%'}} gutter={2}>
+    <div onKeyDown={handleKeyDown} style={{ height: "100%" }}>
+      <Row style={{ height: "100%" }} gutter={2}>
         <Col span={12}>
           {data && data.length > 0 ? (
             <div style={{ width: "100%", height: "100%" }}>
@@ -431,6 +437,7 @@ const ListImage = () => {
                 // title={bboxTitle}
                 onNewBbox={handleNewBbox}
                 categories={categories}
+                onUpdateBbox={handleUpdateBbox}
               />
             </div>
           ) : null}
@@ -445,7 +452,7 @@ const ListImage = () => {
             style={{
               maxWidth: "100%",
               width: "100%",
-              maxHeight: '100%',
+              maxHeight: "100%",
               minHeight: 400,
               overflow: "auto",
             }}
@@ -462,7 +469,11 @@ const ListImage = () => {
                       required={false}
                       tabIndex={index + 1}
                     >
-                      <Space key={field.key} style={{ width: "100%"}} direction="vertical">
+                      <Space
+                        key={field.key}
+                        style={{ width: "100%" }}
+                        direction="vertical"
+                      >
                         <Form.Item
                           {...field}
                           name={[field.name, "caption"]}
@@ -470,7 +481,11 @@ const ListImage = () => {
                           validateTrigger={["onChange", "onBlur"]}
                           noStyle
                         >
-                          <Input rows={2} placeholder="Mô tả" style={{width: width}} />
+                          <Input
+                            rows={2}
+                            placeholder="Mô tả"
+                            style={{ width: width }}
+                          />
                         </Form.Item>
                         <Form.Item
                           {...field}
@@ -483,7 +498,7 @@ const ListImage = () => {
                             rows={2}
                             placeholder="Segment Caption "
                             // noStyle
-                            style={{width: width}}
+                            style={{ width: width }}
                           />
                         </Form.Item>
                       </Space>
