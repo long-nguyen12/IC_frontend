@@ -1,7 +1,12 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 
-const ImageWithBBoxes = ({ imageUrl, bboxes }) => {
+const ImageWithBBoxes = ({ imageUrl, bboxes, onNewBbox }) => {
   const canvasRef = useRef(null);
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [newBbox, setNewBbox] = useState(null);
+  const [startPos, setStartPos] = useState({ x: 0, y: 0 });
+  const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 });
+  const [canvasDimensions, setCanvasDimensions] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -23,6 +28,9 @@ const ImageWithBBoxes = ({ imageUrl, bboxes }) => {
       canvas.width = newWidth;
       canvas.height = newHeight;
 
+      setImageDimensions({ width: image.width, height: image.height });
+      setCanvasDimensions({ width: newWidth, height: newHeight });
+
       ctx.drawImage(image, 0, 0, newWidth, newHeight);
 
       ctx.strokeStyle = "red";
@@ -36,22 +44,71 @@ const ImageWithBBoxes = ({ imageUrl, bboxes }) => {
 
         ctx.strokeRect(scaledX, scaledY, scaledWidth, scaledHeight);
 
-        // Calculate text position
-        const textX = scaledX + 2; // Add a margin from the left edge of the bbox
-        const textY = scaledY + 12; // Position text below the top edge of the bbox
+        const textX = scaledX + 2;
+        const textY = scaledY + 12;
 
-        // Draw text inside bbox if the bbox is large enough
         if (scaledWidth > 20 && scaledHeight > 20) {
-          ctx.fillStyle = "yellow"; // Set text color to black
-          ctx.font = "15px Arial"; // Set font size and type
-          ctx.fillText(title, textX, textY); // Draw text
+          ctx.fillStyle = "yellow";
+          ctx.font = "15px Arial";
+          ctx.fillText(title, textX, textY);
         }
       });
+
+      if (newBbox) {
+        ctx.strokeStyle = "blue";
+        ctx.strokeRect(newBbox.x, newBbox.y, newBbox.width, newBbox.height);
+      }
     };
     image.src = imageUrl;
-  }, [imageUrl, bboxes]);
+  }, [imageUrl, bboxes, newBbox]);
 
-  return <canvas ref={canvasRef} style={{ width: "100%", height: 400 }} />;
+  const handleMouseDown = (e) => {
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    const startX = (e.clientX - rect.left) * (canvas.width / rect.width);
+    const startY = (e.clientY - rect.top) * (canvas.height / rect.height);
+    setStartPos({ x: startX, y: startY });
+    setIsDrawing(true);
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDrawing) return;
+
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    const currentX = (e.clientX - rect.left) * (canvas.width / rect.width);
+    const currentY = (e.clientY - rect.top) * (canvas.height / rect.height);
+    const width = currentX - startPos.x;
+    const height = currentY - startPos.y;
+    setNewBbox({ x: startPos.x, y: startPos.y, width, height });
+  };
+
+  const handleMouseUp = () => {
+    if (!isDrawing) return;
+
+    setIsDrawing(false);
+    if (newBbox) {
+      const scaledBbox = {
+        title: "New Box",
+        x: newBbox.x * (imageDimensions.width / canvasDimensions.width),
+        y: newBbox.y * (imageDimensions.height / canvasDimensions.height),
+        width: newBbox.width * (imageDimensions.width / canvasDimensions.width),
+        height: newBbox.height * (imageDimensions.height / canvasDimensions.height),
+      };
+      onNewBbox(scaledBbox);
+      setNewBbox(null);
+    }
+  };
+
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{ width: "100%", height: 400 }}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+    />
+  );
 };
 
 export default ImageWithBBoxes;

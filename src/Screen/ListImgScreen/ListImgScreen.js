@@ -406,6 +406,10 @@ const ListImage = () => {
       getImageList("asc");
     }
   };
+
+  const handleNewBbox = (newBbox) => {
+    setBBox([...bbox, {  ...newBbox }]);
+  };
   // --------------------------------------------
   return (
     <div onKeyDown={handleKeyDown} style={{ height: '100%'}}>
@@ -421,6 +425,7 @@ const ListImage = () => {
                 )}
                 bboxes={bbox ? bbox : []}
                 // title={bboxTitle}
+                onNewBbox={handleNewBbox}
               />
             </div>
           ) : null}
