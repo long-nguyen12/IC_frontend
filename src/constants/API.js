@@ -16,6 +16,8 @@ export const API = {
   EXPORT_FILE: "/api/describe/create_json",
   DOWNLOAD: "/api/image/download-json?name={0}&subMenu={1}",
 
+  CATEGORIES: "/api/categories/categories_all",
+
   USERS: "/api/users/user",
   USERS_INFO: "/api/users/user_info",
 };

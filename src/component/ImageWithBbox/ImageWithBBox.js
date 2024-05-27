@@ -1,8 +1,23 @@
-import React, { useRef, useEffect, useState } from "react";
-import { Stage, Layer, Image, Rect, Text, Transformer } from "react-konva";
+import React, { useRef, useState } from "react";
+import { Stage, Layer, Image, Rect, Text } from "react-konva";
 import useImage from "use-image";
 
-const ImageWithBBoxes = ({ imageUrl, bboxes, onNewBbox, onUpdateBbox, categories }) => {
+
+const DeleteIcon = ({ x, y, onClick }) => {
+  return (
+    <Text
+      text="🗑️"
+      x={x}
+      y={y}
+      fontSize={20}
+      fill="red"
+      onClick={onClick}
+      style={{ cursor: "pointer" }}
+    />
+  );
+};
+
+const ImageWithBBoxes = ({ imageUrl, bboxes, onNewBbox, onUpdateBbox, onDeleteBbox, categories }) => {
   const [image] = useImage(imageUrl);
   const [isDrawing, setIsDrawing] = useState(false);
   const [newBbox, setNewBbox] = useState(null);
@@ -11,9 +26,10 @@ const ImageWithBBoxes = ({ imageUrl, bboxes, onNewBbox, onUpdateBbox, categories
   const [selectedCategory, setSelectedCategory] = useState('');
   const [showCategorySelect, setShowCategorySelect] = useState(false);
   const stageRef = useRef(null);
-  const transformerRef = useRef(null);
 
   const handleMouseDown = (e) => {
+    if (selectedBbox) return; // Prevent drawing a new bbox if one is selected
+
     if (!image) return;
 
     const { x, y } = e.target.getStage().getPointerPosition();
@@ -23,9 +39,9 @@ const ImageWithBBoxes = ({ imageUrl, bboxes, onNewBbox, onUpdateBbox, categories
 
     // Deselect any selected bounding box
     setSelectedBbox(null);
-    if (transformerRef.current) {
-      transformerRef.current.nodes([]);
-    }
+    // if (transformerRef.current) {
+    //   transformerRef.current.nodes([]);
+    // }
   };
 
   const handleMouseMove = (e) => {
@@ -73,11 +89,6 @@ const ImageWithBBoxes = ({ imageUrl, bboxes, onNewBbox, onUpdateBbox, categories
     setSelectedBbox({ ...bbox, index });
     setSelectedCategory(bbox.title);
     setShowCategorySelect(true);
-
-    if (transformerRef.current) {
-      transformerRef.current.nodes([stageRef.current.findOne(`#bbox-${index}`)]);
-      transformerRef.current.getLayer().batchDraw();
-    }
   };
 
   const handleDragEnd = (e, bbox, index) => {
@@ -91,18 +102,9 @@ const ImageWithBBoxes = ({ imageUrl, bboxes, onNewBbox, onUpdateBbox, categories
     onUpdateBbox(updatedBbox);
   };
 
-  const handleTransformEnd = (e, bbox, index) => {
-    const node = e.target;
-    const { x, y, width, height } = node.attrs;
-    const updatedBbox = {
-      ...bbox,
-      x,
-      y,
-      width,
-      height,
-      index,
-    };
-    onUpdateBbox(updatedBbox);
+  const handleDeleteBbox = (index) => {
+    onDeleteBbox(index);
+    setSelectedBbox(null);
   };
 
   return (
@@ -120,7 +122,6 @@ const ImageWithBBoxes = ({ imageUrl, bboxes, onNewBbox, onUpdateBbox, categories
           {bboxes.map((bbox, index) => (
             <React.Fragment key={index}>
               <Rect
-                id={`bbox-${index}`}
                 x={bbox.x}
                 y={bbox.y}
                 width={bbox.width}
@@ -130,7 +131,6 @@ const ImageWithBBoxes = ({ imageUrl, bboxes, onNewBbox, onUpdateBbox, categories
                 draggable
                 onClick={() => handleBboxClick(bbox, index)}
                 onDragEnd={(e) => handleDragEnd(e, bbox, index)}
-                onTransformEnd={(e) => handleTransformEnd(e, bbox, index)}
               />
               <Text
                 x={bbox.x + 2}
@@ -139,6 +139,14 @@ const ImageWithBBoxes = ({ imageUrl, bboxes, onNewBbox, onUpdateBbox, categories
                 fontSize={15}
                 fill="yellow"
               />
+              {selectedBbox && selectedBbox.index === index && (
+                <DeleteIcon
+                  x={bbox.x + bbox.width - 10}
+                  y={bbox.y - 10}
+                  onClick={() => handleDeleteBbox(index)}
+                />
+              )}
+
             </React.Fragment>
           ))}
           {newBbox && (
@@ -151,7 +159,6 @@ const ImageWithBBoxes = ({ imageUrl, bboxes, onNewBbox, onUpdateBbox, categories
               strokeWidth={2}
             />
           )}
-          <Transformer ref={transformerRef} />
         </Layer>
       </Stage>
       {showCategorySelect && (

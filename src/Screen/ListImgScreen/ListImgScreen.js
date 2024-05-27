@@ -82,6 +82,7 @@ const ListImage = () => {
   const [bbox, setBBox] = useState({});
   // eslint-disable-next-line
   const [bboxTitle, setBBoxTitle] = useState();
+  const [categories, setCategories] = useState([]);
   const [width, setWidth] = useState(window.innerWidth * 0.3);
 
   // --------------- useEffect ------------------
@@ -116,6 +117,7 @@ const ListImage = () => {
     resetState();
     // loadAllDescribe();
     getImageList("asc");
+    handleGetCategories();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [folderName]);
   useEffect(() => {
@@ -165,6 +167,8 @@ const ListImage = () => {
   };
   const onFinish = (values) => {
     const formData = new FormData();
+    const bbox2 = bbox.map((item) => [item.x, item.y, item.width, item.height]);
+    const categories_name = bbox.map((item) => item.title);
     formData.append("name", data[select].name);
     formData.append(
       "folder",
@@ -173,6 +177,14 @@ const ListImage = () => {
     formData.append(
       "describe",
       JSON.stringify(Object.values(values.describes))
+    );
+    formData.append(
+      "bbox",
+      JSON.stringify(Object.values(bbox2))
+    );
+    formData.append(
+      "categories_name",
+      JSON.stringify(Object.values(categories_name))
     );
     request
       .post(API.ADD_DESCRIBE, formData)
@@ -185,7 +197,6 @@ const ListImage = () => {
       })
       .catch((err) => console.log(err));
   };
-
   async function loadMoreData(newPage) {
     setHasMore(true);
     await request
@@ -220,6 +231,19 @@ const ListImage = () => {
     requestDescribe(name);
   };
 
+  const handleGetCategories = async (name, index) => {
+    request
+      .get(API.CATEGORIES)
+      .then((res) => {
+        res.data.forEach((item) => {
+          setCategories((prevCategories) => [
+            ...prevCategories,
+            item.categories_name,
+          ]);
+        });
+      })
+      .catch((err) => console.log(err));
+  };
   const requestDescribe = (name) => {
     request
       .get(formatString(API.GET_DESCRIBE, name))
@@ -227,7 +251,6 @@ const ListImage = () => {
         if (res?.data) {
           setDescribe(res.data.describe.describe);
           if (res.data.describe.bbox) {
-            console.log("here", res.data.describe.bbox);
             setBBoxTitle(res.data.describe?.categories_name);
             const bboxData = res.data.describe.bbox;
             const bboxes = bboxData.map((coords, index) => ({
@@ -238,7 +261,7 @@ const ListImage = () => {
               height: coords[3],
             }));
             setBBox(bboxes);
-            console.log("asdsad >>", bboxes);
+            // console.log("asdsad >>", bboxes);
             // setBBox({
             //   x: res.data.describe?.bbox[0][0],
             //   y: res.data.describe?.bbox[0][1],
@@ -379,8 +402,6 @@ const ListImage = () => {
   };
 
   const moveToNextImg = () => {
-    console.log(data.length);
-    console.log(select);
     if (select === data.length - 1) {
       setSelect(0);
     } else {
@@ -416,11 +437,13 @@ const ListImage = () => {
       index === updatedBbox.index ? updatedBbox : bbox
     );
     setBBox(updatedBboxes);
-    console.log(updatedBboxes);
   };
 
-  const categories = ["1", "2"];
+  const handleDeleteBbox = (index) => {
+    setBBox(bbox.filter((_, i) => i !== index));
+  };
   // --------------------------------------------
+  console.log(bbox);
   return (
     <div onKeyDown={handleKeyDown} style={{ height: "100%" }}>
       <Row style={{ height: "100%" }} gutter={2}>
@@ -438,6 +461,7 @@ const ListImage = () => {
                 onNewBbox={handleNewBbox}
                 categories={categories}
                 onUpdateBbox={handleUpdateBbox}
+                onDeleteBbox={handleDeleteBbox}
               />
             </div>
           ) : null}
