@@ -178,10 +178,7 @@ const ListImage = () => {
       "describe",
       JSON.stringify(Object.values(values.describes))
     );
-    formData.append(
-      "bbox",
-      JSON.stringify(Object.values(bbox2))
-    );
+    formData.append("bbox", JSON.stringify(Object.values(bbox2)));
     formData.append(
       "categories_name",
       JSON.stringify(Object.values(categories_name))
@@ -261,13 +258,6 @@ const ListImage = () => {
               height: coords[3],
             }));
             setBBox(bboxes);
-            // console.log("asdsad >>", bboxes);
-            // setBBox({
-            //   x: res.data.describe?.bbox[0][0],
-            //   y: res.data.describe?.bbox[0][1],
-            //   height: res.data.describe?.bbox[0][2],
-            //   width: res.data.describe?.bbox[0][3],
-            // });
           }
           const data = res.data.describe.describe;
           const array = new Array(5).fill({});
@@ -396,9 +386,6 @@ const ListImage = () => {
     } else {
       setSelect(select - 1);
     }
-    // setImgName(data[select - 1]?.name);
-    // console.log(select);
-    // requestDescribe(data[select - 1]?.name.split("/")[1]);
   };
 
   const moveToNextImg = () => {
@@ -407,8 +394,6 @@ const ListImage = () => {
     } else {
       setSelect(select + 1);
     }
-    // setImgName(data[select + 1]?.name);
-    // requestDescribe(data[select]?.name.split("/")[1]);
   };
 
   const showModal = () => {
@@ -442,15 +427,14 @@ const ListImage = () => {
   const handleDeleteBbox = (index) => {
     setBBox(bbox.filter((_, i) => i !== index));
   };
-  // --------------------------------------------
-  console.log(bbox);
+
   return (
     <div onKeyDown={handleKeyDown} style={{ height: "100%" }}>
       <Row style={{ height: "100%" }} gutter={2}>
         <Col span={12}>
           {data && data.length > 0 ? (
             <div style={{ width: "100%", height: "100%" }}>
-              <ImageWithBBoxes
+              {/* <ImageWithBBoxes
                 imageUrl={formatString(
                   API.API_HOST + API.VIEW_IMAGE,
                   location?.state?.key ? location?.state?.key : folderName,
@@ -462,6 +446,15 @@ const ListImage = () => {
                 categories={categories}
                 onUpdateBbox={handleUpdateBbox}
                 onDeleteBbox={handleDeleteBbox}
+              /> */}
+
+              <Image
+                src={formatString(
+                  API.API_HOST + API.VIEW_IMAGE,
+                  location?.state?.key ? location?.state?.key : folderName,
+                  data[select].name
+                )}
+                style={{width: '100%'}}
               />
             </div>
           ) : null}
@@ -532,7 +525,7 @@ const ListImage = () => {
               )}
             </Form.List>
             <Form.Item>
-              <Row>
+              <Row justify={"center"}>
                 <Space>
                   <Button type="primary" htmlType="submit" ref={submitRef}>
                     Lưu mô tả
@@ -543,7 +536,7 @@ const ListImage = () => {
                       ref={prevRef}
                       onClick={() => moveToPrevImg()}
                     >
-                      Prev
+                      Trước
                     </Button>
                   ) : null}
                   <Button
@@ -551,7 +544,7 @@ const ListImage = () => {
                     ref={nextRef}
                     onClick={() => moveToNextImg()}
                   >
-                    Next
+                    Tiếp theo
                   </Button>
                 </Space>
               </Row>
