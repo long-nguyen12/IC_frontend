@@ -128,7 +128,7 @@ const ImageWithBBoxes = ({
   };
 
   return (
-    <div>
+    <>
       <Stage
         width={window.innerWidth * (IMAGE_WIDTH_PERCENT / 100)}
         height={window.innerHeight * (IMAGE_HEIGHT_PERCENT / 100)}
@@ -255,7 +255,7 @@ const ImageWithBBoxes = ({
           <button onClick={handleCategorySelect}>Confirm</button>
         </div>
       )}
-    </div>
+    </>
   );
 };
 
