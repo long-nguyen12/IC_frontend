@@ -1,5 +1,5 @@
 export const API = {
-  API_HOST: "http://localhost:3000",
+  API_HOST: "http://ic.ailabs.io.vn",
   REGISTER: "/api/users/register",
   LOGIN: "/api/users/login",
   FOLDER: "/api/folder/folder",
