@@ -35,8 +35,9 @@ const Root = () => {
       label: "Danh sách ảnh",
       icon: <CloudServerOutlined />,
       children: (subMenu || []).reduce((acc, item) => {
-        if (item.includes("\\")) {
-          const parts = item.split("\\");
+
+        if (item.includes("/")) {
+          const parts = item.split("/");
           const parentLabel = parts[0];
           const childLabel = parts[1];
 

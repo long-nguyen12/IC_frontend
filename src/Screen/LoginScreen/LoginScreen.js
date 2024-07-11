@@ -20,7 +20,6 @@ export default function LoginScreen() {
   const screens = useBreakpoint();
   const navigation = useNavigate();
   const onFinish = async (values) => {
-    // console.log("Received values of form: ", values);
 
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/x-www-form-urlencoded");

@@ -20,4 +20,8 @@ export const API = {
 
   USERS: "/api/users/user",
   USERS_INFO: "/api/users/user_info",
+
+  // AI Services
+  API_AI: "http://ai-service.ailabs.io.vn",
+  API_DETECTION: "/v1/api/detection"
 };

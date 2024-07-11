@@ -27,6 +27,7 @@ import { formatString } from "../../constants/formatString";
 import { useLocation, useParams } from "react-router-dom";
 import request from "../../service/request";
 import ImageWithBBoxes from "../../component/ImageWithBbox/ImageWithBBox";
+import DetectionImage from "./DetectionImage";
 
 const formItemLayout = {
   labelCol: {
@@ -428,6 +429,10 @@ const ListImage = () => {
     setBBox(bbox.filter((_, i) => i !== index));
   };
 
+  async function generateBoundingBox(data) {
+    console.log(data);
+  }
+
   return (
     <div onKeyDown={handleKeyDown} style={{ height: "100%" }}>
       <Row style={{ height: "100%" }} gutter={2}>
@@ -454,8 +459,9 @@ const ListImage = () => {
                   location?.state?.key ? location?.state?.key : folderName,
                   data[select].name
                 )}
-                style={{width: '100%'}}
+                style={{ width: "100%" }}
               />
+              <DetectionImage image={data[select]} />
             </div>
           ) : null}
         </Col>
@@ -485,6 +491,7 @@ const ListImage = () => {
                       label={index === 0 ? `Mô tả` : ""}
                       required={false}
                       tabIndex={index + 1}
+                      key={index}
                     >
                       <Space
                         key={field.key}
@@ -563,7 +570,7 @@ const ListImage = () => {
           shape="square"
           type="primary"
           icon={status ? <CloudDownloadOutlined /> : <CloudSyncOutlined />}
-          loading={loading}
+          // loading={loading}
           onClick={() => {
             status ? downloadFile() : exportFile();
           }}

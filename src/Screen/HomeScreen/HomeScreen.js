@@ -8,7 +8,6 @@ const { Dragger } = Upload;
 const props = {
   name: "file",
   multiple: false,
-  // action: "http://localhost:3000/api/file/upload",
   action: API.API_HOST + API.FILE,
   onChange(info) {
     const { status } = info.file;
@@ -24,9 +23,6 @@ const props = {
   },
 };
 const UploadScreen = () => {
-  // const [defaultFileList, setDefaultFileList] = useState([]);
-  // const [progress, setProgress] = useState(0);
-
   const handleUpload = async (options) => {
     const { file, onSuccess, onError, onProgress } = options;
 
