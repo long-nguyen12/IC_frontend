@@ -14,7 +14,6 @@ axios.defaults.headers.common["Authorization"] = token
 
 axios.interceptors.request.use(
   async function onRequest(config) {
-    console.log("--- request ---");
     requestsCount = requestsCount + 1;
     if (!config?.hideLoading) {
       // startActivityLoading();
@@ -22,7 +21,6 @@ axios.interceptors.request.use(
     return config;
   },
   function onRequestError(error) {
-    console.log("--- error ---");
     requestsCount = requestsCount - 1;
     return Promise.reject(error);
   }
