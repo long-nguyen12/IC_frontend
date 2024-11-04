@@ -1,7 +1,17 @@
-import { create } from "zustand";
 
-export const useBearStore = create((set) => ({
-  bears: 0,
-  increasePopulation: () => set((state) => ({ bears: state.bears + 1 })),
-  removeAllBears: () => set({ bears: 0 }),
-}));
+import { configureStore } from '@reduxjs/toolkit';
+import { applyMiddleware } from 'redux';
+import { createLogger } from 'redux-logger';
+
+import rootReducer from './reducers';
+
+const Logger = createLogger();
+
+
+const store = configureStore({
+    reducer: rootReducer,
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(Logger)
+  
+});
+
+export default store;

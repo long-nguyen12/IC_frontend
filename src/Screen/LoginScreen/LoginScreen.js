@@ -1,5 +1,6 @@
 import React from "react";
 
+
 import { Button, Checkbox, Form, Grid, Input, theme, Typography } from "antd";
 
 import { LockOutlined, MailOutlined } from "@ant-design/icons";
@@ -10,11 +11,14 @@ import { setToken } from "../../service/token.service";
 import { useAuth } from "../../hooks/auth";
 import request from "../../service/request";
 
+
+
 const { useToken } = theme;
 const { useBreakpoint } = Grid;
 const { Text, Title } = Typography;
 
 export default function LoginScreen() {
+
   const { token } = useToken();
   const { verifyToken } = useAuth();
   const screens = useBreakpoint();
@@ -34,7 +38,12 @@ export default function LoginScreen() {
       .then(async (res) => {
         if (res.data) {
           await verifyToken(res.data.token);
-          setToken(res.data.token);
+          // setToken(res.data.token);
+          console.log(res.data)
+          
+       
+
+          console.log("dhjksahjkdhjakshdjahsjdkhasjhdjksh")
           navigation("/");
         }
       })
