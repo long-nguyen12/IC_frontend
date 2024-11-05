@@ -1,5 +1,5 @@
 export const API = {
-  API_HOST: "http://ic.ailabs.io.vn",
+  API_HOST: "http://localhost:7000",
   REGISTER: "/api/users/register",
   LOGIN: "/api/users/login",
   FOLDER: "/api/folder/folder",
@@ -20,8 +20,14 @@ export const API = {
 
   USERS: "/api/users/user",
   USERS_INFO: "/api/users/user_info",
+  USERS_LOGOUT: "/api/users/logout",
 
   // AI Services
-  API_AI: "http://ai-service.ailabs.io.vn",
-  API_DETECTION: "/v1/api/detection"
+  // API_AI: "http://ai-service.ailabs.io.vn",
+  API_AI: "http://localhost:7000",
+  API_DETECTION: "/v1/api/detection",
+
+  API_LOG: "/api/log/systemlogs",
+ 
+
 };
