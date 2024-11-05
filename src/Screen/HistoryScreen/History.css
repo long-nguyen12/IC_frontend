@@ -1,0 +1,32 @@
+.slogs-content .slogs-content-header {
+    display: flex;
+    font-weight: 500;
+    color: #101828;
+    background: #dee1e8;
+    border: 1px solid #d0d5dd;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+}
+
+.container-item {
+    min-height: 64px;
+    display: flex;
+    align-items: center;
+    width: 31%;
+    padding: 16px 24px 16px 16px;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.custom-list {
+    border-top:0px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+}
+
+.custom-list-item {
+    padding-inline: 0px !important;
+    justify-content: flex-start !important;
+}

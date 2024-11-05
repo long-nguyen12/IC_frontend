@@ -7,6 +7,7 @@ import { message } from "antd";
 let requestsCount = 0;
 
 axios.defaults.baseURL = API.API_HOST;
+
 const token = window.localStorage.getItem("token");
 axios.defaults.headers.common["Authorization"] = token
   ? `Bearer ${JSON.parse(token)}`
@@ -14,7 +15,6 @@ axios.defaults.headers.common["Authorization"] = token
 
 axios.interceptors.request.use(
   async function onRequest(config) {
-    console.log("--- request ---");
     requestsCount = requestsCount + 1;
     if (!config?.hideLoading) {
       // startActivityLoading();
@@ -22,7 +22,6 @@ axios.interceptors.request.use(
     return config;
   },
   function onRequestError(error) {
-    console.log("--- error ---");
     requestsCount = requestsCount - 1;
     return Promise.reject(error);
   }
@@ -57,6 +56,17 @@ axios.interceptors.response.use(
         // await window.localStorage.removeItem("token");
         // router.navigate("/login");
       }
+
+
+      if (error.response.status === 304) {
+        // console.log("--- token timeout ---");
+        errorText = "đăng xuất thành công";
+        message.error(errorText);
+        // await window.localStorage.removeItem("token");
+        // router.navigate("/login");
+      }
+
+
       if (error.response.data?.message) {
         errorText = error.response.data.message;
         message.error(errorText);
@@ -97,4 +107,13 @@ axios.interceptors.response.use(
   }
 );
 
+axios.interceptors.request.use(
+  config => {
+    config.withCredentials = true; 
+    return config; 
+  },
+  error => {
+    return Promise.reject(error);
+  }
+);
 export default axios;

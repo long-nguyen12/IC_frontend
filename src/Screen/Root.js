@@ -6,15 +6,21 @@ import {
   CloudUploadOutlined,
   CloudServerOutlined,
   TeamOutlined,
+  ClockCircleOutlined,
 } from "@ant-design/icons";
 import { Outlet, useNavigate, useLocation, useParams } from "react-router-dom";
 import { API } from "../constants/API";
 import { useAuth } from "../hooks/auth";
 import request from "../service/request";
+import { useDispatch } from 'react-redux';
+import {UserUpdate} from './LoginScreen/UserSlice';
+
+
 
 const { Header, Content, Footer, Sider } = Layout;
 
 const Root = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { logout } = useAuth();
   let params = useParams();
@@ -90,6 +96,18 @@ const Root = () => {
       icon: <TeamOutlined />,
       onClick: () => navigate("/user"),
     },
+    {
+      key: "INFO",
+      label: "Thông tin tài khoản",
+      icon: <TeamOutlined />,
+      onClick: () => navigate("/info"),
+    },
+    {
+      key: "History",
+      label: "Lịch sử cập nhật",
+      icon:<ClockCircleOutlined />,
+      onClick: () => navigate("/history"),
+    }
   ];
 
   const {
@@ -126,8 +144,10 @@ const Root = () => {
       .get(API.USERS_INFO)
       .then((res) => {
         if (res?.data) {
+          
           // setSubMenu(res.data?.data);
-          // console.log(res.data);
+          console.log("dasdas",res.data.user);
+          dispatch(UserUpdate(res.data))
           setName(res.data.user.userName);
         }
       })
@@ -200,7 +220,7 @@ const Root = () => {
             <Avatar>U</Avatar>
             <Dropdown placement="bottomLeft" arrow menu={{ items }}>
               <Button size="tiny" type="text">
-                {name}
+                {name} 
               </Button>
             </Dropdown>
           </Space>

@@ -190,7 +190,6 @@ const ListImage = () => {
         if (res.status === 200) {
           message.success(res?.data?.message);
           getImageList(isSort);
-          // loadAllDescribe();
         }
       })
       .catch((err) => console.log(err));
@@ -223,9 +222,7 @@ const ListImage = () => {
       .catch((err) => console.log(err));
   }
   const handleGetDescribe = async (name, index) => {
-    // request.get(formatString(API.GET_DESCRIBE, name))
     setSelect(index);
-    // setImgName(name);
     requestDescribe(name);
   };
 
@@ -428,11 +425,7 @@ const ListImage = () => {
   const handleDeleteBbox = (index) => {
     setBBox(bbox.filter((_, i) => i !== index));
   };
-
-  async function generateBoundingBox(data) {
-    console.log(data);
-  }
-
+  
   return (
     <div onKeyDown={handleKeyDown} style={{ height: "100%" }}>
       <Row style={{ height: "100%" }} gutter={2}>
