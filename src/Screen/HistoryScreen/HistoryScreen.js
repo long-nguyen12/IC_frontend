@@ -6,18 +6,20 @@ import Optionfill from "./OptionFill";
 import { List } from 'antd';
 
 
-
-// const data = [
-//  {
-//   name:"Admin ",
-//   action:"Thêm mới File ",
-//   time:"03/11/2024"
-//  }
-// ];  
-
-
 export default function HistoryScreen() {
   const [datahistory, setDatahistory] = useState();
+  const [listUser,setListuser] = useState([]);
+  const getUsers = async () => {
+    request
+      .get(API.USERS)
+      .then((res) => {
+        if (res.data) {
+          console.log("list user",res.data)
+          setListuser(res.data);
+        }
+      })
+      .catch((err) => console.log(err));
+  };
 
 
 
@@ -31,22 +33,32 @@ export default function HistoryScreen() {
      })
      .catch((err) => console.log(err));
    };
- 
+
+
    useEffect(() => {
-     handleGetData();
-    
+    handleGetData();
+    getUsers();
    }, []);
  
 
 
-
+   function formatDateTimeToString(time) {
+    console.log(typeof time)
+    const date = new Date(time)
+    var dd = (date.getDate() < 10 ? '0' : '') + date.getDate();
+    var MM = ((date.getMonth() + 1) < 10 ? '0' : '') + (date.getMonth() + 1);
+    var yyyy = date.getFullYear();
+    var hours = (date.getHours() < 10 ? '0' : '') + date.getHours();
+    var minutes = (date.getMinutes() < 10 ? '0' : '') + date.getMinutes();
+    return (hours + ':' + minutes + " " + dd + "/" + MM + "/" + yyyy);
+  }
 
 
 
   return (
     <div className="slogs-content">
       <div className="slogs-content-header slogs-content-item">
-        <Optionfill title={'Người thực hiện'}  icon = {true} />
+        <Optionfill title={'Người thực hiện'}  icon = {true} option = {listUser} />
         <Optionfill title={'Nội dung cập nhật'} icon = {true} />
         <Optionfill title={'Thời gian'} icon = {false} />
       </div>
@@ -61,7 +73,9 @@ export default function HistoryScreen() {
           <List.Item className='custom-list-item'>
             <div className='container-item'>{item.Email}</div>
             <div className='container-item'>{item.action}</div>
-            <div className='container-item'>{item.createdAt}</div>
+            <div className='container-item'>
+            {formatDateTimeToString(item.createdAt)}
+            </div>
           </List.Item>
         )}
         split={true} // Hiển thị các đường phân cách giữa các item

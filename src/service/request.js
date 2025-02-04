@@ -60,7 +60,7 @@ axios.interceptors.response.use(
 
       if (error.response.status === 304) {
         // console.log("--- token timeout ---");
-        errorText = "đăng xuất thành công";
+        errorText = "đăng xuất thành công ";
         message.error(errorText);
         // await window.localStorage.removeItem("token");
         // router.navigate("/login");

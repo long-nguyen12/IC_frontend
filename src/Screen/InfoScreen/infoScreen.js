@@ -1,11 +1,11 @@
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
-import { Flex, message, Upload } from 'antd';
-import React, {  useState } from "react";
+import { Flex, message, Upload, Avatar, Space } from 'antd';
+import React, { useState } from "react";
 import { API } from "../../constants/API";
 import request from "../../service/request";
 import { Input } from 'antd';
-import {  useSelector } from 'react-redux';
-
+import { useSelector } from 'react-redux';
+import { Col, Divider, Row, Button } from 'antd';
 
 
 const getBase64 = (img, callback) => {
@@ -28,184 +28,157 @@ const beforeUpload = (file) => {
 
 
 
-const InfoScreen = ()=>{
-  const UserInfo =  useSelector((state) => state.User)
-  console.log("UserInfo",UserInfo)
+const InfoScreen = () => {
+  const UserInfo = useSelector((state) => state.User)
+  console.log("UserInfo", UserInfo)
   const [imageUrl, setImageUrl] = useState("");
   const [loading, setLoading] = useState(false);
-  const [avartar, setAvatar]=useState("")
+  const [avartar, setAvatar] = useState("")
   const [newName, setName] = useState("")
   const [newPhone, setPhone] = useState("")
   const handleChange = (info) => {
-   
+    console.log("info", info)
     if (info.file.status === 'uploading') {
       setLoading(true);
       return;
     }
     if (info.file.status === 'done') {
-      console.log(info.file,"aasdfghjklkjhgfdsdfghjklkjhgfddfghjkl")
-      getBase64(info.file.originFileObj, (url) => {
-       
-        setAvatar(info.file.response.secure_url)
-        setLoading(false);
-        console.log("url",url)
-        setImageUrl(url);
-      });
+      console.log('File sau khi tải lên:', info.file.response.file)
+
+      setAvatar(info.file.response.file)
+      setLoading(false);
+      setImageUrl(info.file.response.file);
+
     }
   };
-  
-  const uploadButton = (
-    <div>
-      {loading ? <LoadingOutlined /> : <PlusOutlined />}
-      <div
-        style={{
-          marginTop: 8,
-        }}
-      >
-        Upload
-      </div>
-    </div>
-  );
 
-  const UpdateProfile = (e)=>{
+  console.log("avartar", avartar)
+  const uploadProps = {
+    name: 'image',
+    action: API.API_AI + API.UPLOAD_IMAGE,
+    onChange: handleChange,
+    showUploadList: false,
+    beforeUpload: (file) => {
+      const isImage = file.type.startsWith('image/');
+      if (!isImage) {
+        message.error('Chỉ có thể tải ảnh lên!');
+      }
+      console.log("file", file)
+      return isImage;
+    }
+  };
+
+
+  const UpdateProfile = (e) => {
     e.preventDefault();
     const url = ``;
-    const data = { 
+    const data = {
       id: UserInfo._id,
       username: newName,
-      phone:newPhone,
+      phone: newPhone,
       avartar: avartar
     };
 
-    console.log("data",data)
+    console.log("data", data)
     request.put(url, data)
       .then(response => {
         console.log("data")
         // Store.dispatch(loginUser(response.data))
-       
       })
       .catch(error => {
         console.error('Lỗi khi gửi yêu cầu PUT:', error);
       });
-  
+
   }
-  
-  
+
+
 
 
 
   return (
-    <div>
-        {UserInfo?
-        <div className="container-fluid">
+    <div className="container-fluid">
+      {UserInfo ?
+        <div >
           {
-            UserInfo.role ==='pending'?
-            <div className='row'>
-              <div className='mess'> vinghiemxk@gmail.com</div>
-            </div>:<></>
+            UserInfo.role === 'pending' ?
+              <div className='row'>
+                <div className='mess'> vinghiemxk@gmail.com</div>
+              </div> : <></>
           }
           <div className="row">
-            <div className="col-lg-3 col-xlg-3 col-md-12">
-              <div className="white-box">
-                <div className="user-bg">
-                
-                  <div className="overlay-box">
-                    
-                   
-                      <div className="user-content">
-                        <img src={UserInfo?.avartar } className="thumb-lg img-circle" alt="img"/>
-                        <h4 className="text-white mt-2">{ UserInfo.username}</h4>
-                        <h5 className="text-white mt-2">{UserInfo.email}</h5>
-                      </div>
-                    
+            <div className='bg-gray'>
+              <Row>
+                <Col span={8}>
+                  <div className="description-profile">
+                    <div className="title">Ảnh hồ sơ</div>
+                    <div className="description">Thay đổi thông tin tài khoản</div>
                   </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-lg-8 col-xlg-9 col-md-12">
-              <div className="card">
-                  <div className="card-body">
-                    <form className="form-horizontal form-material" onSubmit={UpdateProfile}>
-                        <div className="form-group mb-4">
-                          <label className="col-md-12 p-0">Họ tên</label>
-                          <div className="col-md-12  p-0">
-                            <Input disabled  placeholder={UserInfo?.name} onChange={(e)=>setName(e.target.value)} defaultValue={UserInfo?.username} />
-                          </div>
-                        </div>
-                        <div className="form-group mb-4">
-                          <label htmlFor="example-email" className="col-md-12 p-0">Email</label>
-                          <div className="col-md-12 p-0">
-                            {
-                              UserInfo ? 
-                              
-                              <Input disabled type="email" value={UserInfo?.email} onChange={(e)=>setPhone(e.target.value)} className="form-control p-0 border-0" name="example-email" id="example-email" />
-                              :
-                              <Input type="email" placeholder="" className="form-control p-0 border-0" name="example-email" id="example-email" />
-                            }
-                          </div>
-                        </div>
-                    
-                        <div className="form-group mb-4">
-                          <label className="col-md-12 p-0">Số điện thoại</label>
-                          <div className="col-md-12 p-0">
-                            <Input  disabled  placeholder={UserInfo?.phone} onChange={(e)=>setPhone(e.target.value)} defaultValue={UserInfo?.phone} />
-                          </div>
-                        </div>
-                        <div className="form-group mb-4">
-                          <label className="col-md-12 p-0">Avatar</label>
-                          <div className='row'>
-                            <div className='col-md-4 p-0 d-flex my-avatar'>
-                            {
-                            <Upload
-        
-                                listType="picture-circle"
-                                className="avatar-uploader"
-                                showUploadList={false}
-                                action ={``}
-                                beforeUpload={beforeUpload}
-                                onChange={handleChange}
-                              >
-                                {imageUrl ? (
-                                  <img
-                                    src={imageUrl}
-                                    alt="avatar"
-                                    style={{
-                                      width: '100%',
-                                      height: '100%',
-                                    }}
-                                  />
-                                ) : (
-                                  uploadButton
-                                )}
-                              </Upload>
-                            }
+                </Col>
+                <Col span={8}>
+                  {avartar ?
+                    <img src={avartar} className="thumb-lg img-circle" alt="img" />
+                    :
+                    <Avatar size={120}>U</Avatar>
+                  }
+                </Col>
+                <Col span={8}>
 
-                            </div>
-                            <div className='col-md-8 p-0'>
-                              <div className='box-update'>
-                                
-                              </div>  
-                            </div>
-                          </div>
-                        </div>
-                      
-                        <div className="form-group mb-4">
-                          <div className="col-sm-12">
-                              <button className="btn btn-success" >Update Profile</button>
-                          </div>
-                        </div>
-                    </form>
+                  <Upload {...uploadProps} >
+                    <Button style={{
+                      width: '200px',
+                      height: '50px',
+                      backgroundColor: '#4CAF50',
+                      borderColor: '#4CAF50',
+                      color: '#fff'
+                    }} >Thay đổi ảnh</Button>
+                  </Upload>
+                  
+                </Col>
+              </Row>
+            </div>
+            <div className='bg-gray'>
+              <Row gutter="40">
+                <Col span={8}>
+                  <div className="description-profile">
+                    <div className="title">Thông tin cá nhân</div>
+                    <div className="description">Cập nhật thông tin tài khoản</div>
                   </div>
-              </div>
+                </Col>
+                <Col span={8}>
+                  <div className="description-profile">
+                    <div>Họ tên</div>
+                    <div className="col-md-12  p-0">
+                      <Input placeholder={UserInfo?.name} onChange={(e) => setName(e.target.value)} defaultValue={UserInfo?.username} />
+                    </div>
+                  </div>
+                </Col>
+                <Col span={8}>
+                  <div className="description-profile">
+                    <div>Email</div>
+                    <div className="col-md-12  p-0">
+                      <Input disabled placeholder={UserInfo?.email} defaultValue={UserInfo?.username} />
+                    </div>
+                  </div>
+                </Col>
+              </Row>
+            </div>
+            <div>
+              <Button style={{
+                width: '200px',
+                height: '50px',
+                backgroundColor: '#4CAF50',
+                borderColor: '#4CAF50',
+                color: '#fff'
+              }}>Cập Nhật</Button>
             </div>
           </div>
         </div>
         :
-        
-        <>sssss</>}
+
+        <LoadingOutlined />}
 
     </div>
-        
+
   )
 
 }

@@ -25,7 +25,6 @@ export const AuthProvider = ({ children }) => {
     .then((res) => {
       if (res) {
        console.log("res",res)
-       
       }
     })
     .catch((err) => console.log(err));
