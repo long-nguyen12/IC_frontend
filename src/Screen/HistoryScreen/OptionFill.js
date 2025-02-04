@@ -4,7 +4,7 @@ import { DownOutlined } from '@ant-design/icons';
 
 
 const Optionfill = (props) => {
-
+  console.log("props",props)
   const [open, setOpen] = useState(false);
   // const hide = () => {
   //   setOpen(false);
@@ -12,11 +12,34 @@ const Optionfill = (props) => {
   const handleOpenChange = (newOpen) => {
     setOpen(newOpen);
   };
+  const options = props.option
+  const content = (
+    <div>
+    {
+      props.option ?
+        options.map((item, index) => (
+          <p key={index}>{item.userName}</p>
+        ))
+      :""
+    }
+  </div>
+  )
+     
+         
+      
+    
+     
+   
+  
+
+  
+
 
   return (
     <Popover
     
-      title="Title"
+      title = { props.title }
+      content={content}
       trigger="click"
       open={open}
       placement="bottomLeft"
@@ -27,7 +50,6 @@ const Optionfill = (props) => {
       {
         props.icon? <DownOutlined style={{ fontSize: '12px', marginLeft: '6px'}}/> : ""
       }
-      
     </div>
     </Popover>
   );

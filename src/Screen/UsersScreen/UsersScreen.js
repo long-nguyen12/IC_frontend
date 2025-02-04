@@ -4,23 +4,7 @@ import { App, Checkbox, Row, Table } from "antd";
 import request from "../../service/request";
 import { API } from "../../constants/API";
 
-// const dataTest = [
-//   {
-//     key: "1",
-//     name: "John Brown",
-//     role: ["upload"],
-//   },
-//   {
-//     key: "2",
-//     name: "Jim Green",
-//     role: ["edit", "upload"],
-//   },
-//   {
-//     key: "3",
-//     name: "Joe Black",
-//     role: ["admin"],
-//   },
-// ];
+
 const UsersScreen = () => {
   const CheckboxGroup = Checkbox.Group;
   const [data, setData] = useState([]);

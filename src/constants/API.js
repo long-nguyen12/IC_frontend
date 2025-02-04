@@ -7,6 +7,8 @@ export const API = {
   GET_ALL_IMAGE_NAME: "/api/image/image?folder={0}&page={1}&limit={2}",
   GET_ALL_IMAGE_NAME_NEW:
     "/api/file/get-file-name?folder={0}&page={1}&limit={2}&sort={3}&includes={4}",
+
+  UPLOAD_IMAGE: "/api/image/upload",
   VIEW_IMAGE: "/api/image/view-image?folder={0}&name={1}",
 
   ADD_DESCRIBE: "/api/describe/describe",
