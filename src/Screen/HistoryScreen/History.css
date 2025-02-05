@@ -2,18 +2,18 @@
     display: flex;
     font-weight: 500;
     color: #101828;
-    background: #dee1e8;
+    background: #f7f8f7;
     border: 1px solid #d0d5dd;
     border-top-left-radius: 6px;
     border-top-right-radius: 6px;
 }
 
 .container-item {
-    min-height: 64px;
+    min-height: 48px;
     display: flex;
     align-items: center;
     width: 31%;
-    padding: 16px 24px 16px 16px;
+    padding: 10px 10px 10px 20px;
 }
 
 .cursor-pointer {
@@ -35,7 +35,7 @@
     background: #f7f8f7;
     padding: 1rem;
     border-radius: 6px;
-    margin-bottom: 1rem;
+    margin-bottom: 1.2rem;
 }
 
 .description-profile .title {
@@ -43,6 +43,13 @@
     font-weight: 500;
     color: #474747;
     line-height: 24px;
+}
+
+.description-profile label {
+    margin-bottom: 4px;
+    font-weight: 500;
+    line-height: 22px;
+    display: block;
 }
 
 .img-circle {

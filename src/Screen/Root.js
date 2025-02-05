@@ -227,9 +227,9 @@ const Root = () => {
         </Header>
         <Content
           style={{
-            margin: "24px 16px 0",
-            height: "100%",
-            width: '100%'
+            margin: "24px",
+            height: "100%"
+            // width: '100%',
             // borderWidth: 1,
             // borderStyle: 'dashed'
           }}
