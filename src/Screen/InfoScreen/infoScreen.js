@@ -26,8 +26,6 @@ const beforeUpload = (file) => {
 };
 
 
-
-
 const InfoScreen = () => {
   const UserInfo = useSelector((state) => state.User)
   console.log("UserInfo", UserInfo)
@@ -36,6 +34,7 @@ const InfoScreen = () => {
   const [avartar, setAvatar] = useState("")
   const [newName, setName] = useState("")
   const [newPhone, setPhone] = useState("")
+
   const handleChange = (info) => {
     console.log("info", info)
     if (info.file.status === 'uploading') {
@@ -51,6 +50,8 @@ const InfoScreen = () => {
 
     }
   };
+
+
 
   console.log("avartar", avartar)
   const uploadProps = {
@@ -70,17 +71,16 @@ const InfoScreen = () => {
 
 
   const UpdateProfile = (e) => {
-    e.preventDefault();
-    const url = ``;
+    // e.preventDefault();
     const data = {
-      id: UserInfo._id,
-      username: newName,
-      phone: newPhone,
+      // id: UserInfo._id,
+      // username: newName,
+      // phone: newPhone,
       avartar: avartar
     };
 
     console.log("data", data)
-    request.put(url, data)
+    request.put(API.USERS_UPDATE, data)
       .then(response => {
         console.log("data")
         // Store.dispatch(loginUser(response.data))
@@ -88,12 +88,7 @@ const InfoScreen = () => {
       .catch(error => {
         console.error('Lỗi khi gửi yêu cầu PUT:', error);
       });
-
   }
-
-
-
-
 
   return (
     <div className="container-fluid">
@@ -122,17 +117,15 @@ const InfoScreen = () => {
                   }
                 </Col>
                 <Col span={8}>
-
                   <Upload {...uploadProps} >
                     <Button style={{
-                      width: '200px',
-                      height: '50px',
+                      padding: '0 25px',
+                      height: '38px',
                       backgroundColor: '#4CAF50',
                       borderColor: '#4CAF50',
                       color: '#fff'
                     }} >Thay đổi ảnh</Button>
                   </Upload>
-                  
                 </Col>
               </Row>
             </div>
@@ -146,7 +139,7 @@ const InfoScreen = () => {
                 </Col>
                 <Col span={8}>
                   <div className="description-profile">
-                    <div>Họ tên</div>
+                    <label>Họ tên</label>
                     <div className="col-md-12  p-0">
                       <Input placeholder={UserInfo?.name} onChange={(e) => setName(e.target.value)} defaultValue={UserInfo?.username} />
                     </div>
@@ -154,8 +147,8 @@ const InfoScreen = () => {
                 </Col>
                 <Col span={8}>
                   <div className="description-profile">
-                    <div>Email</div>
-                    <div className="col-md-12  p-0">
+                    <label>Email</label>
+                    <div className="col-md-12 p-0">
                       <Input disabled placeholder={UserInfo?.email} defaultValue={UserInfo?.username} />
                     </div>
                   </div>
@@ -164,19 +157,18 @@ const InfoScreen = () => {
             </div>
             <div>
               <Button style={{
-                width: '200px',
-                height: '50px',
+                padding: '0 25px',
+                height: '38px',
                 backgroundColor: '#4CAF50',
                 borderColor: '#4CAF50',
                 color: '#fff'
-              }}>Cập Nhật</Button>
+              }} onClick={UpdateProfile}>Cập Nhật</Button>
             </div>
           </div>
         </div>
         :
-
-        <LoadingOutlined />}
-
+        <LoadingOutlined />
+      }
     </div>
 
   )

@@ -21,8 +21,9 @@ export const API = {
   CATEGORIES: "/api/categories/categories_all",
 
   USERS: "/api/users/user",
+  // USERS: "/api/users/user",
   USERS_INFO: "/api/users/user_info",
-  USERS_LOGOUT: "/api/users/logout",
+  USERS_UPDATE: "/api/users/update",
 
   // AI Services
   // API_AI: "http://ai-service.ailabs.io.vn",

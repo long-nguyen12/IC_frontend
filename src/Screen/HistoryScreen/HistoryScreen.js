@@ -66,11 +66,12 @@ export default function HistoryScreen() {
       <div>
       <List
         className="custom-list"
-        
         bordered
         dataSource={datahistory}
         renderItem={(item) => (
-          <List.Item className='custom-list-item'>
+          <List.Item className='custom-list-item' 
+            style={{padding: '0'}}
+          >
             <div className='container-item'>{item.Email}</div>
             <div className='container-item'>{item.action}</div>
             <div className='container-item'>
