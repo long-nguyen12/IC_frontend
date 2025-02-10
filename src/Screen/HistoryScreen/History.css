@@ -58,6 +58,32 @@
     border-radius: 100%;
 }
 
-.slogs-content, .container-fluid {
-    padding-right: 20px;
+/* css foder */
+
+.foder-box {
+    width: 100%;
+    min-height: 80px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url(https://content.pancake.vn/web-media/a1/59/52/57/3cf8b83f0cc2b9006f33165d6a36656da9c4eb857c44dffc566fb3df.svg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.name-foder {
+    display: flex;
+    justify-content: center;
+    font-size: 12px;
+    margin-top: 6px;
+}
+
+.poiter {
+    cursor: pointer;
+}
+
+.img-box img{
+    width: 100%;
+    object-fit: cover;
 }

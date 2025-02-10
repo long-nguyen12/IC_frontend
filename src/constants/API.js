@@ -2,7 +2,11 @@ export const API = {
   API_HOST: "http://localhost:7000",
   REGISTER: "/api/users/register",
   LOGIN: "/api/users/login",
-  FOLDER: "/api/folder/folder",
+  FOLDER: "/api/uploads/all",
+  FOLDERS: "/api/uploads/",
+  GET_ALL_FODER: "/api/file/foder",
+
+
   FILE: "/api/file/upload",
   GET_ALL_IMAGE_NAME: "/api/image/image?folder={0}&page={1}&limit={2}",
   GET_ALL_IMAGE_NAME_NEW:
