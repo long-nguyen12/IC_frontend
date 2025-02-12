@@ -2,7 +2,7 @@ import ListImage from "./Screen/ListImgScreen/ListImgScreen";
 import LoginScreen from "./Screen/LoginScreen/LoginScreen";
 import SignUpPage from "./Screen/RegisterScreen/RegisterScreen";
 import HistoryScreen from "./Screen/HistoryScreen/HistoryScreen";
-
+import ListFoderScreen from "./Screen/ListForderScreen/ListFoder";
 
 import { createBrowserRouter } from "react-router-dom";
 import UploadScreen from "./Screen/HomeScreen/HomeScreen";
@@ -62,6 +62,15 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <InfoScreen />
+          </ProtectedRoute>
+        ),
+      },
+
+      {
+        path: "foders",
+        element: (
+          <ProtectedRoute>
+            <ListFoderScreen />
           </ProtectedRoute>
         ),
       },

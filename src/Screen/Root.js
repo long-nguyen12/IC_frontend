@@ -40,55 +40,56 @@ const Root = () => {
       key: "IMAGE",
       label: "Danh sách ảnh",
       icon: <CloudServerOutlined />,
-      children: (subMenu || []).reduce((acc, item) => {
+      onClick: () => navigate("/foders"),
+      // children: (subMenu || []).reduce((acc, item) => {
 
-        if (item.includes("/")) {
-          const parts = item.split("/");
-          const parentLabel = parts[0];
-          const childLabel = parts[1];
+      //   if (item.includes("/")) {
+      //     const parts = item.split("/");
+      //     const parentLabel = parts[0];
+      //     const childLabel = parts[1];
 
-          if (!parentLabels.has(parentLabel)) {
-            parentLabels.set(parentLabel, true);
-            const newItem = {
-              key: parentLabel,
-              label: parentLabel,
-              children: [],
-            };
-            if (childLabel) {
-              newItem.children.push({
-                key: childLabel,
-                label: childLabel,
-                icon: <CloudServerOutlined />,
-                onClick: () =>
-                  navigate(`/image/${childLabel}`, {
-                    state: { key: parentLabel, child: childLabel },
-                  }),
-              });
-            }
-            acc.push(newItem);
-          } else {
-            const existingParent = acc.find((item) => item.key === parentLabel);
-            if (childLabel) {
-              existingParent.children.push({
-                key: childLabel,
-                label: childLabel,
-                icon: <CloudServerOutlined />,
-                onClick: () =>
-                  navigate(`/image/${childLabel}`, {
-                    state: { key: parentLabel, child: childLabel },
-                  }),
-              });
-            }
-          }
-        } else {
-          acc.push({
-            key: item,
-            label: `${item}`,
-            onClick: () => navigate(`/image/${item}`),
-          });
-        }
-        return acc;
-      }, []),
+      //     if (!parentLabels.has(parentLabel)) {
+      //       parentLabels.set(parentLabel, true);
+      //       const newItem = {
+      //         key: parentLabel,
+      //         label: parentLabel,
+      //         children: [],
+      //       };
+      //       if (childLabel) {
+      //         newItem.children.push({
+      //           key: childLabel,
+      //           label: childLabel,
+      //           icon: <CloudServerOutlined />,
+      //           onClick: () =>
+      //             navigate(`/image/${childLabel}`, {
+      //               state: { key: parentLabel, child: childLabel },
+      //             }),
+      //         });
+      //       }
+      //       acc.push(newItem);
+      //     } else {
+      //       const existingParent = acc.find((item) => item.key === parentLabel);
+      //       if (childLabel) {
+      //         existingParent.children.push({
+      //           key: childLabel,
+      //           label: childLabel,
+      //           icon: <CloudServerOutlined />,
+      //           onClick: () =>
+      //             navigate(`/image/${childLabel}`, {
+      //               state: { key: parentLabel, child: childLabel },
+      //             }),
+      //         });
+      //       }
+      //     }
+      //   } else {
+      //     acc.push({
+      //       key: item,
+      //       label: `${item}`,
+      //       onClick: () => navigate(`/image/${item}`),
+      //     });
+      //   }
+      //   return acc;
+      // }, []),
     },
     {
       key: "USER",
