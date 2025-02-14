@@ -27,7 +27,7 @@ import { formatString } from "../../constants/formatString";
 import { useLocation, useParams } from "react-router-dom";
 import request from "../../service/request";
 import ImageWithBBoxes from "../../component/ImageWithBbox/ImageWithBBox";
-import DetectionImage from "./DetectionImage";
+import DetectionImage from "../ListImgScreen/DetectionImage";
 
 const formItemLayout = {
   labelCol: {
@@ -60,10 +60,10 @@ const formItemLayoutWithOutLabel = {
   },
 };
 
-const ListImage = ( props ) => {
+const ModelListImage = ( props ) => {
 
 
-  let { folderName } = useParams();
+  let { folderName } = props.name;
   let location = useLocation();
   const { message } = App.useApp();
   const [form] = Form.useForm();
@@ -77,7 +77,7 @@ const ListImage = ( props ) => {
   // const [imgName, setImgName] = useState(null);
   const [describe, setDescribe] = useState(["", "", "", "", ""]);
   const [hasMore, setHasMore] = useState(true);
-  const [select, setSelect] = useState();
+  const [select, setSelect] = useState(0);
   const [page, setPage] = useState(1);
   const [limit] = useState(25);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -90,11 +90,6 @@ const ListImage = ( props ) => {
 
   // --------------- useEffect ------------------
   useEffect(() => {
-  
-   
-    
-
-
     const handleResize = () => {
       setWidth(window.innerWidth * 0.3);
     };
@@ -118,7 +113,7 @@ const ListImage = ( props ) => {
       setBBox(null);
       setBBoxTitle();
       // setImgName(data[0]);
-      setSelect(location.state.index);
+      setSelect(0);
       setStatus(false);
       setHasMore(true);
     };
@@ -126,29 +121,20 @@ const ListImage = ( props ) => {
     // loadAllDescribe();
     getImageList("asc");
     handleGetCategories();
-    // setDescribe( data[select]?.caption.describes || ["", "", "", "", ""])
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [folderName]);
-
-
-
   useEffect(() => {
-      
-    setDescribe(data[select]?.caption?.describes || ["", "", "", "", ""])
-    // const fileName = data[select]?.name;
-    // if (fileName) {
-    //   requestDescribe(
-    //     fileName.includes("/") ? fileName.split("/")[1] : fileName
-    //   );
-    // }
-    form.setFieldsValue(data[select]?.caption?.describes || ["", "", "", "", ""])
+    const fileName = data[select]?.name;
+    if (fileName) {
+      requestDescribe(
+        fileName.includes("/") ? fileName.split("/")[1] : fileName
+      );
+    }
+
     // eslint-disable-next-line
   }, [select, data]);
   // --------------------------------------------
   // --------------- Action ---------------------
-
-  console.log("describe",describe)
-
   const getImageList = async (sort) => {
     try {
       const res = await request.get(
@@ -163,8 +149,6 @@ const ListImage = ( props ) => {
       );
 
       if (res.data) {
-        console.log("res.data",res.data)
-       
         const newData = res.data.file;
         setData(newData, () => {
           // Use callback function to ensure data is updated
@@ -185,41 +169,29 @@ const ListImage = ( props ) => {
     }
   };
   const onFinish = (values) => {
-    console.log("values",values)
-    // const formData = new FormData();
-    // console.log("bbox",bbox)
-    // const bbox2 = bbox?.map((item) => [item.x, item.y, item.width, item.height]);
-    // const categories_name = bbox?.map((item) => item.title);
-    // formData.append("name", data[select]._id);
-    // formData.append(
-    //   "folder",
-    //   location?.state?.key ? location?.state?.key : folderName
-    // );
-    // formData.append(
-    //   "describe",
-    //   JSON.stringify(Object.values(values.describes))
-    // );
-    // formData.append("bbox", JSON.stringify(Object.values(bbox2)));
-    // formData.append(
-    //   "categories_name",
-    //   JSON.stringify(Object.values(categories_name))
-    // );
-    const Data = {
-      id: data[select]._id,
-      caption: JSON.stringify({...values})
-    }
-    
+    const formData = new FormData();
+    const bbox2 = bbox.map((item) => [item.x, item.y, item.width, item.height]);
+    const categories_name = bbox.map((item) => item.title);
+    formData.append("name", data[select].name);
+    formData.append(
+      "folder",
+      location?.state?.key ? location?.state?.key : folderName
+    );
+    formData.append(
+      "describe",
+      JSON.stringify(Object.values(values.describes))
+    );
+    formData.append("bbox", JSON.stringify(Object.values(bbox2)));
+    formData.append(
+      "categories_name",
+      JSON.stringify(Object.values(categories_name))
+    );
     request
-      .post(API.UPDATE_FILE, Data)
+      .post(API.ADD_DESCRIBE, formData)
       .then((res) => {
         if (res.status === 200) {
-          let fileData = res.data
-          setDescribe(fileData.file.caption.describes)
-          form.setFieldsValue(fileData.file.caption.describes)
-          console.log("Describe",describe)
-          console.log("resresresresresres",res)
-          // message.success(res?.data?.message);
-          // getImageList(isSort);
+          message.success(res?.data?.message);
+          getImageList(isSort);
         }
       })
       .catch((err) => console.log(err));
@@ -255,8 +227,6 @@ const ListImage = ( props ) => {
     setSelect(index);
     requestDescribe(name);
   };
-
-  // console.log("@@@@@@@@@@@",data[select]?.caption.describes)
 
   const handleGetCategories = async (name, index) => {
     request
@@ -494,11 +464,9 @@ const ListImage = ( props ) => {
           <Form
             form={form}
             ref={formRef}
-            initialValue={describe}
             name="dynamic_form_item"
             {...formItemLayoutWithOutLabel}
             onFinish={onFinish}
-            
             style={{
               maxWidth: "100%",
               width: "100%",
@@ -507,47 +475,57 @@ const ListImage = ( props ) => {
               overflow: "auto",
             }}
           >
-            <Form.List   >
+            <Form.List name="describes" initialValue={describe}>
               {(fields, { add, remove }, { errors }) => (
                 <div>
-                {fields.map((field, index) => {
-                  return (
-                      <Form.Item
+                  {fields.map((field, index) => (
+                    <Form.Item
+                      {...(index === 0
+                        ? formItemLayout
+                        : formItemLayoutWithOutLabel)}
+                      label={index === 0 ? `Mô tả` : ""}
+                      required={false}
+                      tabIndex={index + 1}
+                      key={index}
+                    >
+                      <Space
                         key={field.key}
-                        {...(index === 0 ? formItemLayout : formItemLayoutWithOutLabel)}
-                        label={index === 0 ? `Mô tả` : ""}
-                        required={false}
-                        tabIndex={index + 1}
+                        style={{ width: "100%" }}
+                        direction="vertical"
                       >
-                        <Space key={field.key} style={{ width: "100%" }} direction="vertical">
-                          <Form.Item
-                            {...field}
-                            name={[field.name, "caption"]}
-                            key={[field.key, "caption"]}
-                            validateTrigger={["onChange", "onBlur"]}
-                            noStyle
-                          >
-                            <Input rows={2}  placeholder="Mô tả" style={{ width: width }} />
-                          </Form.Item>
-                          <Form.Item
-                            {...field}
-                            name={[field.name, "segment_caption"]}
-                            key={[field.key, "segment_caption"]}
-                            validateTrigger={["onChange", "onBlur"]}
-                            noStyle
-                          >
-                            <Input rows={2} placeholder="Segment Caption" style={{ width: width }} />
-                          </Form.Item>
-                        </Space>
-                      </Form.Item>
-                    );
-                  })}
+                        <Form.Item
+                          {...field}
+                          name={[field.name, "caption"]}
+                          key={[field.key, "caption"]}
+                          validateTrigger={["onChange", "onBlur"]}
+                          noStyle
+                        >
+                          <Input
+                            rows={2}
+                            placeholder="Mô tả"
+                            style={{ width: width }}
+                          />
+                        </Form.Item>
+                        <Form.Item
+                          {...field}
+                          name={[field.name, "segment_caption"]}
+                          key={[field.key, "segment_caption"]}
+                          validateTrigger={["onChange", "onBlur"]}
+                          noStyle
+                        >
+                          <Input
+                            rows={2}
+                            placeholder="Segment Caption "
+                            // noStyle
+                            style={{ width: width }}
+                          />
+                        </Form.Item>
+                      </Space>
+                    </Form.Item>
+                  ))}
                 </div>
               )}
-
-
             </Form.List>
-
             <Form.Item>
               <Row justify={"center"}>
                 <Space>
@@ -664,4 +642,4 @@ const ListImage = ( props ) => {
     </div>
   );
 };
-export default ListImage;
+export default ModelListImage;

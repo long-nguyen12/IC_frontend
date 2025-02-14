@@ -66,14 +66,34 @@ const router = createBrowserRouter([
         ),
       },
 
+      // {
+      //   path: "foders",
+      //   element: (
+      //     <ProtectedRoute>
+      //       <ListFoderScreen />
+      //     </ProtectedRoute>
+      //   ),
+      // },
+
       {
         path: "foders",
-        element: (
-          <ProtectedRoute>
-            <ListFoderScreen />
-          </ProtectedRoute>
-        ),
+        // element: <ListImage />,
+        children: [
+          {
+            path: ":name",
+            element: (
+              <ProtectedRoute>
+                  <ListFoderScreen />
+              </ProtectedRoute>
+            ),
+          },
+        ],
       },
+
+
+
+
+
       {
         path: "history",
         element: (
