@@ -40,7 +40,7 @@ const Root = () => {
       key: "IMAGE",
       label: "Danh sách ảnh",
       icon: <CloudServerOutlined />,
-      onClick: () => navigate("/foders"),
+      onClick: () => navigate("/foders/all",{state:{fodername:`all`}}),
       // children: (subMenu || []).reduce((acc, item) => {
 
       //   if (item.includes("/")) {
@@ -134,6 +134,7 @@ const Root = () => {
       .get(API.FOLDER)
       .then((res) => {
         if (res?.data) {
+          console.log("---------------------",res.data)
           setSubMenu(res.data?.data);
         }
       })

@@ -22,6 +22,9 @@ const props = {
     console.log("Dropped files", e.dataTransfer.files);
   },
 };
+
+
+
 const UploadScreen = () => {
   const handleUpload = async (options) => {
     const { file, onSuccess, onError, onProgress } = options;

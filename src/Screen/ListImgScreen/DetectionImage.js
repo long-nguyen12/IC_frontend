@@ -6,7 +6,7 @@ import { postGenerateImage } from "../../services/image.service";
 
 const DetectionImage = ({ image }) => {
   const [data, setData] = useState(image);
-
+  console.log("------data------",data)
   useEffect(() => {
     setData(image);
   }, [image]);
@@ -35,7 +35,7 @@ const DetectionImage = ({ image }) => {
               src={formatString(
                 API.API_HOST + API.VIEW_IMAGE,
                 data.folder,
-                data.detection_name
+                data.name
               )}
               style={{ width: "100%" }}
             />
