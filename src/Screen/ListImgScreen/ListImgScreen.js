@@ -28,6 +28,9 @@ import { useLocation, useParams } from "react-router-dom";
 import request from "../../service/request";
 import ImageWithBBoxes from "../../component/ImageWithBbox/ImageWithBBox";
 import DetectionImage from "./DetectionImage";
+import { notification } from 'antd';
+ 
+
 
 const formItemLayout = {
   labelCol: {
@@ -88,6 +91,19 @@ const ListImage = ( props ) => {
   const [bboxTitle, setBBoxTitle] = useState();
   const [categories, setCategories] = useState([]);
   const [width, setWidth] = useState(window.innerWidth * 0.3);
+
+
+
+
+
+
+
+
+  
+
+
+
+
 
   // --------------- useEffect ------------------
   useEffect(() => {
@@ -217,8 +233,7 @@ const ListImage = ( props ) => {
         if (res.status === 200) {
           console.log("0000000000000",res)
           let fileData = res.data
-          setDescribe(fileData.file.caption)
-          form.setFieldsValue(fileData.file.caption)
+          
           console.log("Describe------------------",describe)
           console.log("resresresresresres",res)
           // setDataFile( res.data.data.file)
@@ -228,21 +243,34 @@ const ListImage = ( props ) => {
 
 
           let newdata = [...data]; // Sao chép mảng để không thay đổi trực tiếp state
-          let seen = new Map();
-          console.log("mage",newdata)
-          newdata.forEach((item, index) => {
-            if (seen.has(item._id)) {
-              newdata[index] = res.data.data.file; // Thay thế phần tử trùng
-              console.log("------------------sssssssssssssssssss---------------",index)
-            }
-            seen.set(item, index);
-          });
+          // let seen = new Map();
+          // console.log("mage",newdata)
+          // newdata.map((item, index) => {
+          //   console.log("-------item------",item)
+          //   if (item._id == res.data.data.file._id ) {
+          //     newdata[index] = res.data.data.file; // Thay thế phần tử trùng
+          //     console.log("------------------sssssssssssssssssss---------------",index)
+          //   }
+          //   seen.set(item, index);
+          // });
 
-          // setData(newdata); 
+          const updatedData = newdata.map((item) =>
+            item._id === res.data.file._id ? res.data.file : item
+          );
 
-          console.log("---------------------------------",newdata)
+          setData(updatedData); 
+
           
 
+          setDescribe(fileData.file.caption)
+          form.setFieldsValue(fileData.file.caption)
+
+         
+          notification.success({
+            message: "Thành công!",
+            description: "Dữ liệu đã được tải thành công.",
+            duration: 3, // Hiển thị trong 3 giây
+          });
 
 
 
