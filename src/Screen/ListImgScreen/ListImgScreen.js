@@ -70,6 +70,7 @@ const ListImage = ( props ) => {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState(false);
   const [data, setData] = useState([]);
+  const [dataFile, setDataFile] = useState({});
   const prevRef = useRef();
   const nextRef = useRef();
   const submitRef = useRef();
@@ -104,7 +105,8 @@ const ListImage = ( props ) => {
 
     // Initial call to set the correct width on mount
     handleResize();
-
+    setDescribe( data[select]?.caption || ["", "", "", "", ""])
+    form.setFieldsValue(data[select]?.caption || ["", "", "", "", ""])
     // Cleanup the event listener on unmount
     return () => {
       window.removeEventListener("resize", handleResize);
@@ -141,7 +143,7 @@ const ListImage = ( props ) => {
     //     fileName.includes("/") ? fileName.split("/")[1] : fileName
     //   );
     // }
-    form.setFieldsValue(data[select]?.caption?.describes || ["", "", "", "", ""])
+    form.setFieldsValue(data[select]?.caption || ["", "", "", "", ""])
     // eslint-disable-next-line
   }, [select, data]);
   // --------------------------------------------
@@ -213,13 +215,41 @@ const ListImage = ( props ) => {
       .post(API.UPDATE_FILE, Data)
       .then((res) => {
         if (res.status === 200) {
+          console.log("0000000000000",res)
           let fileData = res.data
-          setDescribe(fileData.file.caption.describes)
-          form.setFieldsValue(fileData.file.caption.describes)
-          console.log("Describe",describe)
+          setDescribe(fileData.file.caption)
+          form.setFieldsValue(fileData.file.caption)
+          console.log("Describe------------------",describe)
           console.log("resresresresresres",res)
+          // setDataFile( res.data.data.file)
+          console.log("sadasdasdasdasdas",data)
           // message.success(res?.data?.message);
           // getImageList(isSort);
+
+
+          let newdata = [...data]; // Sao chép mảng để không thay đổi trực tiếp state
+          let seen = new Map();
+          console.log("mage",newdata)
+          newdata.forEach((item, index) => {
+            if (seen.has(item._id)) {
+              newdata[index] = res.data.data.file; // Thay thế phần tử trùng
+              console.log("------------------sssssssssssssssssss---------------",index)
+            }
+            seen.set(item, index);
+          });
+
+          // setData(newdata); 
+
+          console.log("---------------------------------",newdata)
+          
+
+
+
+
+
+
+
+
         }
       })
       .catch((err) => console.log(err));
@@ -494,7 +524,7 @@ const ListImage = ( props ) => {
           <Form
             form={form}
             ref={formRef}
-            initialValue={describe}
+            initialValues ={describe}
             name="dynamic_form_item"
             {...formItemLayoutWithOutLabel}
             onFinish={onFinish}
