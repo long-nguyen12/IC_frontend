@@ -6,16 +6,29 @@ import { postGenerateImage } from "../../services/image.service";
 
 const DetectionImage = ({ image }) => {
   const [data, setData] = useState(image);
+  const [pathAi, setPathAi] = useState('');
   console.log("------data------",data)
   useEffect(() => {
     setData(image);
   }, [image]);
   
+  console.log("API",API.API_IMG)
+
   async function generateBoundingBox() {
-    let file_id = data._id;
-    let resp = await postGenerateImage(file_id);
-    console.log(resp);
+    let pathFile = data.name
+    let resp = await postGenerateImage(pathFile);
+    console.log("đâsdasdasdasdsa",resp);
+    let link = resp.dectect_path.split("/").pop()
+    console.log("link",link)
+    setPathAi(link)
+    
   }
+
+  console.log("pathAi",pathAi)
+  useEffect(() => {
+    console.log("Updated pathAi", pathAi);
+  }, [pathAi]);
+
 
   return (
     <div style={{ maxWidth: "100%" }}>
@@ -32,14 +45,24 @@ const DetectionImage = ({ image }) => {
         <Col span={24}>
           {data && data.detection_name !== null ? (
             <Image
+              src={
+                API.API_IMG + pathAi
+              }
+              style={{ width: "100%" }}
+            />
+
+            
+          ) : null}
+
+
+            {/* <Image
               src={formatString(
                 API.API_HOST + API.VIEW_IMAGE,
                 data.folder,
                 data.name
               )}
               style={{ width: "100%" }}
-            />
-          ) : null}
+            /> */}
         </Col>
       </Row>
     </div>

@@ -95,16 +95,6 @@ const ListImage = ( props ) => {
 
 
 
-
-
-
-
-  
-
-
-
-
-
   // --------------- useEffect ------------------
   useEffect(() => {
   
@@ -606,8 +596,8 @@ const ListImage = ( props ) => {
 
             </Form.List>
 
-            <Form.Item>
-              <Row justify={"center"}>
+            <Form.Item className="list-btn">
+              <Row justify={"center"} style={{margin: "0"}}>
                 <Space>
                   <Button type="primary" htmlType="submit" ref={submitRef}>
                     Lưu mô tả
@@ -694,14 +684,15 @@ const ListImage = ( props ) => {
                       borderWidth: item.haveCaption ? 2 : 0,
                       borderStyle: "solid",
                       borderColor: item.haveCaption ? "green" : "red",
+                      textAlign: 'center',
                     }}
                   >
                     <Image
                       onClick={() =>
                         handleGetDescribe(item.name.split("/")[1], index)
                       }
-                      width={"100%"}
-                      height={150}
+                      width={"50%"}
+                      height={"auto"}
                       style={{ objectFit: "contain" }}
                       preview={true}
                       src={formatString(

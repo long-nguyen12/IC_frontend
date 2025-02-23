@@ -9,6 +9,7 @@ export const API = {
 
   FILE: "/api/file/upload",
   UPDATE_FILE: "/api/file/updatefile",
+  SING_BOX: "/api/file/singbox",
   GET_ALL_IMAGE_NAME: "/api/image/image?folder={0}&page={1}&limit={2}",
   GET_ALL_IMAGE_NAME_NEW:
     "/api/file/get-file-name?folder={0}&page={1}&limit={2}&sort={2}&includes={4}",
@@ -31,8 +32,9 @@ export const API = {
   USERS_UPDATE: "/api/users/update",
 
   // AI Services
-  // API_AI: "http://ai-service.ailabs.io.vn",
-  API_AI: "http://localhost:7000",
+  API_AI: "http://ai-service.ailabs.io.vn:5000",
+  // API_AI: "http://localhost:7000",
+  API_IMG: "http://ai-service.ailabs.io.vn:5000/v1/api/images/",
   API_DETECTION: "/v1/api/detection",
   API_LOG: "/api/log/systemlogs",
  
