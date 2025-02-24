@@ -58,6 +58,11 @@
     border-radius: 100%;
 }
 
+.custom-list {
+    overflow: auto scroll;
+    max-height: calc(-210px + 100vh);
+}
+
 /* css foder */
 
 .foder-box {

@@ -1,13 +1,15 @@
 import axios from "axios";
-import * as BASE_API from "../constants/API";
+import {API} from "../constants/API";
 
-export function postGenerateImage(data) {
-  let api = `${BASE_API.API.API_AI}${BASE_API.API.API_DETECTION}?file_id=${data}`
+export function postGenerateImage(name) {
+  let api = `${API.API_HOST + API.SING_BOX}`
+  let dectect_path ='/uploads/image_traffic/'+ name
+  let data = {dectect_path:dectect_path}
+ 
   return axios
-    .get(api)
+    .post(api,data)
     .then((response) => {
       if (response && response.status === 200) {
-        console.log(response);
         return response?.data;
       }
     })

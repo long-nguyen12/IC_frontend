@@ -620,8 +620,8 @@ const ModelListImage = ( props ) => {
                       onClick={() =>
                         handleGetDescribe(item.name.split("/")[1], index)
                       }
-                      width={"100%"}
-                      height={150}
+                      width={"65%"}
+                      height={"auto"}
                       style={{ objectFit: "contain" }}
                       preview={true}
                       src={formatString(
