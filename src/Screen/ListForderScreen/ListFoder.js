@@ -79,7 +79,7 @@ const ListFoderScreen = () => {
               </Col>
             ))}
 
-            {foder.otherFiles?.map(item => (
+            {/* {foder.otherFiles?.map(item => (
               <Col className="gutter-row" span={3} key={item.name}>
                 <div className='poiter'  >
                   <div className='foder-box' >
@@ -88,7 +88,7 @@ const ListFoderScreen = () => {
                   <div className='name-foder'><span>{item.name}</span></div>
                 </div>
               </Col>
-            ))}
+            ))} */}
 
             {foder.images?.map((item, index) => (
               <Col className="gutter-row" span={3} key={item.name}>
