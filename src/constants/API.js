@@ -32,9 +32,9 @@ export const API = {
   USERS_UPDATE: "/api/users/update",
 
   // AI Services
-  API_AI: "http://ai-service.ailabs.io.vn:5000",
+  API_AI: "http://icai.ailabs.io.vn",
   // API_AI: "http://localhost:7000",
-  API_IMG: "http://ai-service.ailabs.io.vn:5000/v1/api/images/",
+  API_IMG: "http://icai.ailabs.io.vn/v1/api/images/",
   API_DETECTION: "/v1/api/detection",
   API_LOG: "/api/log/systemlogs",
  
