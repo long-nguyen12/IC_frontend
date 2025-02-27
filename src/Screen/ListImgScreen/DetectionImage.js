@@ -5,30 +5,30 @@ import { formatString } from "../../constants/formatString";
 import { postGenerateImage } from "../../services/image.service";
 
 const DetectionImage = ({ image }) => {
+
   const nameAI = image.describe?.split("/").pop()
   const [data, setData] = useState(image);
-  const [pathAi, setPathAi] = useState('');
-  console.log("------data------",data)
+  const [pathAi, setPathAi] = useState(nameAI);
+
   useEffect(() => {
     setData(image);
+    setPathAi(nameAI)
   }, [image]);
-  
-  console.log("image",image)
 
   async function generateBoundingBox() {
-    // let pathFile = data.name
     let resp = await postGenerateImage(data);
-    console.log("đâsdasdasdasdsa",resp);
-    let link = resp.dectect_path.split("/").pop()
-    console.log("link",link)
-    setPathAi(link)
-    
+    console.log("resp-----------", resp)
+    if (resp) {
+
+      let link = resp.describe?.split("/").pop()
+
+      setPathAi(link)
+    }
   }
 
-  console.log("pathAi",pathAi)
-  useEffect(() => {
-    console.log("Updated pathAi", pathAi);
-  }, [pathAi]);
+  // useEffect(() => {
+  //   console.log("Updated pathAi", pathAi);
+  // }, [pathAi]);
 
 
   return (
@@ -47,16 +47,13 @@ const DetectionImage = ({ image }) => {
           {data && data.detection_name !== null ? (
             <Image
               src={
-                API.API_IMG + data.describe?.split("/").pop()
+                API.API_IMG + pathAi
               }
               style={{ width: "100%" }}
             />
-
-            
           ) : null
-          
-          }
 
+          }
         </Col>
       </Row>
     </div>
