@@ -17,7 +17,6 @@ const DetectionImage = ({ image }) => {
 
   async function generateBoundingBox() {
     let resp = await postGenerateImage(data);
-    console.log("resp-----------", resp)
     if (resp) {
 
       let link = resp.describe?.split("/").pop()
@@ -25,11 +24,6 @@ const DetectionImage = ({ image }) => {
       setPathAi(link)
     }
   }
-
-  // useEffect(() => {
-  //   console.log("Updated pathAi", pathAi);
-  // }, [pathAi]);
-
 
   return (
     <div style={{ maxWidth: "100%" }}>
