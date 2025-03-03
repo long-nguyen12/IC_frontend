@@ -92,16 +92,11 @@ const ListImage = ( props ) => {
   const [categories, setCategories] = useState([]);
   const [width, setWidth] = useState(window.innerWidth * 0.3);
 
-
+  
 
 
   // --------------- useEffect ------------------
   useEffect(() => {
-  
-   
-    
-
-
     const handleResize = () => {
       setWidth(window.innerWidth * 0.3);
     };
@@ -155,8 +150,9 @@ const ListImage = ( props ) => {
   // --------------------------------------------
   // --------------- Action ---------------------
 
-  console.log("describe",describe)
-
+  console.log("location", location)
+  console.log("folderName", folderName)
+  
   const getImageList = async (sort) => {
     try {
       const res = await request.get(
@@ -510,6 +506,7 @@ const ListImage = ( props ) => {
     <div onKeyDown={handleKeyDown} style={{ height: "100%" }}>
       <Row style={{ height: "100%" }} gutter={2}>
         <Col span={12}>
+        sssssssss
           {data && data.length > 0 ? (
             <div style={{ width: "100%", height: "100%" }}>
               {/* <ImageWithBBoxes

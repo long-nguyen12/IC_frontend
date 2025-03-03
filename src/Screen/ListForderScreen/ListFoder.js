@@ -32,11 +32,20 @@ const ListFoderScreen = () => {
       .catch((err) => console.log(err));
   };
 
+  console.log("foder--------------------",foder)
+
   function removeFirstSegment(pathStr) {
     const parts = pathStr.split(/[/\\]/);
     parts.shift();
     return parts.join("/");
   }
+
+  function returnFoderSegment(pathStr) {
+    const normalizedPath = pathStr.replace(/\\/g, "/");
+    const parts = normalizedPath.split("/");
+    return parts[1];
+  }
+
 
   useEffect(() => {
     handleGetFolder()
@@ -97,12 +106,12 @@ const ListFoderScreen = () => {
                     <Image
                       src={formatString(
                         API.API_HOST + API.VIEW_IMAGE,
-                        foder.name,
+                        returnFoderSegment(item.path),
                         removeFirstSegment(item.path.replace(/^uploads[\/\\]?/, ""))
                       )}
                       preview={false}
                       onClick={() =>
-                        navigate(`/image/${foder.name}`, { state: {index: index } }) // Sửa select:index thành select:item
+                        navigate(`/image/${ returnFoderSegment(item.path)}`, { state: {index: index } })
                       }
                       style={{ width: "100%" }}
                     />
