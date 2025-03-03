@@ -9,9 +9,10 @@ import { Button, notification, Space } from 'antd';
 
 
 export function postGenerateImage(image) {
+  console.log("imagessssssssssssssssssss",image)
   
   let api = `${API.API_HOST + API.SING_BOX}`
-  let dectect_path ='/uploads/image_traffic/'+ image.name
+  let dectect_path ='/uploads/' +image.folder + '/'+ image.name
   let data = {
     id:image._id,
     dectect_path:dectect_path
