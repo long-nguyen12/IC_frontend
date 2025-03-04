@@ -27,7 +27,7 @@ export const API = {
   CATEGORIES: "/api/categories/categories_all",
 
   USERS: "/api/users/user",
-  // USERS: "/api/users/user",
+  USERS_CREAT: "/api/users/register",
   USERS_INFO: "/api/users/user_info",
   USERS_UPDATE: "/api/users/update",
 

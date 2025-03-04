@@ -10,7 +10,7 @@ import DetectionImage from '../ListImgScreen/DetectionImage'
 import { formatString } from '../../constants/formatString'
 import { useLocation, useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-
+import AppBreadcrumb from '../../component/bread'
 const ListFoderScreen = () => {
   const [foderName, setFoderName] = useState(`all`);
   const [foder, setFoder] = useState({});
@@ -73,7 +73,7 @@ const ListFoderScreen = () => {
       {foder ?
         <div>
 
-
+          <AppBreadcrumb />
           <div>{foder.name}</div>
 
           <Row gutter={16}>

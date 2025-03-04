@@ -18,7 +18,6 @@ const DetectionImage = ({ image }) => {
   async function generateBoundingBox() {
     let resp = await postGenerateImage(data);
     if (resp) {
-
       let link = resp.describe?.split("/").pop()
       setPathAi(link)
     }
