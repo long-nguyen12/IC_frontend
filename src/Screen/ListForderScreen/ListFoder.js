@@ -117,7 +117,7 @@ const ListFoderScreen = () => {
                     />
                   </div>
                   <div className="name-foder">
-                    <span>{item.name} {index}</span>
+                    <span>{item.name?.substring(item.name.length - 10)} {index}</span>
                   </div>
                 </div>
               </Col>
