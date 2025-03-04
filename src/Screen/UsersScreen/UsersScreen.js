@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { App, Checkbox, Row, Table } from "antd";
+import { App, Checkbox, Row, Table, Button } from "antd";
 // import { render } from "@testing-library/react";
 import request from "../../service/request";
 import { API } from "../../constants/API";
-
 
 const UsersScreen = () => {
   const CheckboxGroup = Checkbox.Group;
@@ -48,6 +47,15 @@ const UsersScreen = () => {
             onChange={(value) => onChange(value, index)}
             defaultValue={value.includes("admin") ? plainOptions : value}
           />
+        </Row>
+      ),
+    },
+    {
+      title: "Hành động",
+      key: "action",
+      render: (value, index) => (
+        <Row key={index + value}>
+          
         </Row>
       ),
     },
@@ -111,6 +119,22 @@ const UsersScreen = () => {
       .catch((err) => console.log(err));
   };
   // ------------------------------------------
-  return <Table columns={columns} dataSource={data} rowKey={"_id"} />;
+  return (
+    <div>
+      <div style={{ marginBottom: "10px", display: "flex", justifyContent: "flex-end" }}>
+        <Button
+          style={{
+            height: "38px",
+            backgroundColor: "#4CAF50",
+            borderColor: "#4CAF50",
+            color: "#fff",
+          }}
+        >
+          Thêm tài khoản
+        </Button>
+      </div>
+      <Table columns={columns} dataSource={data} rowKey={"_id"} />
+    </div>
+  );
 };
 export default UsersScreen;

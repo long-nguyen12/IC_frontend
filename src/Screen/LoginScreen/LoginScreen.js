@@ -1,6 +1,5 @@
 import React from "react";
 
-
 import { Button, Checkbox, Form, Grid, Input, theme, Typography } from "antd";
 
 import { LockOutlined, MailOutlined } from "@ant-design/icons";
@@ -11,20 +10,16 @@ import { setToken } from "../../service/token.service";
 import { useAuth } from "../../hooks/auth";
 import request from "../../service/request";
 
-
-
 const { useToken } = theme;
 const { useBreakpoint } = Grid;
 const { Text, Title } = Typography;
 
 export default function LoginScreen() {
-
   const { token } = useToken();
   const { verifyToken } = useAuth();
   const screens = useBreakpoint();
   const navigation = useNavigate();
   const onFinish = async (values) => {
-
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
 
@@ -38,12 +33,6 @@ export default function LoginScreen() {
       .then(async (res) => {
         if (res.data) {
           await verifyToken(res.data.token);
-          // setToken(res.data.token);
-          console.log(res.data)
-          
-       
-
-          console.log("dhjksahjkdhjakshdjahsjdkhasjhdjksh")
           navigation("/");
         }
       })
@@ -136,13 +125,23 @@ export default function LoginScreen() {
             </p> */}
           </Form.Item>
           <Form.Item style={{ marginBottom: "0px" }}>
-            <Button block="true" type="primary" htmlType="submit">
+            <Button
+              block="true"
+              type="primary"
+              htmlType="submit"
+              style={{
+                height: "38px",
+                backgroundColor: "#4CAF50",
+                borderColor: "#4CAF50",
+                color: "#fff",
+              }}
+            >
               Đăng nhập
             </Button>
-            <div style={styles.footer}>
+            {/* <div style={styles.footer}>
               <Text style={styles.text}>Chưa có tài khoản?</Text>{" "}
               <Link to={"/register"}>Đăng ký</Link>
-            </div>
+            </div> */}
           </Form.Item>
         </Form>
       </div>
