@@ -13,9 +13,9 @@ const UsersScreen = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   // const [dataUpdate, setDataUpdate] = useState([]);
   const plainOptions = ["upload", "edit", "admin"];
-  const [users, setUsers] = useState([ ]);
+  const [users, setUsers] = useState([]);
 
-console.log("data------------",data)
+  console.log("data------------", data);
 
   const handleEdit = (user) => {
     // setSelectedUser(user);
@@ -29,20 +29,19 @@ console.log("data------------",data)
 
   // Cập nhật thông tin user
   const handleAddUser = (newUser) => {
-    console.log("newUser",newUser)
+    console.log("newUser", newUser);
     request
-      .post(API.USERS_CREAT,newUser)
+      .post(API.USERS_CREAT, newUser)
       .then((res) => {
         if (res.data) {
-          console.log("res",res)
-          setData([...data, res.data.user]); 
+          console.log("res", res);
+          setData([...data, res.data.user]);
         }
       })
       .catch((err) => console.log(err));
 
-
     const newUserWithId = { ...newUser, id: users.length + 1 };
-    // setUsers([...users, newUserWithId]); 
+    // setUsers([...users, newUserWithId]);
     message.success("Thêm người dùng thành công!");
     handleCancel();
   };
@@ -92,7 +91,8 @@ console.log("data------------",data)
       key: "action",
       render: (value, index) => (
         <Row key={index + value}>
-          
+          <Button type="primary">Chỉnh sửa</Button>
+          <Button type="danger">Xoá</Button>
         </Row>
       ),
     },
@@ -156,11 +156,16 @@ console.log("data------------",data)
       .catch((err) => console.log(err));
   };
 
-
   // ------------------------------------------
   return (
     <div>
-      <div style={{ marginBottom: "24px", display: "flex", justifyContent: "flex-end" }}>
+      <div
+        style={{
+          marginBottom: "24px",
+          display: "flex",
+          justifyContent: "flex-end",
+        }}
+      >
         <Button
           style={{
             height: "38px",
@@ -174,9 +179,13 @@ console.log("data------------",data)
         </Button>
       </div>
       <Table columns={columns} dataSource={data} rowKey={"_id"} />
-      <UserEditModal visible={isModalOpen} user={selectedUser} onUpdate={handleAddUser} onCancel={handleCancel}/>
+      <UserEditModal
+        visible={isModalOpen}
+        user={selectedUser}
+        onUpdate={handleAddUser}
+        onCancel={handleCancel}
+      />
     </div>
   );
-
 };
 export default UsersScreen;

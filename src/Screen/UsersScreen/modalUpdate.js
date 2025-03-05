@@ -35,7 +35,7 @@ const UserEditModal = ({ visible, user, onUpdate, onCancel }) => {
           <Input />
         </Form.Item>
         <Form.Item name="password" label="Password" rules={[{ required: true, message: "Vui lòng nhập password!" }]}>
-          <Input />
+          <Input.Password />
         </Form.Item>
         <Form.Item name="roles" label="Quyền">
           <Checkbox.Group options={roleOptions} />
