@@ -3,13 +3,50 @@ import { App, Checkbox, Row, Table, Button } from "antd";
 // import { render } from "@testing-library/react";
 import request from "../../service/request";
 import { API } from "../../constants/API";
+import UserEditModal from "./modalUpdate";
 
 const UsersScreen = () => {
   const CheckboxGroup = Checkbox.Group;
   const [data, setData] = useState([]);
   const { message } = App.useApp();
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   // const [dataUpdate, setDataUpdate] = useState([]);
   const plainOptions = ["upload", "edit", "admin"];
+  const [users, setUsers] = useState([ ]);
+
+console.log("data------------",data)
+
+  const handleEdit = (user) => {
+    // setSelectedUser(user);
+    setIsModalOpen(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+    setSelectedUser(null);
+  };
+
+  // Cập nhật thông tin user
+  const handleAddUser = (newUser) => {
+    console.log("newUser",newUser)
+    request
+      .post(API.USERS_CREAT,newUser)
+      .then((res) => {
+        if (res.data) {
+          console.log("res",res)
+          setData([...data, res.data.user]); 
+        }
+      })
+      .catch((err) => console.log(err));
+
+
+    const newUserWithId = { ...newUser, id: users.length + 1 };
+    // setUsers([...users, newUserWithId]); 
+    message.success("Thêm người dùng thành công!");
+    handleCancel();
+  };
+
   const options = [
     {
       label: "Upload file",
@@ -33,7 +70,7 @@ const UsersScreen = () => {
       title: "Tên tài khoản",
       dataIndex: "userName",
       key: "userName",
-      render: (text) => <p>{text}</p>,
+      render: (text) => <div>{text}</div>,
     },
     {
       title: "Quyền",
@@ -118,10 +155,12 @@ const UsersScreen = () => {
       })
       .catch((err) => console.log(err));
   };
+
+
   // ------------------------------------------
   return (
     <div>
-      <div style={{ marginBottom: "10px", display: "flex", justifyContent: "flex-end" }}>
+      <div style={{ marginBottom: "24px", display: "flex", justifyContent: "flex-end" }}>
         <Button
           style={{
             height: "38px",
@@ -129,12 +168,15 @@ const UsersScreen = () => {
             borderColor: "#4CAF50",
             color: "#fff",
           }}
+          onClick={() => handleEdit()}
         >
           Thêm tài khoản
         </Button>
       </div>
       <Table columns={columns} dataSource={data} rowKey={"_id"} />
+      <UserEditModal visible={isModalOpen} user={selectedUser} onUpdate={handleAddUser} onCancel={handleCancel}/>
     </div>
   );
+
 };
 export default UsersScreen;
