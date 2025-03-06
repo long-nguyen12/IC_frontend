@@ -4,7 +4,7 @@ import { Modal, Form, Input, Checkbox } from "antd";
 const roleOptions = ["admin", "edit", "upload"]; 
 
 const UserEdit = ({ visible, user, onUpdate, onCancel }) => {
-  const [form] = Form.useForm(); // Tạo instance của useForm
+  const [form] = Form.useForm(); 
 
   useEffect(() => {
     if (visible && user) { 
@@ -12,7 +12,7 @@ const UserEdit = ({ visible, user, onUpdate, onCancel }) => {
         userName: user.userName || "",
         email: user.email || "",
         password: "",
-        roles: Array.isArray(user.roles) ? user.roles : user.roles ? [user.roles] : [], // ✅ Luôn là mảng
+        roles: Array.isArray(user.roles) ? user.roles : user.roles ? [user.roles] : [], 
       });
     }
   }, [visible, user]);
@@ -21,7 +21,7 @@ const UserEdit = ({ visible, user, onUpdate, onCancel }) => {
     try {
       const values = await form.validateFields();
       onUpdate({ ...user, ...values });
-      form.resetFields(); // Reset sau khi cập nhật
+      form.resetFields(); 
     } catch (error) {
       console.error("Validation Failed:", error);
     }
@@ -47,7 +47,7 @@ const UserEdit = ({ visible, user, onUpdate, onCancel }) => {
           <Checkbox.Group options={roleOptions} />
         </Form.Item>
       </Form>
-    </Modal>
+    </Modal> 
   );
 };
 

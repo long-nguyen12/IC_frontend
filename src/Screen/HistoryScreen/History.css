@@ -92,3 +92,13 @@
     width: 100%;
     object-fit: cover;
 }
+
+.ant-table-bordered .ant-table-thead > tr > th,
+.ant-table-bordered .ant-table-tbody > tr > td {
+  border-right: none !important;
+}
+
+.ant-table-bordered .ant-table-thead > tr > th:last-child,
+.ant-table-bordered .ant-table-tbody > tr > td:last-child {
+  border-right: 1px solid #f0f0f0 !important; /* Thay đổi màu sắc nếu muốn */
+}
