@@ -29,7 +29,10 @@ import request from "../../service/request";
 import ImageWithBBoxes from "../../component/ImageWithBbox/ImageWithBBox";
 import DetectionImage from "./DetectionImage";
 import { notification } from 'antd';
- 
+import { useSearchParams } from "react-router-dom";
+
+
+
 
 
 const formItemLayout = {
@@ -63,11 +66,37 @@ const formItemLayoutWithOutLabel = {
   },
 };
 
-const ListImage = ( props ) => {
+const ListImage = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+
+
+  const folder = params.get("folder");
+  const path = params.get("path");
+  const indexImage = params.get("index");
+  const normalizedPath = path.replace(/\\/g, "/");
+  const linkFolder = normalizedPath.substring(0, normalizedPath.lastIndexOf("/"));
+  
+ 
+
+
+  const handleGetFolder = async () => {
+    await request
+      .get(API.FOLDERS + `/${linkFolder}`)
+      .then((res) => {
+        if (res?.data) {
+          const listImg = res?.data.data.images
+          setData(listImg)
+        }
+      })
+      .catch((err) => console.log(err));
+  };
+
+
 
 
   let { folderName } = useParams();
-  let location = useLocation();
   const { message } = App.useApp();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
@@ -78,37 +107,30 @@ const ListImage = ( props ) => {
   const nextRef = useRef();
   const submitRef = useRef();
   const formRef = useRef(null);
-  // const [imgName, setImgName] = useState(null);
   const [describe, setDescribe] = useState(["", "", "", "", ""]);
   const [hasMore, setHasMore] = useState(true);
-  const [select, setSelect] = useState();
+  const [select, setSelect] = useState(indexImage);
   const [page, setPage] = useState(1);
-  const [limit] = useState(25);
+  const [limit] = useState(100);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSort, setIsSort] = useState("asc");
   const [bbox, setBBox] = useState({});
-  // eslint-disable-next-line
+ 
   const [bboxTitle, setBBoxTitle] = useState();
   const [categories, setCategories] = useState([]);
   const [width, setWidth] = useState(window.innerWidth * 0.3);
 
-  
-
 
   // --------------- useEffect ------------------
   useEffect(() => {
+    handleGetFolder()
     const handleResize = () => {
       setWidth(window.innerWidth * 0.3);
     };
-
-    // Add resize event listener
     window.addEventListener("resize", handleResize);
-
-    // Initial call to set the correct width on mount
     handleResize();
-    setDescribe( data[select]?.caption || ["", "", "", "", ""])
+    setDescribe(data[select]?.caption || ["", "", "", "", ""])
     form.setFieldsValue(data[select]?.caption || ["", "", "", "", ""])
-    // Cleanup the event listener on unmount
     return () => {
       window.removeEventListener("resize", handleResize);
     };
@@ -120,45 +142,30 @@ const ListImage = ( props ) => {
       setPage(1);
       setBBox(null);
       setBBoxTitle();
-      // setImgName(data[0]);
-      setSelect(location.state.index);
+      setSelect(indexImage);
       setStatus(false);
       setHasMore(true);
     };
     resetState();
-    // loadAllDescribe();
+
     getImageList("asc");
     handleGetCategories();
-    // setDescribe( data[select]?.caption.describes || ["", "", "", "", ""])
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    handleGetFolder()
   }, [folderName]);
 
 
 
   useEffect(() => {
-      
     setDescribe(data[select]?.caption?.describes || ["", "", "", "", ""])
-    // const fileName = data[select]?.name;
-    // if (fileName) {
-    //   requestDescribe(
-    //     fileName.includes("/") ? fileName.split("/")[1] : fileName
-    //   );
-    // }
     form.setFieldsValue(data[select]?.caption || ["", "", "", "", ""])
-    // eslint-disable-next-line
   }, [select, data]);
-  // --------------------------------------------
-  // --------------- Action ---------------------
-
-  console.log("location", location)
-  console.log("folderName", folderName)
-  
+ 
   const getImageList = async (sort) => {
     try {
       const res = await request.get(
         formatString(
           API.GET_ALL_IMAGE_NAME_NEW,
-          location?.state?.key ? location?.state?.key : folderName,
+          location?.state?.key ? location?.state?.key : folder,
           1,
           limit,
           sort,
@@ -167,19 +174,9 @@ const ListImage = ( props ) => {
       );
 
       if (res.data) {
-        console.log("res.data",res.data)
-       
         const newData = res.data.file;
-        setData(newData, () => {
-          // Use callback function to ensure data is updated
-          const fileName = newData[select]?.name;
-          if (fileName) {
-            requestDescribe(
-              fileName.includes("/") ? fileName.split("/")[1] : fileName
-            );
-          }
-        });
-
+        
+        setData(newData);
         if (newData.length < limit) {
           setHasMore(false);
         }
@@ -188,80 +185,29 @@ const ListImage = ( props ) => {
       console.log(err);
     }
   };
+
   const onFinish = (values) => {
-    console.log("values",values)
-    // const formData = new FormData();
-    // console.log("bbox",bbox)
-    // const bbox2 = bbox?.map((item) => [item.x, item.y, item.width, item.height]);
-    // const categories_name = bbox?.map((item) => item.title);
-    // formData.append("name", data[select]._id);
-    // formData.append(
-    //   "folder",
-    //   location?.state?.key ? location?.state?.key : folderName
-    // );
-    // formData.append(
-    //   "describe",
-    //   JSON.stringify(Object.values(values.describes))
-    // );
-    // formData.append("bbox", JSON.stringify(Object.values(bbox2)));
-    // formData.append(
-    //   "categories_name",
-    //   JSON.stringify(Object.values(categories_name))
-    // );
     const Data = {
       id: data[select]._id,
-      caption: JSON.stringify({...values})
+      caption: JSON.stringify({ ...values })
     }
-    
     request
       .post(API.UPDATE_FILE, Data)
       .then((res) => {
         if (res.status === 200) {
-          console.log("0000000000000",res)
           let fileData = res.data
-          
-          console.log("Describe------------------",describe)
-          console.log("resresresresresres",res)
-          // setDataFile( res.data.data.file)
-          console.log("sadasdasdasdasdas",data)
-          // message.success(res?.data?.message);
-          // getImageList(isSort);
-
-
-          let newdata = [...data]; // Sao chép mảng để không thay đổi trực tiếp state
-          // let seen = new Map();
-          // console.log("mage",newdata)
-          // newdata.map((item, index) => {
-          //   console.log("-------item------",item)
-          //   if (item._id == res.data.data.file._id ) {
-          //     newdata[index] = res.data.data.file; // Thay thế phần tử trùng
-          //     console.log("------------------sssssssssssssssssss---------------",index)
-          //   }
-          //   seen.set(item, index);
-          // });
-
+          let newdata = [...data];
           const updatedData = newdata.map((item) =>
             item._id === res.data.file._id ? res.data.file : item
           );
-
-          setData(updatedData); 
-
-          
-
+          setData(updatedData);
           setDescribe(fileData.file.caption)
           form.setFieldsValue(fileData.file.caption)
-
-         
           notification.success({
             message: "Thành công!",
             description: "Dữ liệu đã được tải thành công.",
-            duration: 3, // Hiển thị trong 3 giây
+            duration: 3,
           });
-
-
-
-
-
 
 
         }
@@ -286,7 +232,6 @@ const ListImage = ( props ) => {
           const newData = res.data.file;
           setData((prevData) => [...prevData, ...newData]);
           setPage(newPage);
-          // Check if there are more pages
           if (newData.length < limit) {
             setHasMore(false);
           }
@@ -299,8 +244,6 @@ const ListImage = ( props ) => {
     setSelect(index);
     requestDescribe(name);
   };
-
-  // console.log("@@@@@@@@@@@",data[select]?.caption.describes)
 
   const handleGetCategories = async (name, index) => {
     request
@@ -315,6 +258,9 @@ const ListImage = ( props ) => {
       })
       .catch((err) => console.log(err));
   };
+
+
+
   const requestDescribe = (name) => {
     request
       .get(formatString(API.GET_DESCRIBE, name))
@@ -391,7 +337,6 @@ const ListImage = ( props ) => {
       .then((res) => {
         if (res.data) {
           message.success(res.data.message);
-          // window.open(res.data.file);
           setStatus(true);
           setLoading(false);
         }
@@ -456,8 +401,10 @@ const ListImage = ( props ) => {
 
   const moveToPrevImg = () => {
     if (select === 0) {
+     
       setSelect(data.length - 1);
     } else {
+ 
       setSelect(select - 1);
     }
   };
@@ -465,10 +412,12 @@ const ListImage = ( props ) => {
   const moveToNextImg = () => {
     if (select === data.length - 1) {
       setSelect(0);
-    } else {
+    } else {  
       setSelect(select + 1);
+      setSearchParams({ folder: folder, index: select + 1, path : data[select + 1].path });
     }
   };
+
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -501,13 +450,14 @@ const ListImage = ( props ) => {
   const handleDeleteBbox = (index) => {
     setBBox(bbox.filter((_, i) => i !== index));
   };
-  
+
   return (
     <div onKeyDown={handleKeyDown} style={{ height: "100%" }}>
       <Row style={{ height: "100%" }} gutter={2}>
         <Col span={12}>
-        
-          {data && data.length > 0 ? (
+     
+         
+        {data && data.length > 0 ? (
             <div style={{ width: "100%", height: "100%" }}>
               {/* <ImageWithBBoxes
                 imageUrl={formatString(
@@ -526,7 +476,7 @@ const ListImage = ( props ) => {
               <Image
                 src={formatString(
                   API.API_HOST + API.VIEW_IMAGE,
-                  location?.state?.key ? location?.state?.key : folderName,
+                  location?.state?.key ? location?.state?.key : folder,
                   data[select].name
                 )}
                 style={{ width: "100%" }}
@@ -534,16 +484,17 @@ const ListImage = ( props ) => {
               <DetectionImage image={data[select]} />
             </div>
           ) : null}
+         
         </Col>
         <Col span={12}>
           <Form
             form={form}
             ref={formRef}
-            initialValues ={describe}
+            initialValues={describe}
             name="dynamic_form_item"
             {...formItemLayoutWithOutLabel}
             onFinish={onFinish}
-            
+
             style={{
               maxWidth: "100%",
               width: "100%",
@@ -555,8 +506,8 @@ const ListImage = ( props ) => {
             <Form.List   >
               {(fields, { add, remove }, { errors }) => (
                 <div>
-                {fields.map((field, index) => {
-                  return (
+                  {fields.map((field, index) => {
+                    return (
                       <Form.Item
                         key={field.key}
                         {...(index === 0 ? formItemLayout : formItemLayoutWithOutLabel)}
@@ -572,7 +523,7 @@ const ListImage = ( props ) => {
                             validateTrigger={["onChange", "onBlur"]}
                             noStyle
                           >
-                            <Input rows={2}  placeholder="Mô tả" style={{ width: width }} />
+                            <Input rows={2} placeholder="Mô tả" style={{ width: width }} />
                           </Form.Item>
                           <Form.Item
                             {...field}
@@ -594,7 +545,7 @@ const ListImage = ( props ) => {
             </Form.List>
 
             <Form.Item className="list-btn">
-              <Row justify={"center"} style={{margin: "0"}}>
+              <Row justify={"center"} style={{ margin: "0" }}>
                 <Space>
                   <Button type="primary" htmlType="submit" ref={submitRef}>
                     Lưu mô tả

@@ -317,7 +317,6 @@ const ModelListImage = ( props ) => {
       .then((res) => {
         if (res.data) {
           message.success(res.data.message);
-          // window.open(res.data.file);
           setStatus(true);
           setLoading(false);
         }
@@ -371,7 +370,6 @@ const ModelListImage = ( props ) => {
     }
     if (event.ctrlKey && event.key === "s") {
       event.preventDefault();
-      // console.log("Ctrl + S");
       if (status) {
         downloadFile();
       } else {
