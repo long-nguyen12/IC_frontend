@@ -126,8 +126,8 @@ const UsersScreen = () => {
       key: "action",
       render: (value, index) => (
         <Row key={index + value}>
-          <Button type="primary" onClick={()=>{handleEditBnt(value)}} >Chỉnh sửa</Button>
-          <Button type="danger" onClick={()=>{showDeleteConfirm(value)}} >Xoá</Button>
+          <Button type="primary" onClick={()=>{handleEditBnt(value)}} style={{marginRight: 10}}>Chỉnh sửa</Button>
+          <Button color="danger" variant="solid" onClick={()=>{showDeleteConfirm(value)}} >Xoá</Button>
         </Row>
       ),
     },
@@ -139,10 +139,9 @@ const UsersScreen = () => {
 
 
   const deleteUser = async (record) => {
-    console.log("record",record)
     let id = record._id
     try {
-        await request.delete(`http://localhost:7000/api/users/delete/${id}`)
+        await request.delete(`${API.API_HOST}${API.USERS_DELETE}/${id}`)
         .then((res) => {
           const dataList = data.filter(item => item._id !== id);
           setData(dataList)
