@@ -48,7 +48,7 @@ const UsersScreen = () => {
 
   const handleCancelBnt = () => {
     setIsModalEdit(false);
-    // setSelectedUser(null);
+    setSelectedUser(null);
   };
 
 
@@ -61,6 +61,32 @@ const UsersScreen = () => {
     setIsModalOpen(false);
     setSelectedUser(null);
   };
+
+  const handleUpdateUser = (newUser) => {
+    console.log("newUser", newUser);
+    request
+      .put(API.USERS_EDIT, newUser)
+      .then((res) => {
+        if (res.data) {
+          console.log("res", res);
+          const userUpdate = res.data
+          console.log("userUpdate",userUpdate)
+          const listUser = [...data].map(item => item._id === userUpdate._id ? userUpdate : item);
+          console.log("listUser",listUser)
+          setData(listUser)
+          setIsModalEdit(false);
+        }
+      })
+      .catch((err) => console.log(err));
+
+    // const newUserWithId = { ...newUser, id: users.length + 1 };
+    // setUsers([...users, newUserWithId]);
+    message.success("Cập nhật người dùng thành công!");
+    handleCancel();
+  };
+
+
+
 
   // Cập nhật thông tin user
   const handleAddUser = (newUser) => {
@@ -230,10 +256,10 @@ const UsersScreen = () => {
           Thêm tài khoản
         </Button>
       </div>
-      <Table columns={columns} dataSource={data} rowKey={"_id"} />
+      <Table columns={columns} dataSource={data} bordered  rowKey={"_id"} />
       <UserEditModal
         visible={isModalOpen}
-        user={selectedUser}
+        // user={selectedUser}
         onUpdate={handleAddUser}
         onCancel={handleCancel}
       />
@@ -241,7 +267,7 @@ const UsersScreen = () => {
       <UserEdit
         visible={isModalEdit}
         user={selectedUser}
-        onUpdate={handleAddUser}
+        onUpdate={handleUpdateUser}
         onCancel={handleCancelBnt}
       />
 

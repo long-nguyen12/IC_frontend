@@ -31,6 +31,7 @@ export const API = {
   USERS_INFO: "/api/users/user_info",
   USERS_UPDATE: "/api/users/update",
   USERS_DELETE: "/api/users/delete",
+  USERS_EDIT: "/api/users/edit",
 
   // AI Services
   API_AI: "http://icai.ailabs.io.vn",

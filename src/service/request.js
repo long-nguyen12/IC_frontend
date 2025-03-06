@@ -101,6 +101,7 @@ axios.interceptors.response.use(
     const showError = error.config.showError ?? true;
     // if (showError) Toast.showText(errorText);
     if (showError) {
+      // router.navigate("/login");
       console.log(errorText);
     }
     return Promise.reject(error);
