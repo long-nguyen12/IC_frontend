@@ -4,6 +4,11 @@ import { App, Checkbox, Row, Table, Button } from "antd";
 import request from "../../service/request";
 import { API } from "../../constants/API";
 import UserEditModal from "./modalUpdate";
+import UserEdit from "./modelEditUser"
+
+import { ExclamationCircleFilled } from '@ant-design/icons';
+import {  Modal, Space } from 'antd';
+const { confirm } = Modal;
 
 const UsersScreen = () => {
   const CheckboxGroup = Checkbox.Group;
@@ -11,11 +16,41 @@ const UsersScreen = () => {
   const { message } = App.useApp();
   const [selectedUser, setSelectedUser] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalEdit, setIsModalEdit] = useState(false);
   // const [dataUpdate, setDataUpdate] = useState([]);
   const plainOptions = ["upload", "edit", "admin"];
   const [users, setUsers] = useState([]);
-
+  
   console.log("data------------", data);
+
+  const showDeleteConfirm = (value) => {
+    confirm({
+      title: 'Xóa tài khoản !',
+      icon: <ExclamationCircleFilled />,
+      content: `Bạn xác nhận xóa tài khoản ${value.userName}`,
+      okText: 'Xóa',
+      okType: 'danger',
+      cancelText: 'Hủy',
+      onOk() {
+        deleteUser(value)
+      },
+      onCancel() {
+        console.log('Cancel');
+      },
+    });
+  };
+
+  const handleEditBnt = (user) => {
+    console.log("-------------")
+    setSelectedUser(user);
+    setIsModalEdit(true);
+  };
+
+  const handleCancelBnt = () => {
+    setIsModalEdit(false);
+    // setSelectedUser(null);
+  };
+
 
   const handleEdit = (user) => {
     // setSelectedUser(user);
@@ -91,8 +126,8 @@ const UsersScreen = () => {
       key: "action",
       render: (value, index) => (
         <Row key={index + value}>
-          <Button type="primary">Chỉnh sửa</Button>
-          <Button type="danger">Xoá</Button>
+          <Button type="primary" onClick={()=>{handleEditBnt(value)}} >Chỉnh sửa</Button>
+          <Button type="danger" onClick={()=>{showDeleteConfirm(value)}} >Xoá</Button>
         </Row>
       ),
     },
@@ -101,11 +136,31 @@ const UsersScreen = () => {
   useEffect(() => {
     getUsers();
   }, []);
+
+
+  const deleteUser = async (record) => {
+    console.log("record",record)
+    let id = record._id
+    try {
+        await request.delete(`http://localhost:7000/api/users/delete/${id}`)
+        .then((res) => {
+          const dataList = data.filter(item => item._id !== id);
+          setData(dataList)
+
+
+        })
+        .catch((err) => console.log(err));
+       
+    } catch (error) {
+        console.error("Lỗi khi xóa:", error);
+        // alert("Xóa thất bại!");
+    }
+};
+
   // --------------------------------------------
   // ---------------- Action --------------------
   const onChange = (checkedValues, record) => {
     const oldRecord = data.find((item) => item._id === record._id);
-
     // Compare the old and new roles
     // const changedRoles = [];
     // for (const role of checkedValues) {
@@ -113,8 +168,6 @@ const UsersScreen = () => {
     //   //   changedRoles.push(role);
     //   // }
     // }
-
-    // Log the changes
     if (oldRecord.role.length !== checkedValues.length) {
       const formData = new FormData();
       formData.append("userId", record._id);
@@ -185,6 +238,15 @@ const UsersScreen = () => {
         onUpdate={handleAddUser}
         onCancel={handleCancel}
       />
+      
+      <UserEdit
+        visible={isModalEdit}
+        user={selectedUser}
+        onUpdate={handleAddUser}
+        onCancel={handleCancelBnt}
+      />
+
+
     </div>
   );
 };

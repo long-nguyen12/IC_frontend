@@ -3,30 +3,38 @@ import { Modal, Form, Input, Checkbox } from "antd";
 
 const roleOptions = ["admin", "edit", "upload"]; 
 
-const UserEditModal = ({ visible, user, onUpdate, onCancel }) => {
-  const [form] = Form.useForm();
+const UserEdit = ({ visible, user, onUpdate, onCancel }) => {
+  const [form] = Form.useForm(); // Tạo instance của useForm
 
   useEffect(() => {
-    if (user) {
+    if (visible && user) { 
       form.setFieldsValue({
-        ...user,
-        roles: Array.isArray(user.roles) ? user.roles : [user.roles],
+        userName: user.userName || "",
+        email: user.email || "",
+        password: "",
+        roles: Array.isArray(user.roles) ? user.roles : user.roles ? [user.roles] : [], // ✅ Luôn là mảng
       });
     }
-  }, [user, form]);
+  }, [visible, user]);
 
   const handleOk = async () => {
     try {
       const values = await form.validateFields();
       onUpdate({ ...user, ...values });
-      form.resetFields();
+      form.resetFields(); // Reset sau khi cập nhật
     } catch (error) {
       console.error("Validation Failed:", error);
     }
   };
 
   return (
-    <Modal title="Thêm tài khoản" open={visible} onCancel={onCancel} onOk={handleOk}>
+    <Modal 
+      title="Chỉnh sửa tài khoản" 
+      open={visible} 
+      onCancel={onCancel} 
+      onOk={handleOk}
+      destroyOnClose // Giúp form reset khi modal đóng
+    >
       <Form form={form} layout="vertical">
         <Form.Item name="userName" label="Tên đăng nhập" rules={[{ required: true, message: "Vui lòng nhập tên đăng nhập!" }]}>
           <Input />
@@ -34,9 +42,7 @@ const UserEditModal = ({ visible, user, onUpdate, onCancel }) => {
         <Form.Item name="email" label="Email" rules={[{ required: true, message: "Vui lòng nhập Email!" }]}>
           <Input />
         </Form.Item>
-        <Form.Item name="password" label="Password" rules={[{ required: true, message: "Vui lòng nhập password!" }]}>
-          <Input.Password />
-        </Form.Item>
+      
         <Form.Item name="roles" label="Quyền">
           <Checkbox.Group options={roleOptions} />
         </Form.Item>
@@ -45,4 +51,4 @@ const UserEditModal = ({ visible, user, onUpdate, onCancel }) => {
   );
 };
 
-export default UserEditModal;
+export default UserEdit;
