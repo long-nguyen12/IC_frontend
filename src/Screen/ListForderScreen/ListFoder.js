@@ -1,26 +1,37 @@
-import { LoadingOutlined, PlusOutlined, LockOutlined } from "@ant-design/icons";
-import { Flex, message, Upload, Avatar, Space, Select } from "antd";
+
 import React, { useState, useEffect } from "react";
 import { API } from "../../constants/API";
 import request from "../../service/request";
-import { Input, Image, Button, Modal } from "antd";
-import { useSelector } from "react-redux";
-import { Col, Divider, Row, Spin, Alert } from "antd";
-import DetectionImage from "../ListImgScreen/DetectionImage";
-import { formatString } from "../../constants/formatString";
+import { Input, Image, Button, Modal } from 'antd';
+import { Col, Divider, Row, Spin, Alert } from 'antd';
+import { formatString } from '../../constants/formatString'
 import { useLocation, useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import AppBreadcrumb from "../../component/bread";
+import { Pagination } from "antd";
+
+
+
 const ListFoderScreen = () => {
+
   const [foderName, setFoderName] = useState(`all`);
   const [foder, setFoder] = useState({});
   const [Select, setSelected] = useState({});
   const [open, setOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
-
   const navigate = useNavigate();
   let location = useLocation();
-  
+
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(24);
+
+  const paginatedChildren = foder.children?.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const paginatedImages = foder.images?.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+
+
+
+
   const handleGetFolder = async () => {
     await request
       .get(API.FOLDERS + `/${location.state.fodername}`)
@@ -31,7 +42,6 @@ const ListFoderScreen = () => {
       })
       .catch((err) => console.log(err));
   };
-
   function removeFirstSegment(pathStr) {
     const parts = pathStr.split(/[/\\]/);
     parts.shift();
@@ -49,7 +59,6 @@ const ListFoderScreen = () => {
   }, [location.state.fodername]);
 
   const SelectFoder = async (path) => {
-    console.log("path---------", API.FOLDERS + path);
     await request
       .get(API.FOLDERS + "/" + path)
       .then((res) => {
@@ -64,56 +73,28 @@ const ListFoderScreen = () => {
     console.log(foldername);
   }
 
+
+ 
+
   return (
     <div>
       {foder ? (
         <div>
-          <AppBreadcrumb />
-          <Row justify="space-between" align="center">
-            <div>{foder.name}</div>
-            {location?.state?.fodername !== "all" && (
-              <Row>
-                <Button type="primary" style={{ marginRight: 10 }} onClick={() => downloadJson(location?.state?.fodername)}>
-                  Export JSON
-                </Button>
-                <Button color="danger" variant="solid">
-                  Xoá
-                </Button>
-              </Row>
-            )}
-          </Row>
+
+          {/* <AppBreadcrumb /> */}
+          <div>{foder.name}</div>
 
           <Row gutter={16}>
-            {foder.children?.map((item) => (
+            {paginatedChildren?.map(item => (
               <Col className="gutter-row" span={3} key={item.name}>
-                <div
-                  className="poiter"
-                  onClick={() =>
-                    navigate(`/foders/${item.name}`, {
-                      state: { fodername: `${item.path}` },
-                    })
-                  }
-                >
+                <div className="poiter" onClick={() => navigate(`/foders/${item.name}`, { state: { fodername: `${item.path}` } })}>
                   <div className="foder-box"></div>
-                  <div className="name-foder">
-                    <span>{item.name}</span>
-                  </div>
+                  <div className="name-foder"><span>{item.name}</span></div>
                 </div>
               </Col>
             ))}
 
-            {/* {foder.otherFiles?.map(item => (
-              <Col className="gutter-row" span={3} key={item.name}>
-                <div className='poiter'  >
-                  <div className='foder-box' >
-                    <LockOutlined />
-                  </div>
-                  <div className='name-foder'><span>{item.name}</span></div>
-                </div>
-              </Col>
-            ))} */}
-
-            {foder.images?.map((item, index) => (
+            {paginatedImages?.map((item, index) => (
               <Col className="gutter-row" span={3} key={item.name}>
                 <div className="poiter">
                   <div className="img-box">
@@ -126,11 +107,7 @@ const ListFoderScreen = () => {
                         )
                       )}
                       preview={false}
-                      onClick={() =>
-                        navigate(`/image/${returnFoderSegment(item.path)}`, {
-                          state: { index: index },
-                        })
-                      }
+                      onClick={() => navigate(`/image?folder=${returnFoderSegment(item.path)}&index=${index}&path=${item.path.replace(/\\/g, "/")}`, { state: { index: index } })}
                       style={{ width: "100%" }}
                     />
                   </div>
@@ -142,7 +119,23 @@ const ListFoderScreen = () => {
                 </div>
               </Col>
             ))}
+
+
           </Row>
+          <div>
+            
+              <Pagination
+                current={currentPage}
+                pageSize={pageSize}
+                total={(foder.children?.length || 0) + (foder.images?.length || 0)}
+                onChange={(page, size) => {
+                  setCurrentPage(page);
+                  setPageSize(size);
+                }}
+                style={{ marginTop: "20px", textAlign: "center" }}
+              />
+
+          </div>
         </div>
       ) : (
         <div>

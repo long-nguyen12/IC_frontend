@@ -21,6 +21,7 @@ const UserEdit = ({ visible, user, onUpdate, onCancel }) => {
     try {
       const values = await form.validateFields();
       onUpdate({ ...user, ...values });
+      
       form.resetFields(); 
     } catch (error) {
       console.error("Validation Failed:", error);

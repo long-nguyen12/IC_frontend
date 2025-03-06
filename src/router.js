@@ -21,10 +21,6 @@ const router = createBrowserRouter([
     ),
     errorElement: <Error404 />,
     children: [
-      // {
-      //   path: "auth",
-      //   element;
-      // },
       {
         // path: "upload",
         index: true,
@@ -36,17 +32,16 @@ const router = createBrowserRouter([
       },
       {
         path: "image",
-        // element: <ListImage />,
-        children: [
-          {
-            path: ":folderName",
+        // children: [
+        //   {
+            // path: ":folderName",
             element: (
               <ProtectedRoute>
                 <ListImage />
               </ProtectedRoute>
             ),
-          },
-        ],
+        //   },
+        // ],
       },
       {
         path: "user",

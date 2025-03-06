@@ -5,7 +5,7 @@ import { formatString } from "../../constants/formatString";
 import { postGenerateImage } from "../../services/image.service";
 
 const DetectionImage = ({ image }) => {
-  console.log("imageimageimageimageimageimage",image)
+
   const nameAI = image.describe?.split("/").pop()
   const [data, setData] = useState(image);
   const [pathAi, setPathAi] = useState(nameAI);
