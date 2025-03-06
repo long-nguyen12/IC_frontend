@@ -30,10 +30,10 @@ export const API = {
   USERS_CREAT: "/api/users/register",
   USERS_INFO: "/api/users/user_info",
   USERS_UPDATE: "/api/users/update",
+  USERS_DELETE: "/api/users/delete",
 
   // AI Services
   API_AI: "http://icai.ailabs.io.vn",
-  // API_AI: "http://localhost:7000",
   API_IMG: "http://icai.ailabs.io.vn/v1/api/images/",
   API_DETECTION: "/v1/api/detection",
   API_LOG: "/api/log/systemlogs",
