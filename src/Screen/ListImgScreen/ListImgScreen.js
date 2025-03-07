@@ -81,17 +81,6 @@ const ListImage = () => {
  
 
 
-  const handleGetFolder = async () => {
-    await request
-      .get(API.FOLDERS + `/${linkFolder}`)
-      .then((res) => {
-        if (res?.data) {
-          const listImg = res?.data.data.images
-          setData(listImg)
-        }
-      })
-      .catch((err) => console.log(err));
-  };
 
 
 
@@ -119,6 +108,29 @@ const ListImage = () => {
   const [bboxTitle, setBBoxTitle] = useState();
   const [categories, setCategories] = useState([]);
   const [width, setWidth] = useState(window.innerWidth * 0.3);
+
+
+console.log("data",data)
+
+  const handleGetFolder = async () => {
+    await request
+      .get(API.FOLDERS + `/${linkFolder}`)
+      .then((res) => {
+        if (res?.data) {
+          const listImg = res?.data.data.images
+          setData(listImg)
+        }
+      })
+      .catch((err) => console.log(err));
+  };
+
+
+
+
+
+
+
+
 
 
   // --------------- useEffect ------------------
@@ -404,17 +416,22 @@ const ListImage = () => {
      
       setSelect(data.length - 1);
     } else {
- 
+      let x = Number(indexImage) - 1
+      let fixedPath = data[x].name.replace(/\\/g, "/")
+      setSearchParams({ folder: folder, index:x, path :fixedPath  });
       setSelect(select - 1);
     }
   };
-
+ 
   const moveToNextImg = () => {
     if (select === data.length - 1) {
       setSelect(0);
-    } else {  
-      setSelect(select + 1);
-      setSearchParams({ folder: folder, index: select + 1, path : data[select + 1].path });
+
+
+    } else { 
+      let x = Number(indexImage) + 1
+      let fixedPath = data[x].name.replace(/\\/g, "/")
+      setSearchParams({ folder: folder, index:x, path :fixedPath  });
     }
   };
 
@@ -436,6 +453,8 @@ const ListImage = () => {
     }
   };
 
+  console.log("select",select)
+  console.log("indexImage",indexImage)
   const handleNewBbox = (newBbox) => {
     setBBox([...bbox, { ...newBbox }]);
   };
@@ -474,14 +493,14 @@ const ListImage = () => {
               /> */}
 
               <Image
-                src={formatString(
-                  API.API_HOST + API.VIEW_IMAGE,
-                  location?.state?.key ? location?.state?.key : folder,
-                  data[select].name
-                )}
+                src={
+                  API.API_HOST + "/"+ path
+                }
                 style={{ width: "100%" }}
               />
-              <DetectionImage image={data[select]} />
+
+
+              <DetectionImage image={data[indexImage]} />
             </div>
           ) : null}
          
@@ -550,7 +569,7 @@ const ListImage = () => {
                   <Button type="primary" htmlType="submit" ref={submitRef}>
                     Lưu mô tả
                   </Button>
-                  {select >= 1 ? (
+                  {indexImage  >= 1 ? (
                     <Button
                       type="primary"
                       ref={prevRef}
@@ -559,13 +578,18 @@ const ListImage = () => {
                       Trước
                     </Button>
                   ) : null}
-                  <Button
-                    type="primary"
-                    ref={nextRef}
-                    onClick={() => moveToNextImg()}
-                  >
-                    Tiếp theo
-                  </Button>
+
+                  { indexImage   == data.length - 1  ? 
+                    null
+                     : (<Button
+                     type="primary"
+                     ref={nextRef}
+                     onClick={() => moveToNextImg()}
+                   >
+                     Tiếp theo
+                   </Button>)
+                  }
+                  
                 </Space>
               </Row>
             </Form.Item>

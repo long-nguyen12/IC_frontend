@@ -6,7 +6,9 @@ import { postGenerateImage } from "../../services/image.service";
 
 const DetectionImage = ({ image }) => {
 
+
   const nameAI = image.describe?.split("/").pop()
+
   const [data, setData] = useState(image);
   const [pathAi, setPathAi] = useState(nameAI);
 
