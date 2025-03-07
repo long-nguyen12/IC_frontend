@@ -84,7 +84,6 @@ const ListImage = () => {
 
 
 
-
   let { folderName } = useParams();
   const { message } = App.useApp();
   const [form] = Form.useForm();
@@ -123,13 +122,6 @@ console.log("data",data)
       })
       .catch((err) => console.log(err));
   };
-
-
-
-
-
-
-
 
 
 
@@ -420,19 +412,19 @@ console.log("data",data)
       let fixedPath = data[x].name.replace(/\\/g, "/")
       setSearchParams({ folder: folder, index:x, path :fixedPath  });
       setSelect(x);
+
     }
   };
  
   const moveToNextImg = () => {
     if (select === data.length - 1) {
       setSelect(0);
-
-
     } else { 
       let x = Number(indexImage) + 1
       let fixedPath = data[x].name.replace(/\\/g, "/")
       setSearchParams({ folder: folder, index:x, path :fixedPath  });
       setSelect(x);
+
     }
   };
 
@@ -496,6 +488,7 @@ console.log("data",data)
                 src={
                   API.API_HOST + "/"+ path
                 }
+
                 style={{ width: "100%" }}
               />
 
