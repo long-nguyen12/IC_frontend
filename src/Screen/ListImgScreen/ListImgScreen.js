@@ -419,7 +419,7 @@ console.log("data",data)
       let x = Number(indexImage) - 1
       let fixedPath = data[x].name.replace(/\\/g, "/")
       setSearchParams({ folder: folder, index:x, path :fixedPath  });
-      setSelect(select - 1);
+      setSelect(x);
     }
   };
  
@@ -432,6 +432,7 @@ console.log("data",data)
       let x = Number(indexImage) + 1
       let fixedPath = data[x].name.replace(/\\/g, "/")
       setSearchParams({ folder: folder, index:x, path :fixedPath  });
+      setSelect(x);
     }
   };
 
@@ -453,8 +454,7 @@ console.log("data",data)
     }
   };
 
-  console.log("select",select)
-  console.log("indexImage",indexImage)
+  
   const handleNewBbox = (newBbox) => {
     setBBox([...bbox, { ...newBbox }]);
   };
