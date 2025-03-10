@@ -5,7 +5,7 @@ export const API = {
   FOLDER: "/api/uploads/all",
   FOLDERS: "/api/uploads/",
   GET_ALL_FODER: "/api/file/foder",
-
+  DELETE_FOLDER:"/api/file/delete-folder",
 
   FILE: "/api/file/upload",
   UPDATE_FILE: "/api/file/updatefile",

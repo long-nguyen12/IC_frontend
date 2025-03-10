@@ -8,11 +8,13 @@ import { formatString } from '../../constants/formatString'
 import { useLocation, useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { Pagination } from "antd";
+import ContextMenu from "./ContextMenu";
 
-
+import { DownOutlined, UserOutlined } from '@ant-design/icons';
+import {  Dropdown, message, Space, Tooltip } from 'antd';
 
 const ListFoderScreen = () => {
-
+  const [active,setActive] = useState(false)
   const [foderName, setFoderName] = useState(`all`);
   const [foder, setFoder] = useState({});
   const [Select, setSelected] = useState({});
@@ -28,8 +30,39 @@ const ListFoderScreen = () => {
   const paginatedChildren = foder.children?.slice((currentPage - 1) * pageSize, currentPage * pageSize);
   const paginatedImages = foder.images?.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
-
-
+  const handleMenuClick = (e) => {
+    message.info('Click on menu item.');
+    console.log('click', e);
+  };
+  const items = [
+    {
+      label: '1st menu item',
+      key: '1',
+      icon: <UserOutlined />,
+    },
+    {
+      label: '2nd menu item',
+      key: '2',
+      icon: <UserOutlined />,
+    },
+    {
+      label: '3rd menu item',
+      key: '3',
+      icon: <UserOutlined />,
+      danger: true,
+    },
+    {
+      label: '4rd menu item',
+      key: '4',
+      icon: <UserOutlined />,
+      danger: true,
+      disabled: true,
+    },
+  ];
+  const menuProps = {
+    items,
+    onClick: handleMenuClick,
+  };
 
 
   const handleGetFolder = async () => {
@@ -42,6 +75,11 @@ const ListFoderScreen = () => {
       })
       .catch((err) => console.log(err));
   };
+
+
+
+
+
   function removeFirstSegment(pathStr) {
     const parts = pathStr.split(/[/\\]/);
     parts.shift();
@@ -58,23 +96,13 @@ const ListFoderScreen = () => {
     handleGetFolder();
   }, [location.state.fodername]);
 
-  const SelectFoder = async (path) => {
-    await request
-      .get(API.FOLDERS + "/" + path)
-      .then((res) => {
-        if (res?.data) {
-          setFoder(res.data.data);
-        }
-      })
-      .catch((err) => console.log(err));
-  };
+ 
 
   const downloadJson = (foldername) => {
     console.log(foldername);
   }
 
 
- 
 
   return (
     <div>
@@ -82,20 +110,25 @@ const ListFoderScreen = () => {
         <div>
 
           {/* <AppBreadcrumb /> */}
-          <div>{foder.name}</div>
+          <div className="title-folder">{foder.name}</div>
 
           <Row gutter={16}>
             {paginatedChildren?.map(item => (
               <Col className="gutter-row" span={3} key={item.name}>
-                <div className="poiter" onClick={() => navigate(`/foders/${item.name}`, { state: { fodername: `${item.path}` } })}>
-                  <div className="foder-box"></div>
-                  <div className="name-foder"><span>{item.name}</span></div>
+                <div className="Hover-Box">
+                  <div className="poiter" onClick={() => navigate(`/foders/${item.name}`, { state: { fodername: `${item.path}` } })}>
+                    <div className="foder-box"></div>
+                    <div className="name-foder"><span>{item.name}</span></div>
+                  </div>
+                 < ContextMenu nameFolder={item.name} onFolderDeleted={handleGetFolder}/>
                 </div>
+
               </Col>
             ))}
 
             {paginatedImages?.map((item, index) => (
               <Col className="gutter-row" span={3} key={item.name}>
+              <div className="Hover-Box">
                 <div className="poiter">
                   <div className="img-box">
                     <Image
@@ -117,6 +150,7 @@ const ListFoderScreen = () => {
                     </span>
                   </div>
                 </div>
+              </div>
               </Col>
             ))}
 

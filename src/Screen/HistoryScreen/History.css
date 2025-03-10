@@ -102,3 +102,40 @@
 .ant-table-bordered .ant-table-tbody > tr > td:last-child {
   border-right: 1px solid #f0f0f0 !important; /* Thay đổi màu sắc nếu muốn */
 }
+
+.Hover-Box {
+    max-width: 110px;
+    padding: 10px;
+    position: relative;
+ 
+}
+
+.Hover-Box:hover {
+    background-color: #0003;
+}
+
+.Hover-Box:hover .Click-folder {
+    display: block;
+}
+
+.Click-folder {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 999;
+    cursor: pointer;
+    width: 14px;
+    
+    background-color: #162d3d3d;
+    rotate: 90deg;
+}
+
+.Hover-Box:has(.Click-folder.active1) {
+    border: 1px solid red;
+}
+
+.title-folder {
+    margin-bottom: 20px;
+}
+  
