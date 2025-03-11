@@ -77,7 +77,7 @@ const ListImage = () => {
   const indexImage = params.get("index");
   const normalizedPath = path.replace(/\\/g, "/");
   const linkFolder = normalizedPath.substring(0, normalizedPath.lastIndexOf("/"));
-  
+    console.log("folder",folder)
  
 
 
@@ -109,14 +109,25 @@ const ListImage = () => {
   const [width, setWidth] = useState(window.innerWidth * 0.3);
 
 
-console.log("data",data)
+console.log("data123123",data)
 
   const handleGetFolder = async () => {
+  const url =   formatString(
+      API.GET_ALL_IMAGE_NAME_NEW,
+      location?.state?.key ? location?.state?.key : folder,
+      1,
+      limit,
+      isSort,
+      location?.state?.child ? location?.state?.child : "all"
+    )
+
+
     await request
-      .get(API.FOLDERS + `/${linkFolder}`)
+      .get( url)
       .then((res) => {
         if (res?.data) {
-          const listImg = res?.data.data.images
+          console.log("res?.data",res?.data)
+          const listImg = res?.data.file
           setData(listImg)
         }
       })
@@ -142,7 +153,7 @@ console.log("data",data)
 
   useEffect(() => {
     const resetState = () => {
-      setData([]);
+      // setData([]);
       setPage(1);
       setBBox(null);
       setBBoxTitle();
@@ -152,7 +163,7 @@ console.log("data",data)
     };
     resetState();
 
-    getImageList("asc");
+    // getImageList("asc");
     handleGetCategories();
     handleGetFolder()
   }, [folderName]);
@@ -234,6 +245,7 @@ console.log("data",data)
       .then((res) => {
         if (res.data) {
           const newData = res.data.file;
+
           setData((prevData) => [...prevData, ...newData]);
           setPage(newPage);
           if (newData.length < limit) {
@@ -470,29 +482,13 @@ console.log("data",data)
          
         {data && data.length > 0 ? (
             <div style={{ width: "100%", height: "100%" }}>
-              {/* <ImageWithBBoxes
-                imageUrl={formatString(
-                  API.API_HOST + API.VIEW_IMAGE,
-                  location?.state?.key ? location?.state?.key : folderName,
-                  data[select].name
-                )}
-                bboxes={bbox ? bbox : []}
-                // title={bboxTitle}
-                onNewBbox={handleNewBbox}
-                categories={categories}
-                onUpdateBbox={handleUpdateBbox}
-                onDeleteBbox={handleDeleteBbox}
-              /> */}
-
               <Image
-                src={
-                  API.API_HOST + "/"+ path
+                src={  data[indexImage]._id? 
+                  API.API_HOST + "/"+ path : API.API_HOST + "/"+ API.API_HOST + "/"+ data[indexImage].name
                 }
 
                 style={{ width: "100%" }}
               />
-
-
               <DetectionImage image={data[indexImage]} />
             </div>
           ) : null}

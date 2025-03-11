@@ -20,6 +20,10 @@ const ContextMenu = ({ nameFolder, onFolderDeleted }) => {
             case "rename":
                 message.warning("Chức năng đổi tên chưa hỗ trợ.");
                 break;
+            case "export":
+                message.warning("Chức năng tải xuống chưa hỗ trợ.");
+                break;
+
             case "delete":
                 Modal.confirm({
                     title: "Xác nhận xóa",
@@ -60,8 +64,10 @@ const ContextMenu = ({ nameFolder, onFolderDeleted }) => {
     const menuItems = [
         { key: "info", label: "ℹ️ Thông tin tệp" },
         { key: "rename", label: "✏️ Đổi tên" },
+        { key: "export", label: "⬇️ Tải xuống" },
         { key: "delete", label: "🗑️ Xóa thư mục", danger: true },
     ];
+
 
 
     return (
