@@ -126,7 +126,7 @@ console.log("data123123",data)
       .get( url)
       .then((res) => {
         if (res?.data) {
-          console.log("res?.data",res?.data)
+          
           const listImg = res?.data.file
           setData(listImg)
         }
