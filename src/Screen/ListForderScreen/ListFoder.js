@@ -2,24 +2,16 @@
 import React, { useState, useEffect } from "react";
 import { API } from "../../constants/API";
 import request from "../../service/request";
-import { Input, Image, Button, Modal } from 'antd';
-import { Col, Divider, Row, Spin, Alert } from 'antd';
-import { formatString } from '../../constants/formatString'
-import { useLocation, useParams } from "react-router-dom";
+import { Image } from 'antd';
+import { Col, Row, Spin, Alert } from 'antd';
+import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { Pagination } from "antd";
 import ContextMenu from "./ContextMenu";
 
-import { DownOutlined, UserOutlined } from '@ant-design/icons';
-import {  Dropdown, message, Space, Tooltip } from 'antd';
 
 const ListFoderScreen = () => {
-  const [active,setActive] = useState(false)
-  const [foderName, setFoderName] = useState(`all`);
   const [foder, setFoder] = useState({});
-  const [Select, setSelected] = useState({});
-  const [open, setOpen] = useState(false);
-  const [confirmLoading, setConfirmLoading] = useState(false);
   const navigate = useNavigate();
   let location = useLocation();
 
@@ -30,39 +22,6 @@ const ListFoderScreen = () => {
   const paginatedChildren = foder.children?.slice((currentPage - 1) * pageSize, currentPage * pageSize);
   const paginatedImages = foder.images?.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
-  const handleMenuClick = (e) => {
-    message.info('Click on menu item.');
-    console.log('click', e);
-  };
-  const items = [
-    {
-      label: '1st menu item',
-      key: '1',
-      icon: <UserOutlined />,
-    },
-    {
-      label: '2nd menu item',
-      key: '2',
-      icon: <UserOutlined />,
-    },
-    {
-      label: '3rd menu item',
-      key: '3',
-      icon: <UserOutlined />,
-      danger: true,
-    },
-    {
-      label: '4rd menu item',
-      key: '4',
-      icon: <UserOutlined />,
-      danger: true,
-      disabled: true,
-    },
-  ];
-  const menuProps = {
-    items,
-    onClick: handleMenuClick,
-  };
 
 
   const handleGetFolder = async () => {
@@ -80,11 +39,6 @@ const ListFoderScreen = () => {
 
 
 
-  function removeFirstSegment(pathStr) {
-    const parts = pathStr.split(/[/\\]/);
-    parts.shift();
-    return parts.join("/");
-  }
 
   function returnFoderSegment(pathStr) {
     const normalizedPath = pathStr.replace(/\\/g, "/");
@@ -97,10 +51,6 @@ const ListFoderScreen = () => {
   }, [location.state.fodername]);
 
  
-
-  const downloadJson = (foldername) => {
-    console.log(foldername);
-  }
 
 
 
@@ -132,15 +82,11 @@ const ListFoderScreen = () => {
                 <div className="poiter">
                   <div className="img-box">
                     <Image
-                      src={formatString(
-                        API.API_HOST + API.VIEW_IMAGE,
-                        returnFoderSegment(item.path),
-                        removeFirstSegment(
-                          item.path.replace(/^uploads[\/\\]?/, "")
-                        )
-                      )}
+                      src={
+                        API.API_HOST +"/" + item.name
+                      }
                       preview={false}
-                      onClick={() => navigate(`/image?folder=${returnFoderSegment(item.path)}&index=${index}&path=${item.path.replace(/\\/g, "/")}`, { state: { index: index } })}
+                      onClick={() => navigate(`/image?folder=${returnFoderSegment(item.path)}&index=${index}&path=${item.name}`, { state: { index: index } })}
                       style={{ width: "100%" }}
                     />
                   </div>
