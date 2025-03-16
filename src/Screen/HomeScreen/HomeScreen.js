@@ -17,6 +17,9 @@ const props = {
     if (status === "done") {
       message.success(`${info.file.name} file đã được upload thành công.`);
     }
+    if(status ==="error") {
+      message.error(`${info.file.name} file tồn tại.`);
+    }
   },
   onDrop(e) {
     console.log("Dropped files", e.dataTransfer.files);
@@ -54,6 +57,7 @@ const UploadScreen = () => {
       onSuccess(response.data, file);
     } catch (error) {
       // If there's an error, call onError callback
+      // console.log("error",error)
       onError(error);
     }
   };
@@ -64,6 +68,7 @@ const UploadScreen = () => {
       accept=".zip, .rar"
       customRequest={handleUpload}
       multiple={false}
+      // showUploadList={{ showRemoveIcon: true }}
     >
       <p className="ant-upload-drag-icon">
         <InboxOutlined />
