@@ -1,26 +1,37 @@
-import { Button, Col, Image, Row } from "antd";
+import { Button, Col, Image, Row,Spin } from "antd";
 import React, { useEffect, useState } from "react";
 import { API } from "../../constants/API";
 import { formatString } from "../../constants/formatString";
 import { postGenerateImage } from "../../services/image.service";
-
+import {  Skeleton } from "antd";
 const DetectionImage = ({ image }) => {
-
-  const nameAI = image.describe?.split("/").pop()
+  const [loading,setLoading] = useState(false)
   const [data, setData] = useState(image);
-  const [pathAi, setPathAi] = useState(nameAI);
+  const [pathAi, setPathAi] = useState("");
 
   useEffect(() => {
-    setData(image);
-    setPathAi(nameAI)
+    setLoading(true);
+    if (image) {
+     
+      setData(image);
+      setPathAi(image.describe?.split("/").pop() || "");
+      setLoading(false);
+    }
   }, [image]);
 
-  async function generateBoundingBox() {
-    let resp = await postGenerateImage(data);
-    if (resp) {
-      let link = resp.describe?.split("/").pop()
-      setPathAi(link)
-    }
+  function generateBoundingBox() {
+    setLoading(true)
+    postGenerateImage(data)
+      .then((resp) => {
+        if (resp) {
+          setData(resp);
+          setPathAi(resp.describe?.split("/").pop() || "");
+          setLoading(false)
+        }
+      })
+      .catch((error) => {
+        console.error("Lỗi khi gọi API:", error);
+      });
   }
 
   return (
@@ -34,20 +45,29 @@ const DetectionImage = ({ image }) => {
           Sinh bounding box
         </Button>
       </Row>
-      <Row gutter={2}>
+      {pathAi?
+        <Row gutter={2}>
         <Col span={24}>
           {data && data.detection_name !== null ? (
-            <Image
+            <div>
+            {loading ? <div className="flex-center"><Spin size="large" /></div> : <Image
               src={
                 API.API_IMG + pathAi
               }
               style={{ width: "100%" }}
-            />
+              onLoad={() => setLoading(false)}
+              onError={() => setLoading(false)} 
+            /> }
+            </div>
+
           ) : null
 
           }
         </Col>
-      </Row>
+      </Row>:``
+    
+      }
+      
     </div>
   );
 };
