@@ -8,6 +8,8 @@ export const API = {
   DELETE_FOLDER:"/api/file/delete-folder",
   API_DOWLOAD: "/api/describe/create_json?folderName=",
 
+
+  GET_FILE_ID: "/api/file/get-file-id",
   FILE: "/api/file/upload",
   UPDATE_FILE: "/api/file/updatefile",
   SING_BOX: "/api/file/singbox",

@@ -128,7 +128,7 @@ const ListImage = () => {
 
   // --------------- useEffect ------------------
   useEffect(() => {
-    // handleGetFolder()
+    handleGetFolder()
     const handleResize = () => {
       setWidth(window.innerWidth * 0.3);
     };

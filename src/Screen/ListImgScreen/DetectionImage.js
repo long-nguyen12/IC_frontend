@@ -4,20 +4,45 @@ import { API } from "../../constants/API";
 import { formatString } from "../../constants/formatString";
 import { postGenerateImage } from "../../services/image.service";
 import {  Skeleton } from "antd";
+import request from "../../service/request";
+
+
 const DetectionImage = ({ image }) => {
+  const id = image._id
   const [loading,setLoading] = useState(false)
   const [data, setData] = useState(image);
-  const [pathAi, setPathAi] = useState("");
+  console.log(data)
+  
+
+
+  const handleGGetFile = async () => {
+    setLoading(true);
+    await request
+      .get(API.GET_FILE_ID,{ params: { id: id } })
+      .then((res) => {
+        console.log(res.data)
+        setData(res.data)
+
+      })
+      .catch((err) => console.log(err));
+  };
+
+
+
 
   useEffect(() => {
+    handleGGetFile()
     setLoading(true);
     if (image) {
-     
       setData(image);
-      setPathAi(image.describe?.split("/").pop() || "");
-      setLoading(false);
     }
+    setLoading(false);
   }, [image]);
+
+
+
+
+
 
   function generateBoundingBox() {
     setLoading(true)
@@ -25,7 +50,6 @@ const DetectionImage = ({ image }) => {
       .then((resp) => {
         if (resp) {
           setData(resp);
-          setPathAi(resp.describe?.split("/").pop() || "");
           setLoading(false)
         }
       })
@@ -45,14 +69,14 @@ const DetectionImage = ({ image }) => {
           Sinh bounding box
         </Button>
       </Row>
-      {pathAi?
+      { data.describe?
         <Row gutter={2}>
         <Col span={24}>
           {data && data.detection_name !== null ? (
             <div>
             {loading ? <div className="flex-center"><Spin size="large" /></div> : <Image
               src={
-                API.API_IMG + pathAi
+                data.describe
               }
               style={{ width: "100%" }}
               onLoad={() => setLoading(false)}
@@ -60,7 +84,7 @@ const DetectionImage = ({ image }) => {
             /> }
             </div>
 
-          ) : null
+          ) : "sss"
 
           }
         </Col>
