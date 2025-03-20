@@ -1,26 +1,61 @@
-import { Button, Col, Image, Row } from "antd";
+import { Button, Col, Image, Row,Spin } from "antd";
 import React, { useEffect, useState } from "react";
 import { API } from "../../constants/API";
 import { formatString } from "../../constants/formatString";
 import { postGenerateImage } from "../../services/image.service";
+import {  Skeleton } from "antd";
+import request from "../../service/request";
+
 
 const DetectionImage = ({ image }) => {
-
-  const nameAI = image.describe?.split("/").pop()
+  const id = image._id
+  const [loading,setLoading] = useState(false)
   const [data, setData] = useState(image);
-  const [pathAi, setPathAi] = useState(nameAI);
+  console.log(data)
+  
+
+
+  const handleGGetFile = async () => {
+    setLoading(true);
+    await request
+      .get(API.GET_FILE_ID,{ params: { id: id } })
+      .then((res) => {
+        console.log(res.data)
+        setData(res.data)
+
+      })
+      .catch((err) => console.log(err));
+  };
+
+
+
 
   useEffect(() => {
-    setData(image);
-    setPathAi(nameAI)
+    handleGGetFile()
+    setLoading(true);
+    if (image) {
+      setData(image);
+    }
+    setLoading(false);
   }, [image]);
 
-  async function generateBoundingBox() {
-    let resp = await postGenerateImage(data);
-    if (resp) {
-      let link = resp.describe?.split("/").pop()
-      setPathAi(link)
-    }
+
+
+
+
+
+  function generateBoundingBox() {
+    setLoading(true)
+    postGenerateImage(data)
+      .then((resp) => {
+        if (resp) {
+          setData(resp);
+          setLoading(false)
+        }
+      })
+      .catch((error) => {
+        console.error("Lỗi khi gọi API:", error);
+      });
   }
 
   return (
@@ -34,20 +69,29 @@ const DetectionImage = ({ image }) => {
           Sinh bounding box
         </Button>
       </Row>
-      <Row gutter={2}>
+      { data.describe?
+        <Row gutter={2}>
         <Col span={24}>
           {data && data.detection_name !== null ? (
-            <Image
+            <div>
+            {loading ? <div className="flex-center"><Spin size="large" /></div> : <Image
               src={
-                API.API_IMG + pathAi
+                data.describe
               }
               style={{ width: "100%" }}
-            />
-          ) : null
+              onLoad={() => setLoading(false)}
+              onError={() => setLoading(false)} 
+            /> }
+            </div>
+
+          ) : "sss"
 
           }
         </Col>
-      </Row>
+      </Row>:``
+    
+      }
+      
     </div>
   );
 };

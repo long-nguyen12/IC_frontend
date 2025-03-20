@@ -8,12 +8,13 @@ import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { Pagination } from "antd";
 import ContextMenu from "./ContextMenu";
-
+import { Breadcrumb } from "antd";
+import { Link } from "react-router-dom";
 
 const ListFoderScreen = () => {
   const [foder, setFoder] = useState({});
   const navigate = useNavigate();
-  let location = useLocation();
+  const location = useLocation();
 
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -35,11 +36,11 @@ const ListFoderScreen = () => {
       .catch((err) => console.log(err));
   };
 
+ 
+  const path = location.state?.fodername || "";
 
-
-
-
-
+  // Chuyển path thành mảng thư mục
+  const folders = path.split("/").filter(Boolean);
   function returnFoderSegment(pathStr) {
     const normalizedPath = pathStr.replace(/\\/g, "/");
     const parts = normalizedPath.split("/");
@@ -50,17 +51,32 @@ const ListFoderScreen = () => {
     handleGetFolder();
   }, [location.state.fodername]);
 
+  console.log("folders",folders)
  
-
-
-
   return (
     <div>
       {foder ? (
         <div>
 
           {/* <AppBreadcrumb /> */}
-          <div className="title-folder">{foder.name}</div>
+          {/* <div className="title-folder">{foder.name}</div> */}
+          <Breadcrumb style={{ marginBottom: "16px" }}>
+            <Breadcrumb.Item>
+              <span to="/foders/all">Uploads</span>
+            </Breadcrumb.Item>
+            {folders[0].replace(/\\/g, "/").split("/").slice(1).map((folder, index) => {
+              console.log("foldersssss",folder)
+              const linkPath = "/" + folders.slice(0, index + 1).join("/");
+              return (
+                <Breadcrumb.Item key={index}>
+                  <Link to={linkPath} state={{ fodername: linkPath }}>
+                    {folder}
+                  </Link>
+                </Breadcrumb.Item>
+              );
+            })}
+          </Breadcrumb>
+
 
           <Row gutter={16}>
             {paginatedChildren?.map(item => (

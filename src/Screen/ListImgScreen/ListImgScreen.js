@@ -12,6 +12,7 @@ import {
   Row,
   Skeleton,
   Space,
+  Spin 
 } from "antd";
 import InfiniteScroll from "react-infinite-scroll-component";
 import {
@@ -70,20 +71,11 @@ const ListImage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const location = useLocation();
   const params = new URLSearchParams(location.search);
-
-
   const folder = params.get("folder");
   const path = params.get("path");
   const indexImage = params.get("index");
   const normalizedPath = path.replace(/\\/g, "/");
   const linkFolder = normalizedPath.substring(0, normalizedPath.lastIndexOf("/"));
-    console.log("folder",folder)
- 
-
-
-
-
-
   let { folderName } = useParams();
   const { message } = App.useApp();
   const [form] = Form.useForm();
@@ -103,16 +95,15 @@ const ListImage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSort, setIsSort] = useState("asc");
   const [bbox, setBBox] = useState({});
- 
+
   const [bboxTitle, setBBoxTitle] = useState();
   const [categories, setCategories] = useState([]);
   const [width, setWidth] = useState(window.innerWidth * 0.3);
 
 
-console.log("data123123",data)
-
   const handleGetFolder = async () => {
-  const url =   formatString(
+    setLoading(true);
+    const url = formatString(
       API.GET_ALL_IMAGE_NAME_NEW,
       location?.state?.key ? location?.state?.key : folder,
       1,
@@ -120,15 +111,14 @@ console.log("data123123",data)
       isSort,
       location?.state?.child ? location?.state?.child : "all"
     )
-
-
     await request
-      .get( url)
+      .get(url)
       .then((res) => {
         if (res?.data) {
-          
+
           const listImg = res?.data.file
           setData(listImg)
+          setLoading(false);
         }
       })
       .catch((err) => console.log(err));
@@ -164,7 +154,7 @@ console.log("data123123",data)
     resetState();
 
     // getImageList("asc");
-    handleGetCategories();
+    // handleGetCategories();
     handleGetFolder()
   }, [folderName]);
 
@@ -174,7 +164,7 @@ console.log("data123123",data)
     setDescribe(data[select]?.caption?.describes || ["", "", "", "", ""])
     form.setFieldsValue(data[select]?.caption || ["", "", "", "", ""])
   }, [select, data]);
- 
+
   const getImageList = async (sort) => {
     try {
       const res = await request.get(
@@ -190,7 +180,7 @@ console.log("data123123",data)
 
       if (res.data) {
         const newData = res.data.file;
-        
+
         setData(newData);
         if (newData.length < limit) {
           setHasMore(false);
@@ -417,26 +407,26 @@ console.log("data123123",data)
 
   const moveToPrevImg = () => {
     if (select === 0) {
-     
+
       setSelect(data.length - 1);
     } else {
       let x = Number(indexImage) - 1
       let fixedPath = data[x].name.replace(/\\/g, "/")
-      setSearchParams({ folder: folder, index:x, path :fixedPath  });
+      setSearchParams({ folder: folder, index: x, path: fixedPath });
       setSelect(x);
 
     }
   };
- 
+
   const moveToNextImg = () => {
     if (select === data.length - 1) {
+
       setSelect(0);
-    } else { 
+    } else {
       let x = Number(indexImage) + 1
       let fixedPath = data[x].name.replace(/\\/g, "/")
-      setSearchParams({ folder: folder, index:x, path :fixedPath  });
+      setSearchParams({ folder: folder, index: x, path: fixedPath });
       setSelect(x);
-
     }
   };
 
@@ -458,7 +448,7 @@ console.log("data123123",data)
     }
   };
 
-  
+
   const handleNewBbox = (newBbox) => {
     setBBox([...bbox, { ...newBbox }]);
   };
@@ -475,24 +465,28 @@ console.log("data123123",data)
   };
 
   return (
+    <div>
+    {loading?
+    <div className="flex-center"><Spin size="large" /></div>
+     
+     :
     <div onKeyDown={handleKeyDown} style={{ height: "100%" }}>
       <Row style={{ height: "100%" }} gutter={2}>
         <Col span={12}>
-     
-         
-        {data && data.length > 0 ? (
+
+
+          {data && data.length > 0 ? (
             <div style={{ width: "100%", height: "100%" }}>
               <Image
-                src={  data[indexImage]._id? 
-                  API.API_HOST + "/"+ path : API.API_HOST + "/"+ API.API_HOST + "/"+ data[indexImage].name
+                src={data[indexImage]._id ?
+                  API.API_HOST + "/" + path : API.API_HOST + "/" + API.API_HOST + "/" + data[indexImage].name
                 }
-
                 style={{ width: "100%" }}
               />
               <DetectionImage image={data[indexImage]} />
             </div>
           ) : null}
-         
+
         </Col>
         <Col span={12}>
           <Form
@@ -558,7 +552,7 @@ console.log("data123123",data)
                   <Button type="primary" htmlType="submit" ref={submitRef}>
                     Lưu mô tả
                   </Button>
-                  {indexImage  >= 1 ? (
+                  {indexImage >= 1 ? (
                     <Button
                       type="primary"
                       ref={prevRef}
@@ -568,17 +562,17 @@ console.log("data123123",data)
                     </Button>
                   ) : null}
 
-                  { indexImage   == data.length - 1  ? 
+                  {indexImage == data.length - 1 ?
                     null
-                     : (<Button
-                     type="primary"
-                     ref={nextRef}
-                     onClick={() => moveToNextImg()}
-                   >
-                     Tiếp theo
-                   </Button>)
+                    : (<Button
+                      type="primary"
+                      ref={nextRef}
+                      onClick={() => moveToNextImg()}
+                    >
+                      Tiếp theo
+                    </Button>)
                   }
-                  
+
                 </Space>
               </Row>
             </Form.Item>
@@ -656,13 +650,10 @@ console.log("data123123",data)
                       height={"auto"}
                       style={{ objectFit: "contain" }}
                       preview={true}
-                      src={formatString(
-                        API.API_HOST + API.VIEW_IMAGE,
-                        location?.state?.key
-                          ? location?.state?.key
-                          : folderName,
+                      src={
+                        API.API_HOST + "/" +
                         item.name
-                      )}
+                      }
                     />
                   </List.Item>
                 );
@@ -671,6 +662,8 @@ console.log("data123123",data)
           </InfiniteScroll>
         </div>
       </Drawer>
+    </div>
+    }
     </div>
   );
 };
