@@ -37,8 +37,8 @@ export const API = {
   USERS_EDIT: "/api/users/edit",
 
   // AI Services
-  API_AI: "http://icai.ailabs.io.vn",
-  API_IMG: "http://icai.ailabs.io.vn/v1/api/images/",
+  API_AI: "https://icai.ailabs.io.vn",
+  API_IMG: "https://icai.ailabs.io.vn/v1/api/images/",
   API_DETECTION: "/v1/api/detection",
   API_LOG: "/api/log/systemlogs",
  
