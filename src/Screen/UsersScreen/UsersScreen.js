@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { App, Checkbox, Row, Table, Button } from "antd";
+import { App, Checkbox, Row, Table, Button,Tag } from "antd";
 // import { render } from "@testing-library/react";
 import request from "../../service/request";
 import { API } from "../../constants/API";
 import UserEditModal from "./modalUpdate";
 import UserEdit from "./modelEditUser"
 
-import { ExclamationCircleFilled } from '@ant-design/icons';
+import { ExclamationCircleFilled, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import {  Modal, Space } from 'antd';
 const { confirm } = Modal;
 
@@ -21,8 +21,6 @@ const UsersScreen = () => {
   const plainOptions = ["upload", "edit", "admin"];
   const [users, setUsers] = useState([]);
   
-  console.log("data------------", data);
-
   const showDeleteConfirm = (value) => {
     confirm({
       title: 'Xóa tài khoản !',
@@ -95,37 +93,30 @@ const UsersScreen = () => {
       .post(API.USERS_CREAT, newUser)
       .then((res) => {
         if (res.data) {
-          console.log("res", res);
           setData([...data, res.data.user]);
         }
       })
       .catch((err) => console.log(err));
 
-    const newUserWithId = { ...newUser, id: users.length + 1 };
-    // setUsers([...users, newUserWithId]);
+
     message.success("Thêm người dùng thành công!");
     handleCancel();
   };
 
-  const options = [
-    {
-      label: "Upload file",
-      value: "upload",
-      key: "upload",
-    },
-    {
-      label: "Tạo mô tả",
-      value: "edit",
-      key: "edit",
-    },
-    {
-      label: "Admin",
-      value: "admin",
-      key: "admin",
-    },
-  ];
 
   const columns = [
+    {
+      title: "ID",
+      dataIndex: "_id",
+      key: "_id",
+      render: (text) => <div>{text}</div>,
+    },
+    {
+      title: "Email",
+      dataIndex: "email",
+      key: "userName",
+      render: (text) => <div>{text}</div>,
+    },
     {
       title: "Tên tài khoản",
       dataIndex: "userName",
@@ -133,27 +124,26 @@ const UsersScreen = () => {
       render: (text) => <div>{text}</div>,
     },
     {
-      title: "Quyền",
+      title: "Role",
       dataIndex: "role",
       key: "role",
-      render: (value, index) => (
-        <Row key={index + value}>
-          <CheckboxGroup
-            key={index + "_key"}
-            options={options}
-            onChange={(value) => onChange(value, index)}
-            defaultValue={value.includes("admin") ? plainOptions : value}
-          />
-        </Row>
-      ),
+      render: (value, index) => {
+        const rolesToShow = value.includes("admin") ? ["admin"] : value;
+        
+        return rolesToShow.map((item, idx) => (
+          <Tag key={idx + item} color={item === "admin" ? "red" : "magenta"}>
+            {item}
+          </Tag>
+        ));
+      },
     },
     {
       title: "Hành động",
       key: "action",
       render: (value, index) => (
         <Row key={index + value}>
-          <Button type="primary" onClick={()=>{handleEditBnt(value)}} style={{marginRight: 10}}>Chỉnh sửa</Button>
-          <Button color="danger" variant="solid" onClick={()=>{showDeleteConfirm(value)}} >Xoá</Button>
+          <Button type="primary" onClick={()=>{handleEditBnt(value)}} style={{marginRight: 10}}><EditOutlined /></Button>
+          <Button color="danger" variant="solid" onClick={()=>{showDeleteConfirm(value)}} ><DeleteOutlined /></Button>
         </Row>
       ),
     },

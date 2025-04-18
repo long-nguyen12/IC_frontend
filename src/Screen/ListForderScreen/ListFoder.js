@@ -12,25 +12,30 @@ import { Breadcrumb } from "antd";
 import { Link } from "react-router-dom";
 
 const ListFoderScreen = () => {
+  const [selectedFolder, setSelectedFolder] = useState('all');
   const [foder, setFoder] = useState({});
+  const [foderChild, setFoderChild] = useState([]);
   const navigate = useNavigate();
   const location = useLocation();
 
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(24);
-
-  const paginatedChildren = foder.children?.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+ 
+  const paginatedChildren = foderChild?.slice((currentPage - 1) * pageSize, currentPage * pageSize);
   const paginatedImages = foder.images?.slice((currentPage - 1) * pageSize, currentPage * pageSize);
-
-
-
-  const handleGetFolder = async () => {
-    await request
-      .get(API.FOLDERS + `/${location.state.fodername}`)
+  console.log("location",location)
+  const handleGetFolder = async (name) => {
+      await request
+      .get(API.FOLDERS ,{ 
+        params: {
+          Id_folder: selectedFolder, 
+        }})
       .then((res) => {
         if (res?.data) {
-          setFoder(res.data.data);
+          console.log("res", res);
+          setFoder(res.data);
+          setFoderChild(res.data.children);
         }
       })
       .catch((err) => console.log(err));
@@ -39,7 +44,7 @@ const ListFoderScreen = () => {
  
   const path = location.state?.fodername || "";
 
-  // Chuyển path thành mảng thư mục
+  
   const folders = path.split("/").filter(Boolean);
   function returnFoderSegment(pathStr) {
     const normalizedPath = pathStr.replace(/\\/g, "/");
@@ -48,10 +53,9 @@ const ListFoderScreen = () => {
   }
 
   useEffect(() => {
-    handleGetFolder();
-  }, [location.state.fodername]);
+    handleGetFolder(selectedFolder);
+  }, [selectedFolder]);
 
-  console.log("folders",folders)
  
   return (
     <div>
@@ -65,7 +69,7 @@ const ListFoderScreen = () => {
               <span to="/foders/all">Uploads</span>
             </Breadcrumb.Item>
             {folders[0].replace(/\\/g, "/").split("/").slice(1).map((folder, index) => {
-              console.log("foldersssss",folder)
+           
               const linkPath = "/" + folders.slice(0, index + 1).join("/");
               return (
                 <Breadcrumb.Item key={index}>
@@ -82,9 +86,9 @@ const ListFoderScreen = () => {
             {paginatedChildren?.map(item => (
               <Col className="gutter-row" span={3} key={item.name}>
                 <div className="Hover-Box">
-                  <div className="poiter" onClick={() => navigate(`/foders/${item.name}`, { state: { fodername: `${item.path}` } })}>
+                  <div className="poiter" onClick={() => {setSelectedFolder(item._id)}}>
                     <div className="foder-box"></div>
-                    <div className="name-foder"><span>{item.name}</span></div>
+                    <div className="name-foder"><span>{item.name}ss</span></div>
                   </div>
                  < ContextMenu nameFolder={item.name} onFolderDeleted={handleGetFolder}/>
                 </div>
@@ -92,7 +96,7 @@ const ListFoderScreen = () => {
               </Col>
             ))}
 
-            {paginatedImages?.map((item, index) => (
+             {paginatedImages?.map((item, index) => (
               <Col className="gutter-row" span={3} key={item.name}>
               <div className="Hover-Box">
                 <div className="poiter">

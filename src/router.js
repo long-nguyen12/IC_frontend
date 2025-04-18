@@ -32,21 +32,16 @@ const router = createBrowserRouter([
       },
       {
         path: "image",
-        // children: [
-        //   {
-            // path: ":folderName",
             element: (
               <ProtectedRoute>
                 <ListImage />
               </ProtectedRoute>
             ),
-        //   },
-        // ],
       },
       {
         path: "user",
         element: (
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={["admin"]}>
             <UsersScreen />
           </ProtectedRoute>
         ),
@@ -60,19 +55,8 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
-
-      // {
-      //   path: "foders",
-      //   element: (
-      //     <ProtectedRoute>
-      //       <ListFoderScreen />
-      //     </ProtectedRoute>
-      //   ),
-      // },
-
       {
         path: "foders",
-        // element: <ListImage />,
         children: [
           {
             path: ":name",
@@ -84,10 +68,6 @@ const router = createBrowserRouter([
           },
         ],
       },
-
-
-
-
 
       {
         path: "history",

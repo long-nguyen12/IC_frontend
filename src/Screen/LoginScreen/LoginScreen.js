@@ -24,7 +24,7 @@ export default function LoginScreen() {
     myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
 
     const urlencoded = new URLSearchParams();
-    urlencoded.append("userName", values.username);
+    urlencoded.append("email", values.email);
     urlencoded.append("password", values.password);
     request
       .post(API.LOGIN, urlencoded, {
@@ -90,16 +90,16 @@ export default function LoginScreen() {
           requiredMark="optional"
         >
           <Form.Item
-            name="username"
+            name="email"
             rules={[
               {
                 type: "text",
                 required: true,
-                message: "Vui lòng nhập tài khoản!",
+                message: "Email!",
               },
             ]}
           >
-            <Input prefix={<MailOutlined />} placeholder="Tên tài khoản" />
+            <Input prefix={<MailOutlined />} placeholder="Email" />
           </Form.Item>
           <Form.Item
             name="password"

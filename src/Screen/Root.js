@@ -29,6 +29,8 @@ const Root = () => {
   const [subMenu, setSubMenu] = useState([]);
   const [name, setName] = useState([]);
   const parentLabels = new Map();
+
+
   const menuItem = [
     {
       key: "UPLOAD",
@@ -41,55 +43,7 @@ const Root = () => {
       label: "Danh sách ảnh",
       icon: <CloudServerOutlined />,
       onClick: () => navigate("/foders/all",{state:{fodername:`all`}}),
-      // children: (subMenu || []).reduce((acc, item) => {
-
-      //   if (item.includes("/")) {
-      //     const parts = item.split("/");
-      //     const parentLabel = parts[0];
-      //     const childLabel = parts[1];
-
-      //     if (!parentLabels.has(parentLabel)) {
-      //       parentLabels.set(parentLabel, true);
-      //       const newItem = {
-      //         key: parentLabel,
-      //         label: parentLabel,
-      //         children: [],
-      //       };
-      //       if (childLabel) {
-      //         newItem.children.push({
-      //           key: childLabel,
-      //           label: childLabel,
-      //           icon: <CloudServerOutlined />,
-      //           onClick: () =>
-      //             navigate(`/image/${childLabel}`, {
-      //               state: { key: parentLabel, child: childLabel },
-      //             }),
-      //         });
-      //       }
-      //       acc.push(newItem);
-      //     } else {
-      //       const existingParent = acc.find((item) => item.key === parentLabel);
-      //       if (childLabel) {
-      //         existingParent.children.push({
-      //           key: childLabel,
-      //           label: childLabel,
-      //           icon: <CloudServerOutlined />,
-      //           onClick: () =>
-      //             navigate(`/image/${childLabel}`, {
-      //               state: { key: parentLabel, child: childLabel },
-      //             }),
-      //         });
-      //       }
-      //     }
-      //   } else {
-      //     acc.push({
-      //       key: item,
-      //       label: `${item}`,
-      //       onClick: () => navigate(`/image/${item}`),
-      //     });
-      //   }
-      //   return acc;
-      // }, []),
+      
     },
     {
       key: "USER",
@@ -123,7 +77,7 @@ const Root = () => {
   ];
   // --------------- useEffect ------------------
   useEffect(() => {
-    handleGetFolder();
+    // handleGetFolder();
     handleGetInfo();
     document.body.style.margin = 0;
   }, []);
@@ -145,15 +99,12 @@ const Root = () => {
     await request
       .get(API.USERS_INFO)
       .then((res) => {
-        if (res?.data) {
-          
-          // setSubMenu(res.data?.data);
-          console.log("dasdas",res.data.user);
+        if (res.data.user) {
           dispatch(UserUpdate(res.data))
           setName(res.data.user.userName);
         }
       })
-      .catch((err) => console.log(err));
+      .catch((err) => navigate("/login"));
   };
 
   const handleLogOut = async () => {

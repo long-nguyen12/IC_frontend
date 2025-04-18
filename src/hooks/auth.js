@@ -21,7 +21,8 @@ export const AuthProvider = ({ children }) => {
   // };
 
   const logout = () => {
-    request.get(API.USERS_LOGOUT)
+    console.log("logout",API.USERS_LOGOUT)
+    request.get(API.API_HOST + API.USERS_LOGOUT)
     .then((res) => {
       if (res) {
        console.log("res",res)
