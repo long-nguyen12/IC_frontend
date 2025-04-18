@@ -7,7 +7,7 @@ export const API = {
   GET_ALL_FODER: "/api/file/foder",
   DELETE_FOLDER:"/api/file/delete-folder",
   API_DOWLOAD: "/api/describe/create_json?folderName=",
-
+  USERS_LOGOUT : "/api/users/logout",
 
   GET_FILE_ID: "/api/file/get-file-id",
   FILE: "/api/file/upload",

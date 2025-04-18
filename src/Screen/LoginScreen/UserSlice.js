@@ -5,17 +5,21 @@ export const userSlice = createSlice({
   initialState: {
     name: '',
     email:'',
+    isAuthenticated: false,
+    userRole: null,
     // savUrl: '',
-    // role: '',
+    role: [],
   },
   reducers: {
-    UserUpdate: (state, action) =>{
-        console.log("dasdasd",action)
+    logout(state) {
+      state.isAuthenticated = false;
+      state.userRole = null;
+    },
 
+    UserUpdate: (state, action) =>{
         state.name = action.payload.user.userName;
         state.email = action.payload.user.email;
-    //   state.savUrl = action.payload.savUrl;
-    //   state.role = action.payload.role;
+        state.role = action.payload.user.role
       return state
     },
     
@@ -25,7 +29,7 @@ export const userSlice = createSlice({
   },
 });
 
-export const {UserUpdate,ClearUser } = userSlice.actions;
+export const {UserUpdate,ClearUser,logout } = userSlice.actions;
 
 export default userSlice.reducer;
 
