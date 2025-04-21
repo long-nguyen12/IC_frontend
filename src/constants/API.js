@@ -3,7 +3,10 @@ export const API = {
   REGISTER: "/api/users/register",
   LOGIN: "/api/users/login",
   FOLDER: "/api/uploads/all",
-  FOLDERS: "/api/uploads/",
+  FOLDERS: "/api/uploads/getdatafolder",
+  
+
+
   GET_ALL_FODER: "/api/file/foder",
   DELETE_FOLDER:"/api/file/delete-folder",
   API_DOWLOAD: "/api/describe/create_json?folderName=",

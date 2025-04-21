@@ -83,17 +83,7 @@ const Root = () => {
   }, []);
   // --------------------------------------------
   // --------------- Action ---------------------
-  const handleGetFolder = async () => {
-    await request
-      .get(API.FOLDER)
-      .then((res) => {
-        if (res?.data) {
-          console.log("---------------------",res.data)
-          setSubMenu(res.data?.data);
-        }
-      })
-      .catch((err) => console.log(err));
-  };
+ 
 
   const handleGetInfo = async () => {
     await request
