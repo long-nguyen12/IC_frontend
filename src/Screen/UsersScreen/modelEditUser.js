@@ -1,11 +1,12 @@
 import React, { useEffect } from "react";
 import { Modal, Form, Input, Checkbox } from "antd";
-
+import { UserOutlined } from '@ant-design/icons';
+import { Avatar, Space } from 'antd';
 const roleOptions = ["admin", "edit", "upload"]; 
 
 const UserEdit = ({ visible, user, onUpdate, onCancel }) => {
   const [form] = Form.useForm(); 
-
+  console.log("userssssssssss", user)
   useEffect(() => {
     if (visible && user) { 
       form.setFieldsValue({
@@ -30,12 +31,21 @@ const UserEdit = ({ visible, user, onUpdate, onCancel }) => {
 
   return (
     <Modal 
-      title="Chỉnh sửa tài khoản" 
+      title="User Details" 
       open={visible} 
       onCancel={onCancel} 
       onOk={handleOk}
       destroyOnClose // Giúp form reset khi modal đóng
     >
+      <div className="flex items-center mb-4">
+        <Avatar size={64} icon={<UserOutlined />} /> 
+        <div className="magin-left-15px">
+          <Space direction="vertical" size={4}>
+            <span style={{ fontSize: "16px", fontWeight: "bold" }}>{user?.userName}</span>
+            <span style={{ fontSize: "14px", color: "#888" }}>{user?.email}</span>
+          </Space>
+        </div>
+      </div>
       <Form form={form} layout="vertical">
         <Form.Item name="userName" label="Tên đăng nhập" rules={[{ required: true, message: "Vui lòng nhập tên đăng nhập!" }]}>
           <Input />

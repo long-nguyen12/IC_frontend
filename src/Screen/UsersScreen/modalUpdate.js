@@ -22,6 +22,7 @@ const UserEditModal = ({ visible, onUpdate, onCancel }) => {
 
   return (
     <Modal title="Thêm tài khoản" open={visible} onCancel={handleCancel} onOk={handleOk}>
+     
       <Form form={form} layout="vertical">
         <Form.Item name="userName" label="Tên đăng nhập" rules={[{ required: true, message: "Vui lòng nhập tên đăng nhập!" }]}>
           <Input />

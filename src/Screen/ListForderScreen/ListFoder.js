@@ -20,7 +20,7 @@ const ListFoderScreen = () => {
 
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(24);
+  const [pageSize, setPageSize] = useState(50);
  
   const paginatedChildren = foderChild?.slice((currentPage - 1) * pageSize, currentPage * pageSize);
   const paginatedImages = foder.images?.slice((currentPage - 1) * pageSize, currentPage * pageSize);

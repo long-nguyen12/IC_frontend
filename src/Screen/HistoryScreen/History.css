@@ -146,4 +146,15 @@
     justify-content: center;
     align-items: center;
 }
+.flex {
+    display: flex;
+    align-items: center;
+}
+.magin-left-15px{
+    margin-left: 10px;
+}
+
+.mb-4 {
+    margin-bottom: 1.5rem;
+}
   
