@@ -10,10 +10,8 @@ import {
 } from "@ant-design/icons";
 import { Outlet, useNavigate, useLocation, useParams } from "react-router-dom";
 import { API } from "../constants/API";
-import { useAuth } from "../hooks/auth";
 import request from "../service/request";
-import { useDispatch } from 'react-redux';
-import {UserUpdate} from './LoginScreen/UserSlice';
+import { useDispatch,useSelector } from 'react-redux';
 
 
 
@@ -22,14 +20,28 @@ const { Header, Content, Footer, Sider } = Layout;
 const Root = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { logout } = useAuth();
+
   let params = useParams();
   let location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
   const [subMenu, setSubMenu] = useState([]);
   const [name, setName] = useState([]);
   const parentLabels = new Map();
+ 
+  const User = useSelector((state) => state.User);
 
+ 
+  const logout = () => {
+    console.log("logout",API.USERS_LOGOUT)
+    request.get(API.API_HOST + API.USERS_LOGOUT)
+    .then((res) => {
+      if (res) {
+       console.log("res",res)
+      }
+    })
+    .catch((err) => console.log(err));
+
+  };
 
   const menuItem = [
     {
@@ -77,31 +89,30 @@ const Root = () => {
   ];
   // --------------- useEffect ------------------
   useEffect(() => {
-    // handleGetFolder();
-    handleGetInfo();
+   
+    setName(User?.name);
     document.body.style.margin = 0;
   }, []);
   // --------------------------------------------
   // --------------- Action ---------------------
- 
-
-  const handleGetInfo = async () => {
+  const handleGetFolder = async () => {
     await request
-      .get(API.USERS_INFO)
+      .get(API.FOLDER)
       .then((res) => {
-        if (res.data.user) {
-          dispatch(UserUpdate(res.data))
-          setName(res.data.user.userName);
+        if (res?.data) {
+          console.log("---------------------",res.data)
+          setSubMenu(res.data?.data);
         }
       })
-      .catch((err) => navigate("/login"));
+      .catch((err) => console.log(err));
   };
+
 
   const handleLogOut = async () => {
     await logout();
     navigate("/login");
   };
-  // --------------------------------------------
+ 
   return (
     <Layout style={{ minHeight: "100vh", overflowX: 'hidden' }}>
       <Sider
