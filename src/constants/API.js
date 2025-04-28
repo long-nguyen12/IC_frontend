@@ -14,6 +14,7 @@ export const API = {
 
   GET_FILE_ID: "/api/file/get-file-id",
   FILE: "/api/file/upload",
+  DELETE_FILE: "/api/file/delete-file",
   UPDATE_FILE: "/api/file/updatefile",
   SING_BOX: "/api/file/singbox",
   GET_ALL_IMAGE_NAME: "/api/image/image?folder={0}&page={1}&limit={2}",

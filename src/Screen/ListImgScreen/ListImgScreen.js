@@ -152,9 +152,6 @@ const ListImage = () => {
       setHasMore(true);
     };
     resetState();
-
-    // getImageList("asc");
-    // handleGetCategories();
     handleGetFolder()
   }, [folderName]);
 
