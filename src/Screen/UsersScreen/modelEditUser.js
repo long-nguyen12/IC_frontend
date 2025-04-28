@@ -6,14 +6,16 @@ const roleOptions = ["admin", "edit", "upload"];
 
 const UserEdit = ({ visible, user, onUpdate, onCancel }) => {
   const [form] = Form.useForm(); 
-  console.log("userssssssssss", user)
+ 
   useEffect(() => {
     if (visible && user) { 
+      console.log("user",user)
+      console.log("user.roles",user.role)
       form.setFieldsValue({
         userName: user.userName || "",
         email: user.email || "",
         password: "",
-        roles: Array.isArray(user.roles) ? user.roles : user.roles ? [user.roles] : [], 
+        role: Array.isArray(user.role) ? user.role : user.role ? [user.role] : [], 
       });
     }
   }, [visible, user]);
@@ -54,7 +56,7 @@ const UserEdit = ({ visible, user, onUpdate, onCancel }) => {
           <Input />
         </Form.Item>
       
-        <Form.Item name="roles" label="Quyền">
+        <Form.Item name="role" label="Quyền">
           <Checkbox.Group options={roleOptions} />
         </Form.Item>
       </Form>

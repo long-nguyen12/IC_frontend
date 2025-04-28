@@ -9,35 +9,50 @@ import { API } from "../../constants/API";
 import { setToken } from "../../service/token.service";
 import { useAuth } from "../../hooks/auth";
 import request from "../../service/request";
+import { useDispatch } from 'react-redux';
+import {UserUpdate} from './UserSlice';
+
+
+
 
 const { useToken } = theme;
 const { useBreakpoint } = Grid;
 const { Text, Title } = Typography;
 
 export default function LoginScreen() {
+  const dispatch = useDispatch();
   const { token } = useToken();
-  const { verifyToken } = useAuth();
+  // const { verifyToken } = useAuth();
   const screens = useBreakpoint();
   const navigation = useNavigate();
-  const onFinish = async (values) => {
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
 
-    const urlencoded = new URLSearchParams();
-    urlencoded.append("email", values.email);
-    urlencoded.append("password", values.password);
-    request
-      .post(API.LOGIN, urlencoded, {
-        headers: myHeaders,
-      })
-      .then(async (res) => {
-        if (res.data) {
-          await verifyToken(res.data.token);
-          navigation("/");
-        }
-      })
-      .catch((err) => console.log(err));
+
+
+  const onFinish = async (values) => {
+    try {
+      const res = await request.post(API.LOGIN, values); // dùng service request bạn đã import
+      console.log("res", res);
+      const user = res.data.user;
+      if (res) {
+        dispatch(UserUpdate(res.data))
+      }
+      
+   
+      if (user.role === "admin") {
+        navigation("/admin");
+      } else {
+        navigation("/user");
+      }
+    } catch (err) {
+      console.error("Đăng nhập thất bại:", err);
+    }
   };
+
+
+
+
+
+
 
   const styles = {
     container: {

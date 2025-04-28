@@ -10,6 +10,7 @@ import { Pagination } from "antd";
 import ContextMenu from "./ContextMenu";
 import { Breadcrumb } from "antd";
 import { Link } from "react-router-dom";
+import ContextMenuImg from "./ContextMenuImg";
 
 const ListFoderScreen = () => {
   const [selectedFolder, setSelectedFolder] = useState('all');
@@ -24,7 +25,6 @@ const ListFoderScreen = () => {
  
   const paginatedChildren = foderChild?.slice((currentPage - 1) * pageSize, currentPage * pageSize);
   const paginatedImages = foder.images?.slice((currentPage - 1) * pageSize, currentPage * pageSize);
-  console.log("location",location)
   const handleGetFolder = async (name) => {
       await request
       .get(API.FOLDERS ,{ 
@@ -88,7 +88,7 @@ const ListFoderScreen = () => {
                 <div className="Hover-Box">
                   <div className="poiter" onClick={() => {setSelectedFolder(item._id)}}>
                     <div className="foder-box"></div>
-                    <div className="name-foder"><span>{item.name}ss</span></div>
+                    <div className="name-foder"><span>{item.name}</span></div>
                   </div>
                  < ContextMenu nameFolder={item.name} onFolderDeleted={handleGetFolder}/>
                 </div>
@@ -101,6 +101,7 @@ const ListFoderScreen = () => {
               <div className="Hover-Box">
                 <div className="poiter">
                   <div className="img-box">
+                    < ContextMenuImg Idimg={item._id} onFolderDeleted={handleGetFolder} />
                     <Image
                       src={
                         API.API_HOST +"/" + item.name

@@ -17,6 +17,7 @@ export const userSlice = createSlice({
     },
 
     UserUpdate: (state, action) =>{
+        state.token = action.payload.token;
         state.name = action.payload.user.userName;
         state.email = action.payload.user.email;
         state.role = action.payload.user.role
