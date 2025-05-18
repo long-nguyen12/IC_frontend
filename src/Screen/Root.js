@@ -29,8 +29,6 @@ const Root = () => {
   const parentLabels = new Map();
  
   const User = useSelector((state) => state.User);
-
- 
   const logout = () => {
     console.log("logout",API.USERS_LOGOUT)
     request.get(API.API_HOST + API.USERS_LOGOUT)
@@ -63,12 +61,7 @@ const Root = () => {
       icon: <TeamOutlined />,
       onClick: () => navigate("/user"),
     },
-    {
-      key: "INFO",
-      label: "Thông tin tài khoản",
-      icon: <TeamOutlined />,
-      onClick: () => navigate("/info"),
-    },
+  
     {
       key: "History",
       label: "Lịch sử cập nhật",
