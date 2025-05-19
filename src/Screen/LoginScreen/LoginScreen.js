@@ -30,14 +30,12 @@ export default function LoginScreen() {
 
   const onFinish = async (values) => {
     try {
-      const res = await request.post(API.LOGIN, values); // dùng service request bạn đã import
+      const res = await request.post(API.LOGIN, values); 
       console.log("res", res);
       const user = res.data.user;
       if (res) {
         dispatch(UserUpdate(res.data))
       }
-      
-   
       if (user.role === "admin") {
         navigation("/admin");
       } else {
@@ -151,12 +149,12 @@ export default function LoginScreen() {
                 color: "#fff",
               }}
             >
-              Đăng nhập
+              Đăng nhập 
             </Button>
-            {/* <div style={styles.footer}>
-              <Text style={styles.text}>Chưa có tài khoản?</Text>{" "}
-              <Link to={"/register"}>Đăng ký</Link>
-            </div> */}
+            <div style={styles.footer}>
+              {/* <Text style={styles.text}>Chưa có tài khoản?</Text>{" "} */}
+              <Link to={"/reset-password"}>Quên mật khẩu ?</Link>
+            </div>
           </Form.Item>
         </Form>
       </div>

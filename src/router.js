@@ -11,6 +11,9 @@ import Error404 from "./Error";
 import { ProtectedRoute } from "./component/ProtectedRoute/ProtectedRoute";
 import UsersScreen from "./Screen/UsersScreen/UsersScreen";
 import InfoScreen from "./Screen/InfoScreen/infoScreen"
+import ResetPassword from "./Screen/LoginScreen/ResetPassword";
+import ForgotPassword from "./Screen/LoginScreen/FogotPassword";
+import SendEmailSuccess from "./Screen/LoginScreen/SendEmailSuccess";
 
 
 
@@ -93,9 +96,28 @@ const router = createBrowserRouter([
     element: <LoginScreen />,
   },
   {
+    path: "/reset-password",
+    element: <ResetPassword/>
+  },
+
+  {
+    path: "/forgot-password",
+    element: <ForgotPassword/>
+  },
+
+  {
+    path:"/reset_password_success",
+    element: <SendEmailSuccess/>
+
+  },
+  {
     path: "register",
     element: <SignUpPage />,
   },
+
+
+
+ 
 ]);
 
 export default router;

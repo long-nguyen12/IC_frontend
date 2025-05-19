@@ -2,6 +2,8 @@ export const API = {
   API_HOST: "http://localhost:7000",
   REGISTER: "/api/users/register",
   LOGIN: "/api/users/login",
+  Forgot_Password: "/api/users/forgot-password",
+  RESET_PASSWORD: "/api/users/reset-password",
   FOLDER: "/api/uploads/all",
   FOLDERS: "/api/uploads/getdatafolder",
   
