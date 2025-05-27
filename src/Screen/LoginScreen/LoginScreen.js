@@ -9,11 +9,8 @@ import { API } from "../../constants/API";
 import { setToken } from "../../service/token.service";
 import { useAuth } from "../../hooks/auth";
 import request from "../../service/request";
-import { useDispatch } from 'react-redux';
-import {UserUpdate} from './UserSlice';
-
-
-
+import { useDispatch } from "react-redux";
+import { UserUpdate } from "./UserSlice";
 
 const { useToken } = theme;
 const { useBreakpoint } = Grid;
@@ -26,15 +23,13 @@ export default function LoginScreen() {
   const screens = useBreakpoint();
   const navigation = useNavigate();
 
-
-
   const onFinish = async (values) => {
     try {
-      const res = await request.post(API.LOGIN, values); 
+      const res = await request.post(API.LOGIN, values);
       console.log("res", res);
       const user = res.data.user;
       if (res) {
-        dispatch(UserUpdate(res.data))
+        dispatch(UserUpdate(res.data));
       }
       if (user.role === "admin") {
         navigation("/admin");
@@ -45,12 +40,6 @@ export default function LoginScreen() {
       console.error("Đăng nhập thất bại:", err);
     }
   };
-
-
-
-
-
-
 
   const styles = {
     container: {
@@ -149,7 +138,7 @@ export default function LoginScreen() {
                 color: "#fff",
               }}
             >
-              Đăng nhập 
+              Đăng nhập
             </Button>
             <div style={styles.footer}>
               {/* <Text style={styles.text}>Chưa có tài khoản?</Text>{" "} */}

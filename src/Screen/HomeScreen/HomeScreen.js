@@ -17,7 +17,7 @@ const props = {
     if (status === "done") {
       message.success(`${info.file.name} file đã được upload thành công.`);
     }
-    if(status ==="error") {
+    if (status === "error") {
       message.error(`${info.file.name} file tồn tại.`);
     }
   },
@@ -25,8 +25,6 @@ const props = {
     console.log("Dropped files", e.dataTransfer.files);
   },
 };
-
-
 
 const UploadScreen = () => {
   const handleUpload = async (options) => {

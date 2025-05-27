@@ -11,9 +11,7 @@ import {
 import { Outlet, useNavigate, useLocation, useParams } from "react-router-dom";
 import { API } from "../constants/API";
 import request from "../service/request";
-import { useDispatch,useSelector } from 'react-redux';
-
-
+import { useDispatch, useSelector } from "react-redux";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -27,18 +25,18 @@ const Root = () => {
   const [subMenu, setSubMenu] = useState([]);
   const [name, setName] = useState([]);
   const parentLabels = new Map();
- 
+
   const User = useSelector((state) => state.User);
   const logout = () => {
-    console.log("logout",API.USERS_LOGOUT)
-    request.get(API.API_HOST + API.USERS_LOGOUT)
-    .then((res) => {
-      if (res) {
-       console.log("res",res)
-      }
-    })
-    .catch((err) => console.log(err));
-
+    console.log("logout", API.USERS_LOGOUT);
+    request
+      .get(API.API_HOST + API.USERS_LOGOUT)
+      .then((res) => {
+        if (res) {
+          console.log("res", res);
+        }
+      })
+      .catch((err) => console.log(err));
   };
 
   const menuItem = [
@@ -52,8 +50,7 @@ const Root = () => {
       key: "IMAGE",
       label: "Danh sách ảnh",
       icon: <CloudServerOutlined />,
-      onClick: () => navigate("/foders/all",{state:{fodername:`all`}}),
-      
+      onClick: () => navigate("/foders/all", { state: { fodername: `all` } }),
     },
     {
       key: "USER",
@@ -61,13 +58,13 @@ const Root = () => {
       icon: <TeamOutlined />,
       onClick: () => navigate("/user"),
     },
-  
+
     {
       key: "History",
       label: "Lịch sử cập nhật",
-      icon:<ClockCircleOutlined />,
+      icon: <ClockCircleOutlined />,
       onClick: () => navigate("/history"),
-    }
+    },
   ];
 
   const {
@@ -82,7 +79,6 @@ const Root = () => {
   ];
   // --------------- useEffect ------------------
   useEffect(() => {
-   
     setName(User?.name);
     document.body.style.margin = 0;
   }, []);
@@ -93,21 +89,20 @@ const Root = () => {
       .get(API.FOLDER)
       .then((res) => {
         if (res?.data) {
-          console.log("---------------------",res.data)
+          console.log("---------------------", res.data);
           setSubMenu(res.data?.data);
         }
       })
       .catch((err) => console.log(err));
   };
 
-
   const handleLogOut = async () => {
     await logout();
     navigate("/login");
   };
- 
+
   return (
-    <Layout style={{ minHeight: "100vh", overflowX: 'hidden' }}>
+    <Layout style={{ minHeight: "100vh", overflowX: "hidden" }}>
       <Sider
         breakpoint="lg"
         style={{ minHeight: "100%", maxHeight: "100%" }}
@@ -129,7 +124,18 @@ const Root = () => {
         >
           {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
         </Button> */}
-        <div style={{ height: 64 }} />
+        <div
+          style={{
+            color: "#fff",
+            textAlign: "center",
+            fontWeight: "bold",
+            fontSize: 18,
+            marginBottom: 16,
+            marginTop: 16,
+          }}
+        >
+          ADMIN
+        </div>
         <Menu
           theme="dark"
           mode="inline"
@@ -167,15 +173,15 @@ const Root = () => {
             <Avatar>U</Avatar>
             <Dropdown placement="bottomLeft" arrow menu={{ items }}>
               <Button size="tiny" type="text">
-                {name} 
+                {name}
               </Button>
             </Dropdown>
           </Space>
         </Header>
         <Content
           style={{
-            margin: "24px",
-            height: "100%"
+            margin: "16px",
+            height: "100%",
             // width: '100%',
             // borderWidth: 1,
             // borderStyle: 'dashed'
@@ -184,7 +190,7 @@ const Root = () => {
           <div
             style={{
               padding: 24,
-              minHeight: 400,
+              minHeight: "100%",
               height: "100%",
               background: colorBgContainer,
               borderRadius: borderRadiusLG,

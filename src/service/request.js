@@ -48,26 +48,19 @@ axios.interceptors.response.use(
         message.error(errorText);
         // getStore().dispatch(authActions.clear());
         // navigationService.replace(ROUTER.AUTH_NAVIGATOR);
-      }
-      if (error.response.status === 403) {
+      } else if (error.response.status === 403) {
         // console.log("--- token timeout ---");
         errorText = "Bạn không có quyền truy cập chức năng này";
         message.error(errorText);
         // await window.localStorage.removeItem("token");
         // router.navigate("/login");
-      }
-
-
-      if (error.response.status === 304) {
+      } else if (error.response.status === 304) {
         // console.log("--- token timeout ---");
         errorText = "đăng xuất thành công ";
         message.error(errorText);
         // await window.localStorage.removeItem("token");
         // router.navigate("/login");
-      }
-
-
-      if (error.response.data?.message) {
+      } else if (error.response.data?.message) {
         errorText = error.response.data.message;
         message.error(errorText);
         if (error.response.status === 401) {
@@ -81,8 +74,7 @@ axios.interceptors.response.use(
         //   await window.localStorage.removeItem("token");
         //   router.navigate("/login");
         // }
-      }
-      if (error.response.data?.body?.message) {
+      } else if (error.response.data?.body?.message) {
         errorText = error.response.data.message;
       }
       // if (error.response.data?.error_description) {
@@ -109,13 +101,12 @@ axios.interceptors.response.use(
 );
 
 axios.interceptors.request.use(
-  config => {
-    config.withCredentials = true; 
-    return config; 
+  (config) => {
+    config.withCredentials = true;
+    return config;
   },
-  error => {
+  (error) => {
     return Promise.reject(error);
   }
 );
 export default axios;
-    
