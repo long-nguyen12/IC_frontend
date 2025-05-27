@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { App, Checkbox, Row, Table, Button,Tag } from "antd";
+import { App, Checkbox, Row, Table, Button, Tag } from "antd";
 // import { render } from "@testing-library/react";
 import request from "../../service/request";
 import { API } from "../../constants/API";
 import UserEditModal from "./modalUpdate";
-import UserEdit from "./modelEditUser"
+import UserEdit from "./modelEditUser";
 
-import { ExclamationCircleFilled, DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import {  Modal, Space } from 'antd';
+import {
+  ExclamationCircleFilled,
+  DeleteOutlined,
+  EditOutlined,
+} from "@ant-design/icons";
+import { Modal, Space } from "antd";
 const { confirm } = Modal;
 
 const UsersScreen = () => {
@@ -17,29 +21,28 @@ const UsersScreen = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalEdit, setIsModalEdit] = useState(false);
-  // const [dataUpdate, setDataUpdate] = useState([]);
   const plainOptions = ["upload", "edit", "admin"];
   const [users, setUsers] = useState([]);
-  
+  const [loading, setLoading] = useState(false);
+
   const showDeleteConfirm = (value) => {
     confirm({
-      title: 'Xóa tài khoản !',
+      title: "Xóa tài khoản !",
       icon: <ExclamationCircleFilled />,
       content: `Bạn xác nhận xóa tài khoản ${value.userName}`,
-      okText: 'Xóa',
-      okType: 'danger',
-      cancelText: 'Hủy',
+      okText: "Xóa",
+      okType: "danger",
+      cancelText: "Hủy",
       onOk() {
-        deleteUser(value)
+        deleteUser(value);
       },
       onCancel() {
-        console.log('Cancel');
+        console.log("Cancel");
       },
     });
   };
 
   const handleEditBnt = (user) => {
-    console.log("-------------")
     setSelectedUser(user);
     setIsModalEdit(true);
   };
@@ -48,7 +51,6 @@ const UsersScreen = () => {
     setIsModalEdit(false);
     setSelectedUser(null);
   };
-
 
   const handleEdit = (user) => {
     // setSelectedUser(user);
@@ -61,30 +63,26 @@ const UsersScreen = () => {
   };
 
   const handleUpdateUser = (newUser) => {
-    console.log("newUser", newUser);
     request
       .put(API.USERS_EDIT, newUser)
       .then((res) => {
         if (res.data) {
           console.log("res", res);
-          const userUpdate = res.data
-          console.log("userUpdate",userUpdate)
-          const listUser = [...data].map(item => item._id === userUpdate._id ? userUpdate : item);
-          console.log("listUser",listUser)
-          setData(listUser)
+          const userUpdate = res.data;
+          console.log("userUpdate", userUpdate);
+          const listUser = [...data].map((item) =>
+            item._id === userUpdate._id ? userUpdate : item
+          );
+          console.log("listUser", listUser);
+          setData(listUser);
           setIsModalEdit(false);
         }
       })
       .catch((err) => console.log(err));
 
-    // const newUserWithId = { ...newUser, id: users.length + 1 };
-    // setUsers([...users, newUserWithId]);
     message.success("Cập nhật người dùng thành công!");
     handleCancel();
   };
-
-
-
 
   // Cập nhật thông tin user
   const handleAddUser = (newUser) => {
@@ -98,11 +96,9 @@ const UsersScreen = () => {
       })
       .catch((err) => console.log(err));
 
-
     message.success("Thêm người dùng thành công!");
     handleCancel();
   };
-
 
   const columns = [
     {
@@ -129,7 +125,7 @@ const UsersScreen = () => {
       key: "role",
       render: (value, index) => {
         const rolesToShow = value.includes("admin") ? ["admin"] : value;
-        
+
         return rolesToShow.map((item, idx) => (
           <Tag key={idx + item} color={item === "admin" ? "red" : "magenta"}>
             {item}
@@ -142,8 +138,24 @@ const UsersScreen = () => {
       key: "action",
       render: (value, index) => (
         <Row key={index + value}>
-          <Button type="primary" onClick={()=>{handleEditBnt(value)}} style={{marginRight: 10}}><EditOutlined /></Button>
-          <Button color="danger" variant="solid" onClick={()=>{showDeleteConfirm(value)}} ><DeleteOutlined /></Button>
+          <Button
+            type="primary"
+            onClick={() => {
+              handleEditBnt(value);
+            }}
+            style={{ marginRight: 10 }}
+          >
+            <EditOutlined />
+          </Button>
+          <Button
+            color="danger"
+            variant="solid"
+            onClick={() => {
+              showDeleteConfirm(value);
+            }}
+          >
+            <DeleteOutlined />
+          </Button>
         </Row>
       ),
     },
@@ -153,24 +165,21 @@ const UsersScreen = () => {
     getUsers();
   }, []);
 
-
   const deleteUser = async (record) => {
-    let id = record._id
+    let id = record._id;
     try {
-        await request.delete(`${API.API_HOST}${API.USERS_DELETE}/${id}`)
+      await request
+        .delete(`${API.API_HOST}${API.USERS_DELETE}/${id}`)
         .then((res) => {
-          const dataList = data.filter(item => item._id !== id);
-          setData(dataList)
-
-
+          const dataList = data.filter((item) => item._id !== id);
+          setData(dataList);
         })
         .catch((err) => console.log(err));
-       
     } catch (error) {
-        console.error("Lỗi khi xóa:", error);
-        // alert("Xóa thất bại!");
+      console.error("Lỗi khi xóa:", error);
+      // alert("Xóa thất bại!");
     }
-};
+  };
 
   // --------------------------------------------
   // ---------------- Action --------------------
@@ -214,6 +223,8 @@ const UsersScreen = () => {
   };
 
   const getUsers = async () => {
+    setLoading(true);
+
     request
       .get(API.USERS)
       .then((res) => {
@@ -221,7 +232,8 @@ const UsersScreen = () => {
           setData(res.data);
         }
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.log(err))
+      .finally(() => setLoading(false));
   };
 
   // ------------------------------------------
@@ -246,22 +258,26 @@ const UsersScreen = () => {
           Thêm tài khoản
         </Button>
       </div>
-      <Table columns={columns} dataSource={data} bordered  rowKey={"_id"} />
+      <Table
+        columns={columns}
+        dataSource={data}
+        bordered
+        rowKey={"_id"}
+        loading={loading}
+      />
       <UserEditModal
         visible={isModalOpen}
         // user={selectedUser}
         onUpdate={handleAddUser}
         onCancel={handleCancel}
       />
-      
+
       <UserEdit
         visible={isModalEdit}
         user={selectedUser}
         onUpdate={handleUpdateUser}
         onCancel={handleCancelBnt}
       />
-
-
     </div>
   );
 };

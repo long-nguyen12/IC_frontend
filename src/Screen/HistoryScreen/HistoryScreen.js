@@ -1,88 +1,91 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import { API } from "../../constants/API";
 import request from "../../service/request";
-import './History.css';
+import "./History.css";
 import Optionfill from "./OptionFill";
-import { List } from 'antd';
-
+import { List, Table } from "antd";
 
 export default function HistoryScreen() {
   const [datahistory, setDatahistory] = useState();
-  const [listUser,setListuser] = useState([]);
+  const [listUser, setListuser] = useState([]);
+  const [loading, setLoading] = useState(false); // Add loading state
+
   const getUsers = async () => {
+    setLoading(true);
     request
       .get(API.USERS)
       .then((res) => {
         if (res.data) {
-          console.log("list user",res.data)
           setListuser(res.data);
         }
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.log(err))
+      .finally(() => setLoading(false));
   };
 
-
-
   const handleGetData = async () => {
-    request.get(API.API_LOG)
-     .then((res) => {
-       if (res) {
-        console.log("res",res)
-        setDatahistory( res.data.reverse())
-       }
-     })
-     .catch((err) => console.log(err));
-   };
+    setLoading(true);
+    request
+      .get(API.API_LOG)
+      .then((res) => {
+        if (res) {
+          setDatahistory(res.data.reverse());
+        }
+      })
+      .catch((err) => console.log(err))
+      .finally(() => setLoading(false));
+  };
 
-
-   useEffect(() => {
+  useEffect(() => {
     handleGetData();
     getUsers();
-   }, []);
- 
+  }, []);
 
-
-   function formatDateTimeToString(time) {
-    console.log(typeof time)
-    const date = new Date(time)
-    var dd = (date.getDate() < 10 ? '0' : '') + date.getDate();
-    var MM = ((date.getMonth() + 1) < 10 ? '0' : '') + (date.getMonth() + 1);
+  function formatDateTimeToString(time) {
+    console.log(typeof time);
+    const date = new Date(time);
+    var dd = (date.getDate() < 10 ? "0" : "") + date.getDate();
+    var MM = (date.getMonth() + 1 < 10 ? "0" : "") + (date.getMonth() + 1);
     var yyyy = date.getFullYear();
-    var hours = (date.getHours() < 10 ? '0' : '') + date.getHours();
-    var minutes = (date.getMinutes() < 10 ? '0' : '') + date.getMinutes();
-    return (hours + ':' + minutes + " " + dd + "/" + MM + "/" + yyyy);
+    var hours = (date.getHours() < 10 ? "0" : "") + date.getHours();
+    var minutes = (date.getMinutes() < 10 ? "0" : "") + date.getMinutes();
+    return hours + ":" + minutes + " " + dd + "/" + MM + "/" + yyyy;
   }
 
-
+  const columns = [
+    {
+      title: "Người thực hiện",
+      dataIndex: "Email",
+      key: "Email",
+      render: (text) => <div className="container-item">{text}</div>,
+    },
+    {
+      title: "Nội dung cập nhật",
+      dataIndex: "action",
+      key: "action",
+      render: (text) => <div className="container-item">{text}</div>,
+    },
+    {
+      title: "Thời gian",
+      dataIndex: "createdAt",
+      key: "createdAt",
+      render: (text) => (
+        <div className="container-item">{formatDateTimeToString(text)}</div>
+      ),
+    },
+  ];
 
   return (
     <div className="slogs-content">
-      <div className="slogs-content-header slogs-content-item">
-        <Optionfill title={'Người thực hiện'}  icon = {true} option = {listUser} />
-        <Optionfill title={'Nội dung cập nhật'} icon = {true} />
-        <Optionfill title={'Thời gian'} icon = {false} />
-      </div>
-      {/* footer list */}
-      <div>
-      <List
+      <Table
         className="custom-list"
         bordered
+        columns={columns}
         dataSource={datahistory}
-        renderItem={(item) => (
-          <List.Item className='custom-list-item' 
-            style={{padding: '0'}}
-          >
-            <div className='container-item'>{item.Email}</div>
-            <div className='container-item'>{item.action}</div>
-            <div className='container-item'>
-            {formatDateTimeToString(item.createdAt)}
-            </div>
-          </List.Item>
-        )}
-        split={true} // Hiển thị các đường phân cách giữa các item
+        rowKey={(record, idx) => record._id || idx}
+        pagination={true}
+        loading={loading}
       />
-      </div>
-
     </div>
   );
 }
